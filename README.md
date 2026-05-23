@@ -56,7 +56,7 @@ La aplicación está orientada a corredores que desean mantener un historial det
 ---
 
 ## Arquitectura y Consideraciones Técnicas
-* **Interfaz de Usuario:** Implementada de forma consistente utilizando `[Jetpack Compose / Views tradicionales en XML]`.
+* **Interfaz de Usuario:** Implementada de forma consistente utilizando Jetpack Compose.
 * **Seguridad:** Configuración estricta de reglas en Firestore para garantizar que los usuarios solo puedan leer y escribir sus propios documentos.
 
 ---
