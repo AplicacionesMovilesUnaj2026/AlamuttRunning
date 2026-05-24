@@ -1,78 +1,91 @@
 package com.aplicacionesmoviles.alamutt_running.features.quickStart
 
-import android.graphics.Bitmap
+
+import android.annotation.SuppressLint
 import android.graphics.Canvas
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.ui.viewinterop.AndroidView
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import kotlinx.coroutines.delay
+
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
+import androidx.core.graphics.toColorInt
 
+
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
-    val context = LocalContext.current
+    var pulseRadius by remember { mutableFloatStateOf(20f) }
+    var pulseAlpha by remember { mutableFloatStateOf(255f) }
 
-    val iconSize = 40
-    val bitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val paint = Paint().apply {
-        color = android.graphics.Color.RED
-        isAntiAlias = true
+    LaunchedEffect(Unit) {
+        while (true) {
+            val startTime = System.currentTimeMillis()
+            val duration = 1800L
+            while (System.currentTimeMillis() - startTime < duration) {
+                val progress = (System.currentTimeMillis() - startTime).toFloat() / duration
+                // rate de crecimiento del halo
+                pulseRadius = 20f + (progress * 20f)
+                // Opacidad
+                pulseAlpha = 150f * (1f - progress)
+                delay(16)
+            }
+        }
     }
-    canvas.drawCircle(iconSize / 2f, iconSize / 2f, 15f, paint)
+
+    val pulseOverlay = remember {
+        object : org.osmdroid.views.overlay.Overlay() {
+            var radius = 20f
+            var alphaVal = 255f
+
+            override fun draw(canvas: Canvas, map: MapView, shadow: Boolean) {
+                val point = map.projection.toPixels(userLocation, null)
+
+                val haloPaint = Paint().apply {
+                    color = "#E94560".toColorInt()
+                    alpha = alphaVal.toInt()
+                    isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+                canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), radius, haloPaint)
+
+                val centerPaint = Paint().apply {
+                    color = "#E94560".toColorInt()
+                    isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+                // Centro aumentado a 22f para mayor visibilidad
+                canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), 15f, centerPaint)
+            }
+        }
+    }
 
     AndroidView(
         factory = { ctx ->
             MapView(ctx).apply {
-                setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(false)
                 setBuiltInZoomControls(false)
-
-                isTilesScaledToDpi = true
-                setClickable(false)
-                setFocusable(false)
                 setOnTouchListener { _, _ -> true }
-
-                val matrix = ColorMatrix().apply {
-                    setSaturation(0.2f)
-                }
-                val filter = ColorMatrixColorFilter(matrix)
-                overlayManager.tilesOverlay.setColorFilter(filter)
-
-                minZoomLevel = 18.0
-                maxZoomLevel = 18.0
-
-                val staticMarker = Marker(this).apply {
-                    position = userLocation
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                    icon = android.graphics.drawable.BitmapDrawable(ctx.resources, bitmap)
-                    infoWindow = null
-                }
-                overlays.add(staticMarker)
-
-                post {
-                    controller.setZoom(18.5)
-                    controller.setCenter(userLocation)
-
-                    val buffer = 0.001
-                    val minLat = userLocation.latitude - buffer
-                    val maxLat = userLocation.latitude + buffer
-                    val minLon = userLocation.longitude - buffer
-                    val maxLon = userLocation.longitude + buffer
-                    setScrollableAreaLimitLatitude(maxLat, minLat, 0)
-                    setScrollableAreaLimitLongitude(minLon, maxLon, 0)
-
-                    invalidate()
-                    onMapReady()
-                }
+                controller.setZoom(19.0)
+                controller.setCenter(userLocation)
+                overlays.add(pulseOverlay)
+                onMapReady()
             }
+        },
+        update = { mapView ->
+            pulseOverlay.radius = pulseRadius
+            pulseOverlay.alphaVal = pulseAlpha
+            mapView.controller.setCenter(userLocation)
+            mapView.invalidate()
         },
         modifier = Modifier.fillMaxSize()
     )
