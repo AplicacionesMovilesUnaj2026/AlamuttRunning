@@ -63,7 +63,6 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
                     isAntiAlias = true
                     style = Paint.Style.FILL
                 }
-                // Centro aumentado a 22f para mayor visibilidad
                 canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), 15f, centerPaint)
             }
         }

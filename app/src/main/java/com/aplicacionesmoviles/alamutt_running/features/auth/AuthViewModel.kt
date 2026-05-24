@@ -66,10 +66,3 @@ class AuthViewModel : ViewModel() {
         uiState = AuthUiState.Idle
     }
 }
-
-sealed interface AuthUiState {
-    object Idle : AuthUiState
-    object Loading : AuthUiState
-    object Success : AuthUiState
-    data class Error(val message: String) : AuthUiState
-}

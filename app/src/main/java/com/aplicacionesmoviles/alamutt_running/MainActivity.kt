@@ -53,7 +53,6 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("quick_start") {
                             QuickStartScreen(
-                                onMenuClick = { },
                                 onStartClick = { }
                             )
                         }

@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,16 +23,17 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 import java.util.Calendar
-
-@SuppressLint("ClickableViewAccessibility")
+//todo:  debemos separar la logica del  hamburguer en otro .kt para mejor legibilidad.
 @Composable
 fun QuickStartScreen(
-    onMenuClick: () -> Unit,
     onStartClick: () -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     val userLocation by viewModel.userLocation.collectAsState()
     val isMapFullyRendered by viewModel.isMapFullyRendered.collectAsState()
 
@@ -44,9 +44,7 @@ fun QuickStartScreen(
     val showNightCard = currentHour >= 20
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            viewModel.startTracking(context, LocationServices.getFusedLocationProviderClient(context))
-        }
+        if (granted) viewModel.startTracking(context, LocationServices.getFusedLocationProviderClient(context))
     }
 
     LaunchedEffect(Unit) {
@@ -58,60 +56,56 @@ fun QuickStartScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(darkBackground)) {
-        if (userLocation != null) {
-            MapViewContainer(
-                userLocation = userLocation!!,
-                onMapReady = { viewModel.onMapRenderComplete() }
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(darkerHeader)
-                .padding(top = 40.dp, start = 16.dp, bottom = 16.dp)
-                .align(Alignment.TopCenter),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onMenuClick) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
-            Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
-        }
-
-        if (userLocation == null || !isMapFullyRendered) {
-            Box(
-                modifier = Modifier.fillMaxSize().background(darkBackground),
-                contentAlignment = Alignment.Center
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.width(280.dp),
+                drawerContainerColor = darkerHeader
             ) {
-                CircularProgressIndicator(color = accentRed)
+                Column(modifier = Modifier.padding(top = 60.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+                    Surface(modifier = Modifier.size(60.dp), shape = CircleShape, color = Color.Gray) {}
+                    Text("Usuario", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.White, modifier = Modifier.padding(top = 8.dp))
+                }
+                HorizontalDivider(color = darkBackground)
+                NavigationDrawerItem(label = { Text("Carrera", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.DirectionsRun, null, tint = Color.White) }, onClick = {})
+                NavigationDrawerItem(label = { Text("Actividad", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.History, null, tint = Color.White) }, onClick = {})
+                NavigationDrawerItem(label = { Text("Desafíos", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) }, onClick = {})
+                NavigationDrawerItem(label = { Text("Bandeja de entrada", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Email, null, tint = Color.White) }, onClick = {})
+                Spacer(modifier = Modifier.weight(1f))
+                HorizontalDivider(color = darkBackground)
+                NavigationDrawerItem(label = { Text("Configuración", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Settings, null, tint = Color.White) }, onClick = {})
             }
-        } else {
-            if (showNightCard) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 120.dp, start = 16.dp, end = 16.dp)
-                        .align(Alignment.TopCenter),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
-                        Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxSize().background(darkBackground)) {
+            if (userLocation != null) MapViewContainer(userLocation = userLocation!!, onMapReady = { viewModel.onMapRenderComplete() })
+
+            Row(modifier = Modifier.fillMaxWidth().background(darkerHeader).padding(top = 40.dp, start = 16.dp, bottom = 16.dp).align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
+                Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+            }
+
+            if (userLocation == null || !isMapFullyRendered) {
+                Box(modifier = Modifier.fillMaxSize().background(darkBackground), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = accentRed) }
+            } else {
+                if (showNightCard) {
+                    Card(modifier = Modifier.fillMaxWidth().padding(top = 120.dp, start = 16.dp, end = 16.dp).align(Alignment.TopCenter), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
+                        }
                     }
                 }
-            }
-
-            Button(onClick = onStartClick, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 120.dp).size(120.dp), shape = CircleShape, colors = ButtonDefaults.buttonColors(containerColor = accentRed)) {
-                Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
-            }
-
-            IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
-                Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
-            }
-
-            Button(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
-                Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
+                Button(onClick = onStartClick, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 120.dp).size(120.dp), shape = CircleShape, colors = ButtonDefaults.buttonColors(containerColor = accentRed)) {
+                    Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
+                }
+                IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
+                    Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
+                }
+                Button(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
+                    Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
+                }
             }
         }
     }
