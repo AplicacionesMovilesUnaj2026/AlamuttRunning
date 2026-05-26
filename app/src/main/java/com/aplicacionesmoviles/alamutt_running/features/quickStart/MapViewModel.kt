@@ -42,7 +42,7 @@ class MapViewModel : ViewModel() {
     }
 
     @SuppressLint("MissingPermission")
-    fun startTracking(context: Context, client: FusedLocationProviderClient) {
+    fun startTracking(client: FusedLocationProviderClient) {
         this.fusedClient = client
 
         val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)

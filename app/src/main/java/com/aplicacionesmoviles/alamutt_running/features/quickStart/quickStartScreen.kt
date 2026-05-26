@@ -44,13 +44,13 @@ fun QuickStartScreen(
     val showNightCard = currentHour >= 20
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) viewModel.startTracking(context, LocationServices.getFusedLocationProviderClient(context))
+        if (granted) viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
     }
 
     LaunchedEffect(Unit) {
         viewModel.setupOsmdroid(context)
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            viewModel.startTracking(context, LocationServices.getFusedLocationProviderClient(context))
+            viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
         } else {
             launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }

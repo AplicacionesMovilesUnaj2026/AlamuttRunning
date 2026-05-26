@@ -74,7 +74,7 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
                 setMultiTouchControls(false)
                 setBuiltInZoomControls(false)
                 setOnTouchListener { _, _ -> true }
-                controller.setZoom(19.0)
+                controller.setZoom(19.5)
                 controller.setCenter(userLocation)
                 overlays.add(pulseOverlay)
                 onMapReady()
