@@ -53,7 +53,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("quick_start") {
                             QuickStartScreen(
-                                onStartClick = { }
+                                onStartClick = { },
+                                onLogout = {
+                                    navController.navigate("auth") {
+                                        popUpTo("quick_start") { inclusive = true }
+                                    }
+                                }
                             )
                         }
                     }

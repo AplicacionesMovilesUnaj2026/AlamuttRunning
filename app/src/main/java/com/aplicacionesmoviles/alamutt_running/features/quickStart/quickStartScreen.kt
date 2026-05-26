@@ -1,7 +1,6 @@
 package com.aplicacionesmoviles.alamutt_running.features.quickStart
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,10 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import java.util.Calendar
-//todo:  debemos separar la logica del  hamburguer en otro .kt para mejor legibilidad.
+
 @Composable
 fun QuickStartScreen(
     onStartClick: () -> Unit,
+    onLogout: () -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -58,28 +58,12 @@ fun QuickStartScreen(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                modifier = Modifier.width(280.dp),
-                drawerContainerColor = darkerHeader
-            ) {
-                Column(modifier = Modifier.padding(top = 60.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-                    Surface(modifier = Modifier.size(60.dp), shape = CircleShape, color = Color.Gray) {}
-                    Text("Usuario", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.White, modifier = Modifier.padding(top = 8.dp))
-                }
-                HorizontalDivider(color = darkBackground)
-                NavigationDrawerItem(label = { Text("Carrera", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.DirectionsRun, null, tint = Color.White) }, onClick = {})
-                NavigationDrawerItem(label = { Text("Actividad", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.History, null, tint = Color.White) }, onClick = {})
-                NavigationDrawerItem(label = { Text("Desafíos", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) }, onClick = {})
-                NavigationDrawerItem(label = { Text("Bandeja de entrada", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Email, null, tint = Color.White) }, onClick = {})
-                Spacer(modifier = Modifier.weight(1f))
-                HorizontalDivider(color = darkBackground)
-                NavigationDrawerItem(label = { Text("Configuración", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Settings, null, tint = Color.White) }, onClick = {})
-            }
-        }
+        drawerContent = { AppDrawer(darkBackground, darkerHeader, onLogout) }
     ) {
         Box(modifier = Modifier.fillMaxSize().background(darkBackground)) {
-            if (userLocation != null) MapViewContainer(userLocation = userLocation!!, onMapReady = { viewModel.onMapRenderComplete() })
+            if (userLocation != null) {
+                MapViewContainer(userLocation = userLocation!!, onMapReady = { viewModel.onMapRenderComplete() })
+            }
 
             Row(modifier = Modifier.fillMaxWidth().background(darkerHeader).padding(top = 40.dp, start = 16.dp, bottom = 16.dp).align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
@@ -87,7 +71,9 @@ fun QuickStartScreen(
             }
 
             if (userLocation == null || !isMapFullyRendered) {
-                Box(modifier = Modifier.fillMaxSize().background(darkBackground), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = accentRed) }
+                Box(modifier = Modifier.fillMaxSize().background(darkBackground), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = accentRed)
+                }
             } else {
                 if (showNightCard) {
                     Card(modifier = Modifier.fillMaxWidth().padding(top = 120.dp, start = 16.dp, end = 16.dp).align(Alignment.TopCenter), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
