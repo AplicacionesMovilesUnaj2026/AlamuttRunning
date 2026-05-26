@@ -7,7 +7,7 @@ Aplicación Android nativa diseñada para el seguimiento y registro de actividad
 ## Integrantes y Grupo
 * **Integrantes:**
   * Mariano Alejo Carrizo - mariano.carrizo4280@gmail.com
-  * Claudio D' Amico - mail
+  * Claudio D' Amico - cdamico18@gmail.com
 
 ---
 
