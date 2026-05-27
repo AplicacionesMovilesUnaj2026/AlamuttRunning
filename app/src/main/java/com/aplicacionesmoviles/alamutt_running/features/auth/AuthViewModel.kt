@@ -8,9 +8,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.aplicacionesmoviles.alamutt_running.model.User
+import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val userRepository = UserRepository()
 
     var uiState by mutableStateOf<AuthUiState>(AuthUiState.Idle)
         private set
@@ -42,7 +45,22 @@ class AuthViewModel : ViewModel() {
         }
         uiState = AuthUiState.Loading
         auth.createUserWithEmailAndPassword(email, pass)
-            .addOnSuccessListener {
+            .addOnSuccessListener { result ->
+
+                val firebaseUser = result.user
+
+                if (firebaseUser != null) {
+
+                    val user = User(
+                        uid = firebaseUser.uid,
+                        email = firebaseUser.email ?: "",
+                        name = firebaseUser.displayName ?: "",
+                        photoUrl = firebaseUser.photoUrl?.toString() ?: ""
+                    )
+
+                    userRepository.saveUser(user)
+                }
+
                 uiState = AuthUiState.Success
                 onSuccess()
             }

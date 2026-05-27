@@ -24,6 +24,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import android.net.Uri
+import coil.compose.AsyncImage
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun QuickStartScreen(
@@ -42,6 +52,27 @@ fun QuickStartScreen(
     val accentRed = Color(0xFFE94560)
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val showNightCard = currentHour >= 20
+
+    var selectedImage by remember { mutableStateOf<Uri?>(null) }
+    val cloudinaryRepository = remember { CloudinaryRepository() }
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        selectedImage = uri
+        uri?.let {
+
+            scope.launch(Dispatchers.IO) {
+
+                val imageUrl = cloudinaryRepository.uploadImage(
+                    context = context,
+                    imageUri = it
+                )
+
+                Log.d("CLOUDINARY", imageUrl ?: "ERROR SUBIENDO")
+            }
+        }
+    }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
@@ -68,6 +99,30 @@ fun QuickStartScreen(
             Row(modifier = Modifier.fillMaxWidth().background(darkerHeader).padding(top = 40.dp, start = 16.dp, bottom = 16.dp).align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
                 Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+                Spacer(modifier = Modifier.weight(1f))
+
+                IconButton(
+                    onClick = {
+                        imagePicker.launch(arrayOf("image/*"))
+                    }
+                ) {
+                    if (selectedImage != null) {
+                        AsyncImage(
+                            model = selectedImage,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(Color.Gray, CircleShape)
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = Color.White,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
             }
 
             if (userLocation == null || !isMapFullyRendered) {
