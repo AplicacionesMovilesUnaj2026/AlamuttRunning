@@ -38,6 +38,8 @@ import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.aplicacionesmoviles.alamutt_running.model.Run
 import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
+import androidx.compose.runtime.mutableLongStateOf
+import kotlinx.coroutines.delay
 
 @Composable
 fun QuickStartScreen(
@@ -59,6 +61,16 @@ fun QuickStartScreen(
 
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
     var profileImageUrl by remember { mutableStateOf<String?>(null) }
+    var isRunning by remember {
+        mutableStateOf(false)
+    }
+
+    var elapsedTime by remember {
+        mutableLongStateOf(0L)
+    }
+    var hasStarted by remember {
+        mutableStateOf(false)
+    }
     val cloudinaryRepository = remember { CloudinaryRepository() }
     val userRepository = remember { UserRepository() }
     val runRepository = remember { RunRepository() }
@@ -114,6 +126,16 @@ fun QuickStartScreen(
         }
     }
 
+    LaunchedEffect(isRunning) {
+
+        while (isRunning) {
+
+            delay(1000)
+
+            elapsedTime += 1
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -153,6 +175,27 @@ fun QuickStartScreen(
                         }
                     }
                 }
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 260.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = darkerHeader
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+
+                    Text(
+                        text = "${elapsedTime}s",
+                        color = Color.White,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(
+                            horizontal = 24.dp,
+                            vertical = 12.dp
+                        )
+                    )
+                }
                 Button(
                     onClick = {
 
@@ -170,6 +213,9 @@ fun QuickStartScreen(
                             runRepository.saveRun(run)
                         }
 
+                        isRunning = !isRunning
+                        hasStarted = true
+
                         onStartClick()
                     },
                     modifier = Modifier
@@ -180,12 +226,34 @@ fun QuickStartScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = accentRed)
                 ) {
                     Text(
-                        "COMENZAR",
+                        if (isRunning) "DETENER" else "COMENZAR",
                         fontWeight = FontWeight.Black,
                         fontSize = 12.sp,
                         color = Color.White
                     )
                 }
+                if (hasStarted && !isRunning) {
+
+                    Button(
+                        onClick = {
+
+                            elapsedTime = 0L
+                            hasStarted = false
+
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .offset(x = 120.dp)
+                            .padding(bottom = 160.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.DarkGray
+                        )
+                    ) {
+
+                        Text("REINICIAR")
+                    }
+                }
+
                 IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
                     Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
                 }
