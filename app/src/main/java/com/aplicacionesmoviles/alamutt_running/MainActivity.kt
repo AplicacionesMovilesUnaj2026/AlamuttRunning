@@ -22,6 +22,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import com.aplicacionesmoviles.alamutt_running.features.stats.StatsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("quick_start") {
                             QuickStartScreen(
+                                navController = navController,
                                 onStartClick = { },
                                 onLogout = {
                                     navController.navigate("auth") {
@@ -60,6 +62,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+                        }
+                        composable("stats") {
+
+                            StatsScreen(navController)
                         }
                     }
                 }

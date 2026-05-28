@@ -25,7 +25,8 @@ fun AppDrawer(
     onLogout: () -> Unit,
     selectedImage: Uri?,
     onPickImage: () -> Unit,
-    profileImageUrl: String?
+    profileImageUrl: String?,
+    onStatsClick: () -> Unit
 ) {
     val context = LocalContext.current
     ModalDrawerSheet(
@@ -63,6 +64,18 @@ fun AppDrawer(
         HorizontalDivider(color = darkBackground)
         NavigationDrawerItem(label = { Text("Carrera", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.DirectionsRun, null, tint = Color.White) }, onClick = {})
         NavigationDrawerItem(label = { Text("Actividad", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.History, null, tint = Color.White) }, onClick = {})
+        NavigationDrawerItem(
+            label = { Text("Estadísticas", color = Color.White) },
+            selected = false,
+            icon = {
+                Icon(
+                    Icons.Default.BarChart,
+                    null,
+                    tint = Color.White
+                )
+            },
+            onClick = onStatsClick
+        )
         NavigationDrawerItem(label = { Text("Desafíos", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) }, onClick = {})
         NavigationDrawerItem(label = { Text("Tabla de líderes", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Leaderboard, null, tint = Color.White) }, onClick = {})
         NavigationDrawerItem(label = { Text("Bandeja de entrada", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Email, null, tint = Color.White) }, onClick = {})

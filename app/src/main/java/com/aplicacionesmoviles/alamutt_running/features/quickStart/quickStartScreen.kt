@@ -40,9 +40,11 @@ import com.aplicacionesmoviles.alamutt_running.model.Run
 import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 import androidx.compose.runtime.mutableLongStateOf
 import kotlinx.coroutines.delay
+import androidx.navigation.NavController
 
 @Composable
 fun QuickStartScreen(
+    navController: NavController,
     onStartClick: () -> Unit,
     onLogout: () -> Unit,
     viewModel: MapViewModel = viewModel()
@@ -128,7 +130,10 @@ fun QuickStartScreen(
                 onPickImage = {
                     imagePicker.launch(arrayOf("image/*"))
                 },
-                profileImageUrl = profileImageUrl
+                onStatsClick = {
+                    navController.navigate("stats")
+                },
+                profileImageUrl = profileImageUrl,
             )
         }
     ) {
