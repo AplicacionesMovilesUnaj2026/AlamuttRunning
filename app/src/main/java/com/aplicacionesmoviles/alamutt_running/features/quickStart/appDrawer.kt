@@ -14,16 +14,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
+import android.net.Uri
+import coil.compose.AsyncImage
+import androidx.compose.foundation.background
 
 @Composable
-fun AppDrawer(darkBackground: Color, darkerHeader: Color, onLogout: () -> Unit) {
+fun AppDrawer(
+    darkBackground: Color,
+    darkerHeader: Color,
+    onLogout: () -> Unit,
+    selectedImage: Uri?,
+    onPickImage: () -> Unit,
+    profileImageUrl: String?
+) {
     val context = LocalContext.current
     ModalDrawerSheet(
         modifier = Modifier.width(280.dp),
         drawerContainerColor = darkerHeader
     ) {
         Column(modifier = Modifier.padding(top = 60.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-            Surface(modifier = Modifier.size(60.dp), shape = CircleShape, color = Color.Gray) {}
+            IconButton(
+                onClick = onPickImage,
+                modifier = Modifier.size(90.dp)
+            ) {
+
+                if (selectedImage != null || profileImageUrl != null) {
+
+                    AsyncImage(
+                        model = selectedImage ?: profileImageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(90.dp)
+                            .background(Color.Gray, CircleShape)
+                    )
+
+                } else {
+
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(90.dp)
+                    )
+                }
+            }
             Text("Usuario", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.White, modifier = Modifier.padding(top = 8.dp))
         }
         HorizontalDivider(color = darkBackground)

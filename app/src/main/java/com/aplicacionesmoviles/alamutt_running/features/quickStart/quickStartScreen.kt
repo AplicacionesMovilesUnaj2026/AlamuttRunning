@@ -34,6 +34,10 @@ import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryReposit
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
+import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.aplicacionesmoviles.alamutt_running.model.Run
+import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 
 @Composable
 fun QuickStartScreen(
@@ -54,7 +58,10 @@ fun QuickStartScreen(
     val showNightCard = currentHour >= 20
 
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
+    var profileImageUrl by remember { mutableStateOf<String?>(null) }
     val cloudinaryRepository = remember { CloudinaryRepository() }
+    val userRepository = remember { UserRepository() }
+    val runRepository = remember { RunRepository() }
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -69,7 +76,20 @@ fun QuickStartScreen(
                     imageUri = it
                 )
 
-                Log.d("CLOUDINARY", imageUrl ?: "ERROR SUBIENDO")
+                if (imageUrl != null) {
+
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+                    if (userId != null) {
+
+                        userRepository.updatePhoto(
+                            userId,
+                            imageUrl
+                        )
+                    }
+
+                    Log.d("CLOUDINARY", imageUrl)
+                }
             }
         }
     }
@@ -85,11 +105,29 @@ fun QuickStartScreen(
         } else {
             launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (userId != null) {
+
+            profileImageUrl = userRepository.getPhoto(userId)
+        }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { AppDrawer(darkBackground, darkerHeader, onLogout) }
+        drawerContent = {
+            AppDrawer(
+                darkBackground,
+                darkerHeader,
+                onLogout,
+                selectedImage,
+                onPickImage = {
+                    imagePicker.launch(arrayOf("image/*"))
+                },
+                profileImageUrl = profileImageUrl
+            )
+        }
     ) {
         Box(modifier = Modifier.fillMaxSize().background(darkBackground)) {
             if (userLocation != null) {
@@ -100,29 +138,6 @@ fun QuickStartScreen(
                 IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
                 Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
                 Spacer(modifier = Modifier.weight(1f))
-
-                IconButton(
-                    onClick = {
-                        imagePicker.launch(arrayOf("image/*"))
-                    }
-                ) {
-                    if (selectedImage != null) {
-                        AsyncImage(
-                            model = selectedImage,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(Color.Gray, CircleShape)
-                        )
-                    } else {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = "Perfil",
-                            tint = Color.White,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                }
             }
 
             if (userLocation == null || !isMapFullyRendered) {
@@ -138,8 +153,38 @@ fun QuickStartScreen(
                         }
                     }
                 }
-                Button(onClick = onStartClick, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 120.dp).size(120.dp), shape = CircleShape, colors = ButtonDefaults.buttonColors(containerColor = accentRed)) {
-                    Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
+                Button(
+                    onClick = {
+
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+                        if (userId != null) {
+
+                            val run = Run(
+                                userId = userId,
+                                distance = 0.0,
+                                duration = 0L,
+                                calories = 0
+                            )
+
+                            runRepository.saveRun(run)
+                        }
+
+                        onStartClick()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 120.dp)
+                        .size(120.dp),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+                ) {
+                    Text(
+                        "COMENZAR",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 12.sp,
+                        color = Color.White
+                    )
                 }
                 IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
                     Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
