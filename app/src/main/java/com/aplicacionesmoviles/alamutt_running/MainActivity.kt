@@ -11,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
+import com.aplicacionesmoviles.alamutt_running.features.profile.ProfileScreen
 import com.aplicacionesmoviles.alamutt_running.features.quickStart.QuickStartScreen
 import com.aplicacionesmoviles.alamutt_running.ui.theme.AlamuttRunningTheme
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -23,6 +25,9 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import com.aplicacionesmoviles.alamutt_running.features.stats.StatsScreen
+import com.aplicacionesmoviles.alamutt_running.features.tracking.CountdownScreen
+import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingScreen
+import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +41,7 @@ class MainActivity : ComponentActivity() {
             AlamuttRunningTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
+                    val trackingViewModel: TrackingViewModel = viewModel()
                     val startDestination = if (auth.currentUser != null) "quick_start" else "auth"
 
                     NavHost(navController = navController, startDestination = startDestination) {
@@ -55,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         composable("quick_start") {
                             QuickStartScreen(
                                 navController = navController,
-                                onStartClick = { },
+                                onStartClick = { navController.navigate("countdown") },
                                 onLogout = {
                                     navController.navigate("auth") {
                                         popUpTo("quick_start") { inclusive = true }
@@ -63,9 +69,26 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable("countdown") {
+                            CountdownScreen(trackingViewModel, navController)
+                        }
+                        composable("tracking") {
+                            TrackingScreen(
+                                viewModel = trackingViewModel,
+                                onStop = {
+                                    trackingViewModel.resetTracking()
+                                    navController.navigate("quick_start") {
+                                        popUpTo("quick_start") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
                         composable("stats") {
-
                             StatsScreen(navController)
+                        }
+                        composable("profile") {
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                            ProfileScreen(uid = uid, navController = navController)
                         }
                     }
                 }

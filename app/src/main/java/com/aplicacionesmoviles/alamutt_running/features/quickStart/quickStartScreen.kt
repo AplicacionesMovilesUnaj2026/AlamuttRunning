@@ -2,6 +2,8 @@ package com.aplicacionesmoviles.alamutt_running.features.quickStart
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -21,26 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
+import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import android.net.Uri
-import coil.compose.AsyncImage
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.Dispatchers
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.aplicacionesmoviles.alamutt_running.model.Run
-import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
-import androidx.compose.runtime.mutableLongStateOf
-import kotlinx.coroutines.delay
-import androidx.navigation.NavController
 
 @Composable
 fun QuickStartScreen(
@@ -63,59 +52,50 @@ fun QuickStartScreen(
 
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
     var profileImageUrl by remember { mutableStateOf<String?>(null) }
+    var userName by remember { mutableStateOf<String?>(null) }
 
     val cloudinaryRepository = remember { CloudinaryRepository() }
     val userRepository = remember { UserRepository() }
-    val runRepository = remember { RunRepository() }
 
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        selectedImage = uri
-        uri?.let {
-
-            scope.launch(Dispatchers.IO) {
-
-                val imageUrl = cloudinaryRepository.uploadImage(
-                    context = context,
-                    imageUri = it
-                )
-
-                if (imageUrl != null) {
-
-                    val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-                    if (userId != null) {
-
-                        userRepository.updatePhoto(
-                            userId,
-                            imageUrl
-                        )
-                    }
-
-                    Log.d("CLOUDINARY", imageUrl)
-                }
-            }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        if (locationGranted) {
+            viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
         }
-    }
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
     }
 
     LaunchedEffect(Unit) {
         viewModel.setupOsmdroid(context)
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
-        } else {
-            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
+        val permissionsToRequest = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
         }
 
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val allGranted = permissionsToRequest.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
 
-        if (userId != null) {
+        if (allGranted) {
+            viewModel.startTracking(LocationServices.getFusedLocationProviderClient(context))
+        } else {
+            permissionLauncher.launch(permissionsToRequest.toTypedArray())
+        }
 
-            profileImageUrl = userRepository.getPhoto(userId)
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            scope.launch {
+                val userData = userRepository.getUserData(user.uid)
+                val dbName = userData?.get("name") as? String
+                val photo = userData?.get("photoUrl") as? String
+
+                userName = dbName.takeIf { !it.isNullOrBlank() }
+                    ?: user.displayName?.takeIf { it.isNotBlank() }
+                            ?: "Usuario"
+                profileImageUrl = photo.takeIf { !it.isNullOrBlank() }
+                    ?: user.photoUrl?.toString()
+            }
         }
     }
 
@@ -123,17 +103,20 @@ fun QuickStartScreen(
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
-                darkBackground,
-                darkerHeader,
-                onLogout,
-                selectedImage,
-                onPickImage = {
-                    imagePicker.launch(arrayOf("image/*"))
+                darkBackground = darkBackground,
+                darkerHeader = darkerHeader,
+                onLogout = onLogout,
+                onNavigateToProfile = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate("profile")
                 },
-                onStatsClick = {
-                    navController.navigate("stats")
-                },
+                selectedImage = selectedImage,
                 profileImageUrl = profileImageUrl,
+                userName = userName,
+                onStatsClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate("stats")
+                }
             )
         }
     ) {
@@ -145,7 +128,6 @@ fun QuickStartScreen(
             Row(modifier = Modifier.fillMaxWidth().background(darkerHeader).padding(top = 40.dp, start = 16.dp, bottom = 16.dp).align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
                 Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
-                Spacer(modifier = Modifier.weight(1f))
             }
 
             if (userLocation == null || !isMapFullyRendered) {
@@ -154,7 +136,11 @@ fun QuickStartScreen(
                 }
             } else {
                 if (showNightCard) {
-                    Card(modifier = Modifier.fillMaxWidth().padding(top = 120.dp, start = 16.dp, end = 16.dp).align(Alignment.TopCenter), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(top = 120.dp, start = 16.dp, end = 16.dp).align(Alignment.TopCenter),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
                             Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
@@ -163,24 +149,7 @@ fun QuickStartScreen(
                 }
 
                 Button(
-                    onClick = {
-
-                        val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-                        if (userId != null) {
-
-                            val run = Run(
-                                userId = userId,
-                                distance = 0.0,
-                                duration = 0L,
-                                calories = 0
-                            )
-
-                            runRepository.saveRun(run)
-                        }
-
-                        onStartClick()
-                    },
+                    onClick = { onStartClick() },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 120.dp)
@@ -188,17 +157,13 @@ fun QuickStartScreen(
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = accentRed)
                 ) {
-                    Text(
-                        "COMENZAR",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 12.sp,
-                        color = Color.White
-                    )
+                    Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
                 }
 
                 IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
                     Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
                 }
+
                 Button(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
                     Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
                 }

@@ -8,6 +8,7 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
 
     <application
@@ -26,11 +27,11 @@
             android:name=".data.model.act.asfa"
             android:exported="false"
             android:label="@string/title_activity_asfa"
-            android:theme="@style/Theme.AlamuttRunning" />
+            android:theme="@style/Theme.AlamuttRunning"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.AlamuttRunning">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +43,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

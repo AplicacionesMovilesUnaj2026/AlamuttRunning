@@ -46,27 +46,28 @@ class AuthViewModel : ViewModel() {
         uiState = AuthUiState.Loading
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnSuccessListener { result ->
-
                 val firebaseUser = result.user
-
                 if (firebaseUser != null) {
-
                     val user = User(
                         uid = firebaseUser.uid,
                         email = firebaseUser.email ?: "",
-                        name = firebaseUser.displayName ?: "",
+                        name = firebaseUser.displayName?.takeIf { it.isNotBlank() } ?: generateRandomName(),
                         photoUrl = firebaseUser.photoUrl?.toString() ?: ""
                     )
-
                     userRepository.saveUser(user)
                 }
-
                 uiState = AuthUiState.Success
                 onSuccess()
             }
             .addOnFailureListener { e ->
                 uiState = AuthUiState.Error(mapFirebaseError(e))
             }
+    }
+
+    private fun generateRandomName(): String {
+        val adjetivos = listOf("fellow", "swift", "bold", "wild", "fast", "brave", "cool", "urban")
+        val sustantivos = listOf("Sparrow", "Runner", "Tiger", "Eagle", "Falcon", "Ghost", "Striders", "Walker")
+        return "${adjetivos.random()}${sustantivos.random()}${(100..999).random()}"
     }
 
     fun loginWithGoogle(idToken: String, onSuccess: () -> Unit) {

@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.osmbonuspack)
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.android.image.cropper)
 }
