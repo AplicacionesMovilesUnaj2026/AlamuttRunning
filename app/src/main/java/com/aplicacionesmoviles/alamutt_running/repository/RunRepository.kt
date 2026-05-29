@@ -9,31 +9,16 @@ class RunRepository {
     private val db = FirebaseFirestore.getInstance()
 
     fun saveRun(run: Run) {
-
         db.collection("runs")
             .add(run)
     }
 
-    suspend fun getTotalRuns(userId: String): Int {
-
+    suspend fun getUserRuns(userId: String): List<Run> {
         val result = db.collection("runs")
             .whereEqualTo("userId", userId)
             .get()
             .await()
 
-        return result.size()
-    }
-
-    suspend fun getTotalDistance(userId: String): Double {
-
-        val result = db.collection("runs")
-            .whereEqualTo("userId", userId)
-            .get()
-            .await()
-
-        return result.documents.sumOf {
-
-            it.getDouble("distance") ?: 0.0
-        }
+        return result.documents.mapNotNull { it.toObject(Run::class.java) }
     }
 }

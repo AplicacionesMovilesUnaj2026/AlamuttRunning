@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -24,13 +25,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun QuickStartScreen(
     navController: NavController,
@@ -54,7 +55,6 @@ fun QuickStartScreen(
     var profileImageUrl by remember { mutableStateOf<String?>(null) }
     var userName by remember { mutableStateOf<String?>(null) }
 
-    val cloudinaryRepository = remember { CloudinaryRepository() }
     val userRepository = remember { UserRepository() }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -69,10 +69,11 @@ fun QuickStartScreen(
     LaunchedEffect(Unit) {
         viewModel.setupOsmdroid(context)
 
-        val permissionsToRequest = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
-        }
+        val permissionsToRequest = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.FOREGROUND_SERVICE_LOCATION,
+            Manifest.permission.ACTIVITY_RECOGNITION
+        )
 
         val allGranted = permissionsToRequest.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
@@ -120,24 +121,35 @@ fun QuickStartScreen(
             )
         }
     ) {
-        Box(modifier = Modifier.fillMaxSize().background(darkBackground)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(darkBackground)) {
             if (userLocation != null) {
                 MapViewContainer(userLocation = userLocation!!, onMapReady = { viewModel.onMapRenderComplete() })
             }
 
-            Row(modifier = Modifier.fillMaxWidth().background(darkerHeader).padding(top = 40.dp, start = 16.dp, bottom = 16.dp).align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .background(darkerHeader)
+                .padding(top = 40.dp, start = 16.dp, bottom = 16.dp)
+                .align(Alignment.TopCenter), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) }
                 Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
             }
 
             if (userLocation == null || !isMapFullyRendered) {
-                Box(modifier = Modifier.fillMaxSize().background(darkBackground), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(darkBackground), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = accentRed)
                 }
             } else {
                 if (showNightCard) {
                     Card(
-                        modifier = Modifier.fillMaxWidth().padding(top = 120.dp, start = 16.dp, end = 16.dp).align(Alignment.TopCenter),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 120.dp, start = 16.dp, end = 16.dp)
+                            .align(Alignment.TopCenter),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
@@ -160,11 +172,18 @@ fun QuickStartScreen(
                     Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
                 }
 
-                IconButton(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 150.dp).offset(x = (-100).dp).size(60.dp).background(darkerHeader, CircleShape)) {
+                IconButton(onClick = {}, modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 150.dp)
+                    .offset(x = (-100).dp)
+                    .size(60.dp)
+                    .background(darkerHeader, CircleShape)) {
                     Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
                 }
 
-                Button(onClick = {}, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
+                Button(onClick = {}, modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
                     Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }

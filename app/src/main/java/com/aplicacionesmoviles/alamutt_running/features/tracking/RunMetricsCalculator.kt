@@ -1,18 +1,19 @@
 package com.aplicacionesmoviles.alamutt_running.features.tracking
 
-import android.location.Location
+import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.content.Context
+import android.location.Location
 
 class RunMetricsCalculator(context: Context) : SensorEventListener {
     private var totalDistance: Double = 0.0
     private var lastLocation: Location? = null
     private val speedHistory = mutableListOf<Double>()
+    private var lastValidPace: Double = 0.0
+    private var currentAcceleration: Double = 0.0
 
-    private var isActuallyMoving = false
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
 
@@ -21,38 +22,50 @@ class RunMetricsCalculator(context: Context) : SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        // Si la aceleración es muy baja (cerca de 0), el usuario está quieto
-        val acceleration = event?.values?.let { Math.sqrt((it[0]*it[0] + it[1]*it[1] + it[2]*it[2]).toDouble()) } ?: 0.0
-        isActuallyMoving = acceleration > 0.5
+        event?.values?.let {
+            currentAcceleration = kotlin.math.sqrt((it[0] * it[0] + it[1] * it[1] + it[2] * it[2]).toDouble())
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     fun updateMetrics(newLocation: Location): RunMetrics {
-        // Solo procesamos si el GPS dice que se movió Y el acelerómetro confirma movimiento
-        if (isActuallyMoving && newLocation.speed > 0.5) {
-            lastLocation?.let { last ->
-                val distanceSegment = last.distanceTo(newLocation).toDouble()
-                if (distanceSegment < 50.0) { // Filtro anti-saltos bruscos
-                    totalDistance += distanceSegment
+        val isMoving = newLocation.hasSpeed() && newLocation.speed > 0.5 && currentAcceleration > 0.2
+
+        lastLocation?.let { last ->
+            if (isMoving) {
+                val rawDistance = last.distanceTo(newLocation).toDouble()
+                if (rawDistance > 0.5 && rawDistance < 50.0) {
+                    totalDistance += rawDistance
                 }
             }
-            lastLocation = newLocation
-            speedHistory.add(newLocation.speed.toDouble())
-            if (speedHistory.size > 10) speedHistory.removeAt(0)
+        }
+        lastLocation = newLocation
+
+        if (isMoving) {
+            val currentSpeed = newLocation.speed.toDouble()
+            speedHistory.add(currentSpeed)
+
+            if (speedHistory.size > 35) {
+                speedHistory.removeAt(0)
+            }
+
+            val avgSpeed = speedHistory.average()
+            if (avgSpeed > 0.3) {
+                val calculatedPace = (1000.0 / (avgSpeed * 60.0))
+                lastValidPace = (lastValidPace * 0.90) + (calculatedPace * 0.10)
+            }
         }
 
-        val avgSpeed = if (speedHistory.isNotEmpty()) speedHistory.average() else 0.0
-        val pace = if (isActuallyMoving && avgSpeed > 0.5) (1000.0 / (avgSpeed * 60.0)) else 0.0
-        val calories = (totalDistance / 1000 * 60).toInt()
+        val displayPace = if (lastValidPace == 0.0) 0.0 else lastValidPace.coerceIn(4.0, 25.0)
 
-        return RunMetrics(totalDistance, pace, calories)
+        return RunMetrics(totalDistance, displayPace, (totalDistance / 1000 * 60).toInt())
     }
 
     fun reset() {
         totalDistance = 0.0
         lastLocation = null
         speedHistory.clear()
-        sensorManager.unregisterListener(this)
+        lastValidPace = 0.0
     }
 }
