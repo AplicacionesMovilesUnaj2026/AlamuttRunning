@@ -9,32 +9,51 @@ import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
+
     private val userRepository = UserRepository()
 
     var name by mutableStateOf("")
     var bio by mutableStateOf("")
     var photoUrl by mutableStateOf<String?>(null)
-    var isLoading by mutableStateOf(false)
+    var weightKg by mutableStateOf(70.0)
+    var heightCm by mutableStateOf(170)
+
+    var editName by mutableStateOf("")
+    var editBio by mutableStateOf("")
+    var editWeightKg by mutableStateOf(70.0)
+    var editHeightCm by mutableStateOf(170)
+
     var isSaving by mutableStateOf(false)
 
     fun loadUserData(uid: String) {
-        isLoading = true
         viewModelScope.launch {
-            val userData = userRepository.getUserData(uid)
-            userData?.let { data ->
-                name = data["name"] as? String ?: ""
-                bio = data["bio"] as? String ?: ""
-                photoUrl = data["photoUrl"] as? String
+            val data = userRepository.getUserData(uid)
+            data?.let {
+                name = it["name"] as? String ?: ""
+                bio = it["bio"] as? String ?: ""
+                photoUrl = it["photoUrl"] as? String
+                weightKg = (it["weightKg"] as? Number)?.toDouble() ?: 70.0
+                heightCm = (it["heightCm"] as? Number)?.toInt() ?: 170
+
+                editName = name
+                editBio = bio
+                editWeightKg = weightKg
+                editHeightCm = heightCm
             }
-            isLoading = false
         }
     }
 
-    fun updateProfile(uid: String, newName: String, newBio: String, onComplete: () -> Unit = {}) {
+    fun saveChanges(uid: String, onComplete: () -> Unit) {
         isSaving = true
-        userRepository.updateUserData(uid, newName, newBio) { success ->
+        userRepository.updateUserData(uid, editName, editBio, editWeightKg, editHeightCm) { success ->
             isSaving = false
-            if (success) onComplete()
+            if (success) {
+                name = editName
+                bio = editBio
+                weightKg = editWeightKg
+                heightCm = editHeightCm
+                onComplete()
+            }
         }
     }
 }

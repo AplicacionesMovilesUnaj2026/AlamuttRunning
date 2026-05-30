@@ -45,8 +45,8 @@ class MapViewModel : ViewModel() {
     fun startTracking(client: FusedLocationProviderClient) {
         this.fusedClient = client
 
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
-            .setMinUpdateIntervalMillis(10000L)
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 30000L)
+            .setMinUpdateIntervalMillis(30000L)
             .build()
 
         locationCallback = object : LocationCallback() {

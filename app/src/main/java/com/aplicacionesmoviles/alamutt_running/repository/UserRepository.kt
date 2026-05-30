@@ -16,9 +16,24 @@ class UserRepository {
         }
     }
 
-    fun updateUserData(uid: String, name: String, bio: String, onResult: (Boolean) -> Unit) {
+
+    fun updateUserData(
+        uid: String,
+        name: String,
+        bio: String,
+        weightKg: Double,
+        heightCm: Int,
+        onResult: (Boolean) -> Unit
+    ) {
         db.collection("users").document(uid)
-            .update("name", name, "bio", bio)
+            .update(
+                mapOf(
+                    "name" to name,
+                    "bio" to bio,
+                    "weightKg" to weightKg,
+                    "heightCm" to heightCm
+                )
+            )
             .addOnSuccessListener { onResult(true) }
             .addOnFailureListener { onResult(false) }
     }

@@ -56,7 +56,11 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             val client = LocationServices.getFusedLocationProviderClient(context)
             val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L).build()
             val callback = object : LocationCallback() {
@@ -66,33 +70,89 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
             }
             try {
                 client.requestLocationUpdates(request, callback, Looper.getMainLooper())
-            } catch (e: SecurityException) { e.printStackTrace() }
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            }
         }
     }
 
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Box(Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
         Column(
-            Modifier.fillMaxSize().padding(16.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text("TIEMPO", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
-            Text(formattedTime, color = MaterialTheme.colorScheme.onBackground, fontSize = 48.sp, fontWeight = FontWeight.Bold)
+            Text(
+                formattedTime,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             Spacer(Modifier.height(24.dp))
 
             Text("DISTANCIA", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
-            Text(String.format(Locale.US, "%.2f km", distance / 1000), color = MaterialTheme.colorScheme.onBackground, fontSize = 32.sp)
-
+            Text(
+                String.format(Locale.US, "%.2f km", distance / 1000.0),
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.height(24.dp))
 
-            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                val stats = listOf("PASOS" to "$steps", "RITMO" to String.format(Locale.US, "%d:%02d", pace.toInt(), ((pace - pace.toInt()) * 60).toInt()), "CALORÍAS" to "$calories kcal")
-                stats.forEach { (label, value) ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
-                        Text(value, color = MaterialTheme.colorScheme.onBackground, fontSize = 24.sp)
-                    }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "PASOS",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
+                    )
+
+                    Text(
+                        steps.toString(),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "RITMO",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
+                    )
+
+                    Text(
+                        formatPace(pace),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "CAL",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
+                    )
+
+                    Text(
+                        calories.toString(),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
@@ -103,7 +163,17 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
                     onClick = {
                         FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
                             scope.launch {
-                                runRepository.saveRun(Run(userId = userId, distance = distance, pace = pace, duration = timer, calories = calories, steps = steps, date = System.currentTimeMillis()))
+                                runRepository.saveRun(
+                                    Run(
+                                        userId = userId,
+                                        distance = distance,
+                                        pace = pace,
+                                        duration = timer,
+                                        calories = calories,
+                                        steps = steps,
+                                        date = System.currentTimeMillis()
+                                    )
+                                )
                                 onStop()
                             }
                         }
@@ -112,7 +182,12 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Icon(Icons.Default.Stop, contentDescription = "Finalizar", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(40.dp))
+                    Icon(
+                        Icons.Default.Stop,
+                        contentDescription = "Finalizar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
 
                 Spacer(Modifier.width(40.dp))
@@ -133,4 +208,15 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
             }
         }
     }
+}
+
+private fun formatPace(pace: Double): String {
+    if (pace <= 0.0 || pace.isNaN() || pace.isInfinite()) {
+        return "--:--"
+    }
+
+    val minutes = pace.toInt()
+    val seconds = ((pace - minutes) * 60).toInt()
+
+    return String.format(Locale.US, "%d:%02d", minutes, seconds)
 }

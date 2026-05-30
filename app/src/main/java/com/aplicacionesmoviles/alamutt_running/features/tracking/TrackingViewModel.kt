@@ -6,8 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.aplicacionesmoviles.alamutt_running.model.User
+import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.services.TrackingService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,9 +20,13 @@ import java.util.Locale
 
 class TrackingViewModel(application: Application) : AndroidViewModel(application) {
     private val context = application
+
+    private val userRepository = UserRepository()
+    private var user: User = User()
     private val metricsCalculator = RunMetricsCalculator(application)
 
     val runState = MutableStateFlow<RunState>(RunState.Idle)
+
     val timerSeconds = MutableStateFlow(0L)
     val distance = MutableStateFlow(0.0)
     val pace = MutableStateFlow(0.0)
@@ -44,9 +51,13 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
         context.registerReceiver(controlReceiver, IntentFilter("CONTROL_RUN"), Context.RECEIVER_EXPORTED)
     }
 
-    fun startTracking() {
+    fun startTracking(userId: String) {
+
+        loadUser(userId)
+
         val intent = Intent(context, TrackingService::class.java)
-        androidx.core.content.ContextCompat.startForegroundService(context, intent)
+        ContextCompat.startForegroundService(context, intent)
+
         updateRunState(RunState.Running)
     }
 
@@ -80,9 +91,24 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
             _routePoints.add(loc)
 
             val m = metricsCalculator.updateMetrics(loc)
-            distance.value = m.distance
-            pace.value = m.pace
-            calories.value = m.calories
+
+            distance.value = m.distanceMeters
+            pace.value = m.currentPace
+
+            // Cálculo dinámico de calorías
+            val met = if (m.currentPace > 0) {
+                when {
+                    m.currentPace < 6.0 -> 10.0 // Corriendo rápido
+                    m.currentPace < 10.0 -> 7.0  // Trotando
+                    else -> 3.5                // Caminando
+                }
+            } else {
+                0.0
+            }
+
+            // Calorías por metro = (MET * 3.5 * peso) / (200 * velocidad_en_m/s * 60)
+            val distanceKm = (m.distanceMeters / 1000.0)
+            calories.value = (distanceKm * user.weightKg * 1.036).toInt()
         }
     }
 
@@ -101,5 +127,26 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
         super.onCleared()
         context.unregisterReceiver(controlReceiver)
         resetTracking()
+    }
+
+    fun loadUser(userId: String) {
+        viewModelScope.launch {
+
+            val data = userRepository.getUserData(userId)
+
+            data?.let {
+
+                user = User(
+                    uid = userId,
+                    email = it["email"] as? String ?: "",
+                    name = it["name"] as? String ?: "",
+                    bio = it["bio"] as? String ?: "",
+                    photoUrl = it["photoUrl"] as? String ?: "",
+                    weightKg = (it["weightKg"] as? Number)?.toDouble() ?: 70.0,
+                    heightCm = (it["heightCm"] as? Number)?.toInt() ?: 170,
+                    createdAt = (it["createdAt"] as? Number)?.toLong() ?: System.currentTimeMillis()
+                )
+            }
+        }
     }
 }

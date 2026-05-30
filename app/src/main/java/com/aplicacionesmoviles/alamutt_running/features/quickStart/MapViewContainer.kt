@@ -1,25 +1,17 @@
 package com.aplicacionesmoviles.alamutt_running.features.quickStart
 
-
 import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
+import com.aplicacionesmoviles.alamutt_running.ui.theme.AccentRed
 import kotlinx.coroutines.delay
-
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import androidx.core.graphics.toColorInt
-
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
@@ -27,15 +19,16 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
     var pulseRadius by remember { mutableFloatStateOf(20f) }
     var pulseAlpha by remember { mutableFloatStateOf(255f) }
 
+    // Usamos directamente su constante AccentRed
+    val primaryColor = AccentRed.toArgb()
+
     LaunchedEffect(Unit) {
         while (true) {
             val startTime = System.currentTimeMillis()
             val duration = 1800L
             while (System.currentTimeMillis() - startTime < duration) {
                 val progress = (System.currentTimeMillis() - startTime).toFloat() / duration
-                // rate de crecimiento del halo
                 pulseRadius = 20f + (progress * 20f)
-                // Opacidad
                 pulseAlpha = 150f * (1f - progress)
                 delay(16)
             }
@@ -51,7 +44,7 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
                 val point = map.projection.toPixels(userLocation, null)
 
                 val haloPaint = Paint().apply {
-                    color = "#E94560".toColorInt()
+                    color = primaryColor
                     alpha = alphaVal.toInt()
                     isAntiAlias = true
                     style = Paint.Style.FILL
@@ -59,7 +52,7 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
                 canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), radius, haloPaint)
 
                 val centerPaint = Paint().apply {
-                    color = "#E94560".toColorInt()
+                    color = primaryColor
                     isAntiAlias = true
                     style = Paint.Style.FILL
                 }
