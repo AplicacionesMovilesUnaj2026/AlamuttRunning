@@ -16,6 +16,35 @@ class UserRepository {
         }
     }
 
+    suspend fun updateUserStats(
+        userId: String,
+        distance: Double
+    ) {
+
+        val userRef =
+            db.collection("users")
+                .document(userId)
+
+        db.runTransaction { transaction ->
+
+            val snapshot =
+                transaction.get(userRef)
+
+            val currentDistance =
+                snapshot.getDouble("totalDistance") ?: 0.0
+
+            val currentRuns =
+                snapshot.getLong("totalRuns") ?: 0
+
+            transaction.update(
+                userRef,
+                mapOf(
+                    "totalDistance" to currentDistance + distance,
+                    "totalRuns" to currentRuns + 1
+                )
+            )
+        }.await()
+    }
 
     fun updateUserData(
         uid: String,

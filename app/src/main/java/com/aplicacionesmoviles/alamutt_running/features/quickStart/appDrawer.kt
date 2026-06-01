@@ -33,7 +33,8 @@ fun AppDrawer(
     selectedImage: Uri?,
     profileImageUrl: String?,
     userName: String?,
-    onStatsClick: () -> Unit
+    onStatsClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
 ) {
     val context = LocalContext.current
     ModalDrawerSheet(
@@ -89,7 +90,22 @@ fun AppDrawer(
             onClick = onStatsClick
         )
         NavigationDrawerItem(label = { Text("Desafíos", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) }, onClick = {})
-        NavigationDrawerItem(label = { Text("Tabla de líderes", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Leaderboard, null, tint = Color.White) }, onClick = {})
+        NavigationDrawerItem(
+            label = {
+                Text("Tabla de líderes", color = Color.White)
+            },
+            selected = false,
+            icon = {
+                Icon(
+                    Icons.Default.Leaderboard,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            },
+            onClick = {
+                onLeaderboardClick()
+            }
+        )
         NavigationDrawerItem(label = { Text("Bandeja de entrada", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Email, null, tint = Color.White) }, onClick = {})
 
         Spacer(modifier = Modifier.weight(1f))

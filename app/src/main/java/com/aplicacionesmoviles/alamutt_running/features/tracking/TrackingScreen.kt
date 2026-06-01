@@ -26,13 +26,14 @@ import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Locale
+import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 
 @Composable
 fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val runRepository = remember { RunRepository() }
-
+    val userRepository = remember { UserRepository() }
     val runState by viewModel.runState.collectAsState()
     val timer by viewModel.timerSeconds.collectAsState()
     val distance by viewModel.distance.collectAsState()
@@ -173,6 +174,11 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
                                         steps = steps,
                                         date = System.currentTimeMillis()
                                     )
+                                )
+
+                                userRepository.updateUserStats(
+                                    userId = userId,
+                                    distance = distance / 1000.0
                                 )
                                 onStop()
                             }

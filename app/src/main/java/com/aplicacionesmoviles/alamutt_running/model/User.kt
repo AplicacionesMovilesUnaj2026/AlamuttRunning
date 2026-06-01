@@ -8,5 +8,7 @@ data class User(
     val name: String = "",
     val bio: String = "",
     val photoUrl: String = "",
+    val totalDistance: Double = 0.0,
+    val totalRuns: Int = 0,
     val createdAt: Long = System.currentTimeMillis()
 )

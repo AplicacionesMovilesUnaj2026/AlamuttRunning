@@ -35,6 +35,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import com.aplicacionesmoviles.alamutt_running.features.leaderboard.LeaderboardScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -184,6 +185,13 @@ class MainActivity : ComponentActivity() {
 
                             ProfileScreen(uid = uid, navController = navController)
 
+                        }
+
+                        composable("leaderboard") {
+
+                            LeaderboardScreen(
+                                navController = navController
+                            )
                         }
 
                     }

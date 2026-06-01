@@ -117,7 +117,10 @@ fun QuickStartScreen(
                 onStatsClick = {
                     scope.launch { drawerState.close() }
                     navController.navigate("stats")
-                }
+                },
+                onLeaderboardClick = {
+                    navController.navigate("leaderboard")
+                },
             )
         }
     ) {
