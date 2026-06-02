@@ -74,4 +74,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.okhttp)
     implementation(libs.android.image.cropper)
+    implementation(libs.play.services.auth)
 }

@@ -30,6 +30,7 @@ okhttp = "5.3.2"
 osmbonuspack = "6.9.0"
 osmdroidAndroid = "6.1.20"
 osmdroidAndroidVersion = "6.1.18"
+playServicesAuth = "21.6.0"
 playServicesMaps = "20.0.0"
 playServicesMapsVersion = "19.0.0"
 playServicesLocation = "21.3.0"
@@ -73,6 +74,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 osmbonuspack = { module = "com.github.MKergall:osmbonuspack", version.ref = "osmbonuspack" }
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 osmdroid-android-v6118 = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroidVersion" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 play-services-maps-v1900 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMapsVersion" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }

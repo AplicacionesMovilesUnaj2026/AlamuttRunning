@@ -19,21 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.aplicacionesmoviles.alamutt_running.model.Run
-
-import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
 import java.util.Locale
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 
 @Composable
-fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
+fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val runRepository = remember { RunRepository() }
-    val userRepository = remember { UserRepository() }
     val runState by viewModel.runState.collectAsState()
     val timer by viewModel.timerSeconds.collectAsState()
     val distance by viewModel.distance.collectAsState()
@@ -163,24 +155,8 @@ fun TrackingScreen(viewModel: TrackingViewModel, onStop: () -> Unit) {
                 Button(
                     onClick = {
                         FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
-                            scope.launch {
-                                runRepository.saveRun(
-                                    Run(
-                                        userId = userId,
-                                        distance = distance,
-                                        pace = pace,
-                                        duration = timer,
-                                        calories = calories,
-                                        steps = steps,
-                                        date = System.currentTimeMillis()
-                                    )
-                                )
-
-                                userRepository.updateUserStats(
-                                    userId = userId,
-                                    distance = distance / 1000.0
-                                )
-                                onStop()
+                            viewModel.finishAndSaveRun(userId) { runId ->
+                                onFinish(runId ?: "CANCELLED")
                             }
                         }
                     },

@@ -4,12 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.aplicacionesmoviles.alamutt_running.model.User
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -70,16 +72,53 @@ class AuthViewModel : ViewModel() {
         return "${adjetivos.random()}${sustantivos.random()}${(100..999).random()}"
     }
 
-    fun loginWithGoogle(idToken: String, onSuccess: () -> Unit) {
+    fun loginWithGoogle(idToken: String, onResult: (shouldGoToOnboarding: Boolean) -> Unit) {
         uiState = AuthUiState.Loading
         auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
-            .addOnSuccessListener {
-                uiState = AuthUiState.Success
-                onSuccess()
+            .addOnSuccessListener { credentialResult ->
+                val currentUid = credentialResult.user?.uid ?: ""
+                viewModelScope.launch {
+                    val data = userRepository.getUserData(currentUid)
+                    if (data == null) {
+                        val firebaseUser = credentialResult.user
+                        if (firebaseUser != null) {
+                            val user = User(
+                                uid = firebaseUser.uid,
+                                email = firebaseUser.email ?: "",
+                                name = firebaseUser.displayName?.takeIf { it.isNotBlank() } ?: "Runner",
+                                photoUrl = firebaseUser.photoUrl?.toString() ?: ""
+                            )
+                            userRepository.saveUser(user)
+                        }
+                        uiState = AuthUiState.Success
+                        onResult(true)
+                    } else {
+                        val weight = data["weightKg"] as? Double ?: 0.0
+                        val height = (data["heightCm"] as? Long)?.toInt() ?: 0
+                        uiState = AuthUiState.Success
+                        onResult(weight <= 0.0 || height <= 0)
+                    }
+                }
             }
             .addOnFailureListener { e ->
                 uiState = AuthUiState.Error(mapFirebaseError(e))
             }
+    }
+
+    fun checkUserOnboardingStatus(onResult: (shouldGoToOnboarding: Boolean) -> Unit) {
+        val currentUid = auth.currentUser?.uid ?: ""
+        if (currentUid.isBlank()) {
+            onResult(false)
+            return
+        }
+        uiState = AuthUiState.Loading
+        viewModelScope.launch {
+            val data = userRepository.getUserData(currentUid)
+            val weight = data?.get("weightKg") as? Double ?: 0.0
+            val height = (data?.get("heightCm") as? Long)?.toInt() ?: 0
+            uiState = AuthUiState.Success
+            onResult(weight <= 0.0 || height <= 0)
+        }
     }
 
     private fun mapFirebaseError(e: Exception): String {

@@ -35,6 +35,7 @@ fun AppDrawer(
     userName: String?,
     onStatsClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
+    onNavigateToHistory: () -> Unit
 ) {
     val context = LocalContext.current
     ModalDrawerSheet(
@@ -82,7 +83,14 @@ fun AppDrawer(
 
         NavigationDrawerItem(label = { Text("Carrera", color = Color.White) }, selected = false, icon = { Icon(
             Icons.AutoMirrored.Filled.DirectionsRun, null, tint = Color.White) }, onClick = {})
-        NavigationDrawerItem(label = { Text("Actividad", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.History, null, tint = Color.White) }, onClick = {})
+
+        NavigationDrawerItem(
+            label = { Text("Actividad", color = Color.White) },
+            selected = false,
+            icon = { Icon(Icons.Default.History, null, tint = Color.White) },
+            onClick = { onNavigateToHistory() }
+        )
+
         NavigationDrawerItem(
             label = { Text("Estadísticas", color = Color.White) },
             selected = false,

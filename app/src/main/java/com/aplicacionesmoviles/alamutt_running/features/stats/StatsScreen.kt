@@ -34,7 +34,7 @@ fun StatsScreen(
     LaunchedEffect(Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
-            val runs = runRepository.getUserRuns(userId)
+            val runs = runRepository.getAllUserRuns(userId)
             totalRuns = runs.size
             totalDistanceKm = runs.sumOf { it.distance } / 1000.0
             totalCalories = runs.sumOf { it.calories }

@@ -19,7 +19,6 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
     var pulseRadius by remember { mutableFloatStateOf(20f) }
     var pulseAlpha by remember { mutableFloatStateOf(255f) }
 
-    // Usamos directamente su constante AccentRed
     val primaryColor = AccentRed.toArgb()
 
     LaunchedEffect(Unit) {
@@ -39,9 +38,10 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
         object : org.osmdroid.views.overlay.Overlay() {
             var radius = 20f
             var alphaVal = 255f
+            var currentLocation: GeoPoint = userLocation
 
             override fun draw(canvas: Canvas, map: MapView, shadow: Boolean) {
-                val point = map.projection.toPixels(userLocation, null)
+                val point = map.projection.toPixels(currentLocation, null)
 
                 val haloPaint = Paint().apply {
                     color = primaryColor
@@ -76,6 +76,7 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
         update = { mapView ->
             pulseOverlay.radius = pulseRadius
             pulseOverlay.alphaVal = pulseAlpha
+            pulseOverlay.currentLocation = userLocation
             mapView.controller.setCenter(userLocation)
             mapView.invalidate()
         },

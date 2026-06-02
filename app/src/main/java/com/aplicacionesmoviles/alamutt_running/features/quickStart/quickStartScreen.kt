@@ -37,6 +37,7 @@ fun QuickStartScreen(
     navController: NavController,
     onStartClick: () -> Unit,
     onLogout: () -> Unit,
+    onNavigateToHistory: () -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -121,14 +122,30 @@ fun QuickStartScreen(
                 onLeaderboardClick = {
                     navController.navigate("leaderboard")
                 },
+                onNavigateToHistory = {
+                    scope.launch { drawerState.close() }
+                    onNavigateToHistory()
+                }
             )
         }
     ) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(darkBackground)) {
+
             if (userLocation != null) {
                 MapViewContainer(userLocation = userLocation!!, onMapReady = { viewModel.onMapRenderComplete() })
+            }
+
+            if (userLocation == null || !isMapFullyRendered) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(darkBackground.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = accentRed)
+                }
             }
 
             Row(modifier = Modifier
@@ -140,55 +157,47 @@ fun QuickStartScreen(
                 Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
             }
 
-            if (userLocation == null || !isMapFullyRendered) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(darkBackground), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = accentRed)
-                }
-            } else {
-                if (showNightCard) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 120.dp, start = 16.dp, end = 16.dp)
-                            .align(Alignment.TopCenter),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
-                            Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
-                        }
+            if (showNightCard) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 120.dp, start = 16.dp, end = 16.dp)
+                        .align(Alignment.TopCenter),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
                     }
                 }
+            }
 
-                Button(
-                    onClick = { onStartClick() },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 120.dp)
-                        .size(120.dp),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = accentRed)
-                ) {
-                    Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
-                }
-
-                IconButton(onClick = {}, modifier = Modifier
+            Button(
+                onClick = { onStartClick() },
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 150.dp)
-                    .offset(x = (-100).dp)
-                    .size(60.dp)
-                    .background(darkerHeader, CircleShape)) {
-                    Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
-                }
+                    .padding(bottom = 120.dp)
+                    .size(120.dp),
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+            ) {
+                Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
+            }
 
-                Button(onClick = {}, modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
-                    Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
-                }
+            IconButton(onClick = {}, modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 150.dp)
+                .offset(x = (-100).dp)
+                .size(60.dp)
+                .background(darkerHeader, CircleShape)) {
+                Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
+            }
+
+            Button(onClick = {}, modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp), shape = RoundedCornerShape(24.dp), colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)) {
+                Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
             }
         }
     }
