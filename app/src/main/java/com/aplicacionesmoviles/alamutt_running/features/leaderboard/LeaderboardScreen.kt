@@ -1,8 +1,11 @@
 package com.aplicacionesmoviles.alamutt_running.features.leaderboard
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 data class LeaderboardUser(
     val name: String = "",
@@ -58,13 +62,16 @@ fun LeaderboardScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 40.dp, start = 8.dp),
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -76,78 +83,83 @@ fun LeaderboardScreen(
 
                 Icon(
                     Icons.Default.ArrowBack,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Text(
                 text = "Tabla de líderes",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
         LazyColumn(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
             itemsIndexed(users) { index, user ->
 
-                val medal = when(index) {
-                    0 -> "🥇"
-                    1 -> "🥈"
-                    2 -> "🥉"
-                    else -> "#${index + 1}"
-                }
-
-                val cardColor = when(index) {
+                val rankColor = when(index) {
                     0 -> Color(0xFFFFD700)
                     1 -> Color(0xFFC0C0C0)
                     2 -> Color(0xFFCD7F32)
-                    else -> Color(0xFF0F3460)
+                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 }
 
-                val textColor =
-                    if (index <= 2)
-                        Color.Black
-                    else
-                        Color.White
+                val formattedDistance = String.format(Locale.US, "%.2f", user.totalDistance)
 
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = cardColor
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                     )
                 ) {
 
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            text = medal,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(rankColor.copy(alpha = 0.15f), CircleShape)
+                                .border(1.5.dp, rankColor.copy(alpha = 0.8f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = when(index) {
+                                    0 -> "🥇"
+                                    1 -> "🥈"
+                                    2 -> "🥉"
+                                    else -> "${index + 1}"
+                                },
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = if (index <= 2) 18.sp else 14.sp
+                            )
+                        }
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        Column {
+                        Text(
+                            text = user.name,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                            Text(
-                                text = user.name,
-                                color = Color.White
-                            )
-
-                            Text(
-                                text = "${user.totalDistance} km",
-                                color = textColor
-                            )
-                        }
+                        Text(
+                            text = "$formattedDistance km",
+                            color = if (index <= 2) rankColor else MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }

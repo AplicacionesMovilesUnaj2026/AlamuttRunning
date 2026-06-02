@@ -95,7 +95,6 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
             distance.value = m.distanceMeters
             pace.value = m.currentPace
 
-            // Cálculo dinámico de calorías
             val met = if (m.currentPace > 0) {
                 when {
                     m.currentPace < 6.0 -> 10.0 // Corriendo rápido
@@ -106,7 +105,6 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
                 0.0
             }
 
-            // Calorías por metro = (MET * 3.5 * peso) / (200 * velocidad_en_m/s * 60)
             val distanceKm = (m.distanceMeters / 1000.0)
             calories.value = (distanceKm * user.weightKg * 1.036).toInt()
         }

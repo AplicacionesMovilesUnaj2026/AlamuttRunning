@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -47,10 +48,6 @@ fun ProfileScreen(
     val userRepository = remember { UserRepository() }
     val cloudinaryRepository = remember { CloudinaryRepository() }
 
-    val darkBackground = Color(0xFF0F3460)
-    val darkerHeader = Color(0xFF0A192F)
-    val accentRed = Color(0xFFE94560)
-
     var isEditing by remember { mutableStateOf(false) }
     var pendingCropUri by remember { mutableStateOf<Uri?>(null) }
     var isUploading by remember { mutableStateOf(false) }
@@ -73,29 +70,34 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(darkBackground)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(darkerHeader)
-                    .padding(top = 40.dp, start = 16.dp, bottom = 16.dp),
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                Text("Perfil", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Perfil",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -119,18 +121,15 @@ fun ProfileScreen(
                             }
                         })
                     }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(24.dp))
                     Row(horizontalArrangement = Arrangement.Center) {
                         TextButton(onClick = {
-                            viewModel.editName = viewModel.name
-                            viewModel.editBio = viewModel.bio
-                            viewModel.editWeightKg = viewModel.weightKg
-                            viewModel.editHeightCm = viewModel.heightCm
+                            pendingCropUri = null
                             isEditing = false
                         }) {
-                            Text("Cancelar", color = Color.White)
+                            Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
                         }
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(16.dp))
                         Button(
                             onClick = {
                                 isUploading = true
@@ -161,9 +160,9 @@ fun ProfileScreen(
                                     } ?: run { isUploading = false }
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Recortar y Guardar")
+                            Text("Recortar y Guardar", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 } else {
@@ -171,33 +170,33 @@ fun ProfileScreen(
                         viewModel.photoUrl,
                         isEditing
                     ) { imagePicker.launch(arrayOf("image/*")) }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(24.dp))
                     if (!isEditing) {
                         Text(
                             viewModel.name.ifBlank { "Nombre de usuario" },
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             viewModel.bio.ifBlank { "Sin biografía" },
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(24.dp))
                         Text(
                             "Peso: ${viewModel.weightKg} kg",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             "Altura: ${viewModel.heightCm} cm",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(Modifier.height(24.dp))
+                        Spacer(Modifier.height(32.dp))
                         Button(
                             onClick = {
                                 viewModel.editName = viewModel.name
@@ -206,30 +205,30 @@ fun ProfileScreen(
                                 viewModel.editHeightCm = viewModel.heightCm
                                 isEditing = true
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
-                            Text("Editar Perfil", color = Color.White)
+                            Text("Editar Perfil", color = MaterialTheme.colorScheme.onSurface)
                         }
                     } else {
                         ProfileFields(viewModel)
+                        Spacer(Modifier.height(24.dp))
                         Row(horizontalArrangement = Arrangement.Center) {
                             TextButton(onClick = { isEditing = false }) {
                                 Text(
                                     "Cancelar",
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(16.dp))
                             Button(
                                 onClick = { viewModel.saveChanges(uid) { isEditing = false } },
-                                colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                             ) {
                                 if (viewModel.isSaving) CircularProgressIndicator(
-                                    modifier = Modifier.size(
-                                        20.dp
-                                    ), color = Color.White
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
-                                else Text("Guardar", color = Color.White)
+                                else Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
                     }
@@ -243,7 +242,7 @@ fun ProfileScreen(
                     .background(Color.Black.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = accentRed)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -251,12 +250,11 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
-    val accentRed = Color(0xFFE94560)
     Box(
         modifier = Modifier
             .size(120.dp)
             .clip(CircleShape)
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable(enabled = isEditing, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -274,7 +272,7 @@ fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
             loading = {
                 CircularProgressIndicator(
                     modifier = Modifier.size(30.dp),
-                    color = accentRed
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         )
@@ -289,7 +287,7 @@ fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
                     Icons.Default.CameraAlt,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 )
             }
         }
@@ -304,7 +302,7 @@ fun ProfileFields(viewModel: ProfileViewModel) {
         label = { Text("Nombre") },
         modifier = Modifier.fillMaxWidth()
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
     OutlinedTextField(
         value = viewModel.editBio,
         onValueChange = { viewModel.editBio = it },
@@ -312,14 +310,14 @@ fun ProfileFields(viewModel: ProfileViewModel) {
         modifier = Modifier.fillMaxWidth(),
         minLines = 3
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
     OutlinedTextField(
         value = viewModel.editWeightKg.toString(),
         onValueChange = { viewModel.editWeightKg = it.toDoubleOrNull() ?: 0.0 },
         label = { Text("Peso (kg)") },
         modifier = Modifier.fillMaxWidth()
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
     OutlinedTextField(
         value = viewModel.editHeightCm.toString(),
         onValueChange = { viewModel.editHeightCm = it.toIntOrNull() ?: 0 },
