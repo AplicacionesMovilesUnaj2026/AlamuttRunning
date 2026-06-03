@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,15 +36,16 @@ import com.aplicacionesmoviles.alamutt_running.features.RunHistory.HistoryScreen
 import com.aplicacionesmoviles.alamutt_running.features.RunHistory.RunHistoryViewModel
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
+import com.aplicacionesmoviles.alamutt_running.features.challenges.ChallengesScreen
 import com.aplicacionesmoviles.alamutt_running.features.leaderboard.LeaderboardScreen
 import com.aplicacionesmoviles.alamutt_running.features.onboarding.OnboardingScreen
 import com.aplicacionesmoviles.alamutt_running.features.profile.ProfileScreen
+import com.aplicacionesmoviles.alamutt_running.features.runnerProfile.RunnerProfileScreen
 import com.aplicacionesmoviles.alamutt_running.features.quickStart.QuickStartScreen
 import com.aplicacionesmoviles.alamutt_running.features.stats.StatsScreen
 import com.aplicacionesmoviles.alamutt_running.features.tracking.CountdownScreen
 import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingScreen
 import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewModel
-import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 import com.aplicacionesmoviles.alamutt_running.ui.theme.AlamuttRunningTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -99,12 +102,18 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AlamuttRunningTheme {
-                val runRepository = remember { RunRepository() }
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     navController = rememberNavController()
                     val trackingViewModel: TrackingViewModel = viewModel()
 
-                    NavHost(navController = navController, startDestination = "splash") {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "splash",
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ) {
                         composable("splash") {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -141,6 +150,7 @@ class MainActivity : ComponentActivity() {
                         composable("quick_start") {
                             QuickStartScreen(
                                 navController = navController,
+                                trackingViewModel = trackingViewModel,
                                 onStartClick = { navController.navigate("countdown") },
                                 onLogout = { googleSignInClient.signOut().addOnCompleteListener { navController.navigate("auth") { popUpTo("quick_start") { inclusive = true } } } },
                                 onNavigateToHistory = { navController.navigate("run_history") }
@@ -166,12 +176,9 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("run_history") {
-                            val viewModel: RunHistoryViewModel = viewModel(factory = object : ViewModelProvider.Factory {
-                                override fun <T : ViewModel> create(modelClass: Class<T>): T = RunHistoryViewModel(runRepository) as T
-                            })
                             val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                             HistoryScreen(
-                                viewModel = viewModel,
+                                viewModel = viewModel(),
                                 userId = uid,
                                 onBack = { navController.popBackStack() },
                                 onRunClicked = { runId -> navController.navigate("run_detail/$runId") }
@@ -182,12 +189,9 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("runId") { type = NavType.StringType })
                         ) { backStackEntry ->
                             val runId = backStackEntry.arguments?.getString("runId") ?: ""
-                            val viewModel: RunDetailViewModel = viewModel(factory = object : ViewModelProvider.Factory {
-                                override fun <T : ViewModel> create(modelClass: Class<T>): T = RunDetailViewModel(runRepository) as T
-                            })
                             RunDetailScreen(
                                 runId = runId,
-                                viewModel = viewModel,
+                                viewModel = viewModel(),
                                 onBack = {
                                     navController.navigate("quick_start") {
                                         popUpTo("quick_start") { inclusive = true }
@@ -201,6 +205,14 @@ class MainActivity : ComponentActivity() {
                             ProfileScreen(uid = uid, navController = navController)
                         }
                         composable("leaderboard") { LeaderboardScreen(navController = navController) }
+                        composable("challenges") { ChallengesScreen(navController = navController) }
+                        composable(
+                            "runner_profile/{uid}",
+                            arguments = listOf(navArgument("uid") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+                            RunnerProfileScreen(uid = uid, navController = navController)
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.aplicacionesmoviles.alamutt_running.features.stats
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,37 +12,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
+import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 @Composable
 fun StatsScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: StatsViewModel = viewModel()
 ) {
-    val runRepository = remember { RunRepository() }
-
-    var totalRuns by remember { mutableIntStateOf(0) }
-    var totalDistanceKm by remember { mutableDoubleStateOf(0.0) }
-    var totalCalories by remember { mutableIntStateOf(0) }
-    var totalSteps by remember { mutableIntStateOf(0) }
-    var isLoading by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            val runs = runRepository.getAllUserRuns(userId)
-            totalRuns = runs.size
-            totalDistanceKm = runs.sumOf { it.distance } / 1000.0
-            totalCalories = runs.sumOf { it.calories }
-            totalSteps = runs.sumOf { it.steps }
-        }
-        isLoading = false
-    }
+    val unitSystem = viewModel.unitSystem
+    val totalRuns = viewModel.totalRuns
+    val totalDistanceKm = viewModel.totalDistanceKm
+    val totalCalories = viewModel.totalCalories
+    val totalSteps = viewModel.totalSteps
+    val isLoading = viewModel.isLoading
 
     Column(
         modifier = Modifier
@@ -86,7 +79,7 @@ fun StatsScreen(
 
                 StatCardFeatured(
                     title = "Distancia Total",
-                    value = "${String.format(Locale.US, "%.2f", totalDistanceKm)} km"
+                    value = UnitConverter.formatDistanceKm(totalDistanceKm, unitSystem)
                 )
 
                 Row(

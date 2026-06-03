@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +32,7 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.canhub.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -179,20 +181,36 @@ fun ProfileScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(Modifier.height(8.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "${viewModel.points} puntos",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFFD700)
+                            )
+                        }
+                        
+                        Spacer(Modifier.height(16.dp))
                         Text(
                             viewModel.bio.ifBlank { "Sin biografía" },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                         Spacer(Modifier.height(24.dp))
+                        val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
+                        val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
+
                         Text(
-                            "Peso: ${viewModel.weightKg} kg",
+                            "Peso: ${viewModel.weightKg} $weightLabel",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Altura: ${viewModel.heightCm} cm",
+                            "Altura: ${viewModel.heightCm} $heightLabel",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -311,17 +329,20 @@ fun ProfileFields(viewModel: ProfileViewModel) {
         minLines = 3
     )
     Spacer(Modifier.height(12.dp))
+    val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
+    val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
+
     OutlinedTextField(
         value = viewModel.editWeightKg.toString(),
         onValueChange = { viewModel.editWeightKg = it.toDoubleOrNull() ?: 0.0 },
-        label = { Text("Peso (kg)") },
+        label = { Text("Peso ($weightLabel)") },
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
     OutlinedTextField(
         value = viewModel.editHeightCm.toString(),
         onValueChange = { viewModel.editHeightCm = it.toIntOrNull() ?: 0 },
-        label = { Text("Altura (cm)") },
+        label = { Text("Altura ($heightLabel)") },
         modifier = Modifier.fillMaxWidth()
     )
 }

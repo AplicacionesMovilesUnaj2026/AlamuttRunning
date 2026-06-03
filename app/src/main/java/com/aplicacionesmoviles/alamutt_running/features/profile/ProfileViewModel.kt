@@ -1,22 +1,29 @@
 package com.aplicacionesmoviles.alamutt_running.features.profile
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import kotlinx.coroutines.launch
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userRepository = UserRepository()
+    private val prefs = application.getSharedPreferences("tracking_prefs", Context.MODE_PRIVATE)
+
+    var unitSystem by mutableStateOf(prefs.getString("unit_system", "Metric") ?: "Metric")
+        private set
 
     var name by mutableStateOf("")
     var bio by mutableStateOf("")
     var photoUrl by mutableStateOf<String?>(null)
     var weightKg by mutableStateOf(70.0)
     var heightCm by mutableStateOf(170)
+    var points by mutableStateOf(0)
 
     var editName by mutableStateOf("")
     var editBio by mutableStateOf("")
@@ -34,6 +41,7 @@ class ProfileViewModel : ViewModel() {
                 photoUrl = it["photoUrl"] as? String
                 weightKg = (it["weightKg"] as? Number)?.toDouble() ?: 70.0
                 heightCm = (it["heightCm"] as? Number)?.toInt() ?: 170
+                points = (it["points"] as? Number)?.toInt() ?: 0
 
                 editName = name
                 editBio = bio

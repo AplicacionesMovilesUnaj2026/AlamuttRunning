@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
@@ -32,6 +33,11 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     val pace by viewModel.pace.collectAsState()
     val calories by viewModel.calories.collectAsState()
     val steps by viewModel.steps.collectAsState()
+    val completedChallenges by viewModel.completedChallenges.collectAsState()
+    val isGoalReached by viewModel.isGoalReached.collectAsState()
+    val goalDistance by viewModel.goalDistance.collectAsState()
+    val unitSystem by viewModel.unitSystem.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val formattedTime by remember(timer) {
         derivedStateOf {
@@ -45,6 +51,25 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
         onDispose {
             stepManager.stop()
             viewModel.resetTracking()
+        }
+    }
+
+    LaunchedEffect(isGoalReached) {
+        if (isGoalReached) {
+            snackbarHostState.showSnackbar(
+                message = "¡Objetivo alcanzado! Sigue así.",
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
+
+    LaunchedEffect(completedChallenges) {
+        if (completedChallenges.isNotEmpty()) {
+            val challengeText = completedChallenges.joinToString(", ") { "${it.toInt()}km" }
+            snackbarHostState.showSnackbar(
+                message = "¡Desafío completado: $challengeText! +${(completedChallenges.sumOf { it } * 10).toInt()} pts",
+                duration = SnackbarDuration.Long
+            )
         }
     }
 
@@ -91,11 +116,27 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
             Text("DISTANCIA", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             Text(
-                String.format(Locale.US, "%.2f km", distance / 1000.0),
+                UnitConverter.formatDistance(distance, unitSystem),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
+
+            if (goalDistance > 0.0) {
+                LinearProgressIndicator(
+                    progress = { (distance / (goalDistance * 1000.0)).coerceIn(0.0, 1.0).toFloat() },
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .padding(top = 8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+                Text(
+                    text = "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance * 1000.0, unitSystem)}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Spacer(Modifier.height(24.dp))
 
             Row(
@@ -126,7 +167,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     )
 
                     Text(
-                        formatPace(pace),
+                        UnitConverter.formatPace(pace, unitSystem),
                         color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
@@ -189,6 +230,10 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                 }
             }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp)
+        )
     }
 }
 

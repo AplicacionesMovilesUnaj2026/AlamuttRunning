@@ -35,7 +35,9 @@ fun AppDrawer(
     userName: String?,
     onStatsClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
-    onNavigateToHistory: () -> Unit
+    onChallengesClick: () -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onCloseDrawer: () -> Unit
 ) {
     val context = LocalContext.current
     ModalDrawerSheet(
@@ -46,7 +48,10 @@ fun AppDrawer(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 60.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .clickable { onNavigateToProfile() }
+                .clickable { 
+                    onCloseDrawer()
+                    onNavigateToProfile() 
+                }
         ) {
             Box(
                 modifier = Modifier
@@ -81,50 +86,69 @@ fun AppDrawer(
         }
         HorizontalDivider(color = darkBackground)
 
-        NavigationDrawerItem(label = { Text("Carrera", color = Color.White) }, selected = false, icon = { Icon(
-            Icons.AutoMirrored.Filled.DirectionsRun, null, tint = Color.White) }, onClick = {})
+        NavigationDrawerItem(
+            label = { Text("Carrera", color = Color.White) }, 
+            selected = false, 
+            icon = { Icon(Icons.AutoMirrored.Filled.DirectionsRun, null, tint = Color.White) }, 
+            onClick = { onCloseDrawer() }
+        )
 
         NavigationDrawerItem(
             label = { Text("Actividad", color = Color.White) },
             selected = false,
             icon = { Icon(Icons.Default.History, null, tint = Color.White) },
-            onClick = { onNavigateToHistory() }
+            onClick = { 
+                onCloseDrawer()
+                onNavigateToHistory() 
+            }
         )
 
         NavigationDrawerItem(
             label = { Text("Estadísticas", color = Color.White) },
             selected = false,
             icon = { Icon(Icons.Default.BarChart, null, tint = Color.White) },
-            onClick = onStatsClick
-        )
-        NavigationDrawerItem(label = { Text("Desafíos", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) }, onClick = {})
-        NavigationDrawerItem(
-            label = {
-                Text("Tabla de líderes", color = Color.White)
-            },
-            selected = false,
-            icon = {
-                Icon(
-                    Icons.Default.Leaderboard,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            },
             onClick = {
+                onCloseDrawer()
+                onStatsClick()
+            }
+        )
+
+        NavigationDrawerItem(
+            label = { Text("Tabla de líderes", color = Color.White) },
+            selected = false,
+            icon = { Icon(Icons.Default.Leaderboard, null, tint = Color.White) },
+            onClick = {
+                onCloseDrawer()
                 onLeaderboardClick()
             }
         )
-        NavigationDrawerItem(label = { Text("Bandeja de entrada", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Email, null, tint = Color.White) }, onClick = {})
+
+        NavigationDrawerItem(
+            label = { Text("Desafíos", color = Color.White) },
+            selected = false,
+            icon = { Icon(Icons.Default.EmojiEvents, null, tint = Color.White) },
+            onClick = {
+                onCloseDrawer()
+                onChallengesClick()
+            }
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
         HorizontalDivider(color = darkBackground)
-        NavigationDrawerItem(label = { Text("Configuración", color = Color.White) }, selected = false, icon = { Icon(Icons.Default.Settings, null, tint = Color.White) }, onClick = {})
+        NavigationDrawerItem(
+            label = { Text("Configuración", color = Color.White) }, 
+            selected = false, 
+            icon = { Icon(Icons.Default.Settings, null, tint = Color.White) }, 
+            onClick = { onCloseDrawer() }
+        )
+        
         NavigationDrawerItem(
             label = { Text("Cerrar Sesión", color = Color.White) },
             selected = false,
             icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = Color.White) },
             onClick = {
+                onCloseDrawer()
                 FirebaseAuth.getInstance().signOut()
                 Toast.makeText(context, "Sesión cerrada exitosamente", Toast.LENGTH_SHORT).show()
                 onLogout()

@@ -10,29 +10,18 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.aplicacionesmoviles.alamutt_running.ui.theme.AccentRed
 import kotlinx.coroutines.delay
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
-    var pulseRadius by remember { mutableFloatStateOf(20f) }
-    var pulseAlpha by remember { mutableFloatStateOf(255f) }
-
+fun MapViewContainer(
+    userLocation: GeoPoint, 
+    mapStyle: String = "Standard",
+    onMapReady: () -> Unit
+) {
     val primaryColor = AccentRed.toArgb()
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            val startTime = System.currentTimeMillis()
-            val duration = 1800L
-            while (System.currentTimeMillis() - startTime < duration) {
-                val progress = (System.currentTimeMillis() - startTime).toFloat() / duration
-                pulseRadius = 20f + (progress * 20f)
-                pulseAlpha = 150f * (1f - progress)
-                delay(16)
-            }
-        }
-    }
 
     val pulseOverlay = remember {
         object : org.osmdroid.views.overlay.Overlay() {
@@ -41,6 +30,7 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
             var currentLocation: GeoPoint = userLocation
 
             override fun draw(canvas: Canvas, map: MapView, shadow: Boolean) {
+                if (shadow) return
                 val point = map.projection.toPixels(currentLocation, null)
 
                 val haloPaint = Paint().apply {
@@ -61,6 +51,24 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
         }
     }
 
+    var mapViewInternal by remember { mutableStateOf<MapView?>(null) }
+
+
+    LaunchedEffect(mapViewInternal) {
+        val mv = mapViewInternal ?: return@LaunchedEffect
+        while (true) {
+            val duration = 1800L
+            val startTime = System.currentTimeMillis()
+            while (System.currentTimeMillis() - startTime < duration) {
+                val progress = (System.currentTimeMillis() - startTime).toFloat() / duration
+                pulseOverlay.radius = 20f + (progress * 20f)
+                pulseOverlay.alphaVal = 150f * (1f - progress)
+                mv.postInvalidate()
+                delay(32)
+            }
+        }
+    }
+
     AndroidView(
         factory = { ctx ->
             MapView(ctx).apply {
@@ -70,15 +78,29 @@ fun MapViewContainer(userLocation: GeoPoint, onMapReady: () -> Unit) {
                 controller.setZoom(19.5)
                 controller.setCenter(userLocation)
                 overlays.add(pulseOverlay)
+                mapViewInternal = this
                 onMapReady()
             }
         },
         update = { mapView ->
-            pulseOverlay.radius = pulseRadius
-            pulseOverlay.alphaVal = pulseAlpha
             pulseOverlay.currentLocation = userLocation
-            mapView.controller.setCenter(userLocation)
-            mapView.invalidate()
+
+            val newTileSource = when (mapStyle) {
+                "Satellite" -> TileSourceFactory.USGS_SAT
+                "Terrain" -> TileSourceFactory.USGS_TOPO
+                else -> TileSourceFactory.MAPNIK
+            }
+            if (mapView.tileProvider.tileSource != newTileSource) {
+                mapView.setTileSource(newTileSource)
+            }
+
+            val currentCenter = mapView.mapCenter
+            val latDiff = Math.abs(currentCenter.latitude - userLocation.latitude)
+            val lonDiff = Math.abs(currentCenter.longitude - userLocation.longitude)
+            
+            if (latDiff > 1e-6 || lonDiff > 1e-6) {
+                mapView.controller.setCenter(userLocation)
+            }
         },
         modifier = Modifier.fillMaxSize()
     )

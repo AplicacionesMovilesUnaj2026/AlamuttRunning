@@ -1,5 +1,6 @@
 package com.aplicacionesmoviles.alamutt_running.features.RunDetail
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,10 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +29,7 @@ fun RunDetailScreen(
 ) {
     val run by viewModel.run.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val unitSystem = viewModel.unitSystem
 
     LaunchedEffect(runId) {
         viewModel.loadRun(runId)
@@ -66,11 +70,11 @@ fun RunDetailScreen(
             ) {
                 Text(text = dateFormatted, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.padding(start = 8.dp))
 
-                StatCardFeatured(title = "Distancia (km)", value = "${"%.2f".format(r.distance / 1000.0)}")
+                StatCardFeatured(title = "Distancia (${UnitConverter.getUnitLabel(unitSystem)})", value = UnitConverter.formatDistance(r.distance, unitSystem).removeSuffix(" ${UnitConverter.getUnitLabel(unitSystem)}"))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Ritmo", value = "${"%.2f".format(r.pace)} min/km")
+                        StatCardSmall(title = "Ritmo", value = "${UnitConverter.formatPace(r.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}")
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         StatCardSmall(title = "Tiempo", value = "${r.duration / 60000} min")

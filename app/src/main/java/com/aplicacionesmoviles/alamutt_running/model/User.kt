@@ -10,5 +10,12 @@ data class User(
     val photoUrl: String = "",
     val totalDistance: Double = 0.0,
     val totalRuns: Int = 0,
+    val totalCalories: Int = 0,
+    val totalSteps: Int = 0,
+    val points: Int = 0,
+    val activeChallenges: Map<String, Double> = emptyMap(),
+    val challengeWeekId: String = "",
+    val completedChallenges: List<String> = emptyList(),
+    val bestPace: Double = 0.0,
     val createdAt: Long = System.currentTimeMillis()
 )

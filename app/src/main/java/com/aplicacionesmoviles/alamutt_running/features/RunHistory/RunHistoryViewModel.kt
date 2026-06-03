@@ -1,6 +1,8 @@
 package com.aplicacionesmoviles.alamutt_running.features.RunHistory
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.aplicacionesmoviles.alamutt_running.model.Run
 import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
@@ -9,7 +11,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class RunHistoryViewModel(private val repository: RunRepository) : ViewModel() {
+class RunHistoryViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = RunRepository()
+    private val prefs = application.getSharedPreferences("tracking_prefs", Context.MODE_PRIVATE)
+    
+    val unitSystem = prefs.getString("unit_system", "Metric") ?: "Metric"
     private val _runHistory = MutableStateFlow<List<Run>>(emptyList())
     val runHistory: StateFlow<List<Run>> = _runHistory
     private var lastDocument: DocumentSnapshot? = null

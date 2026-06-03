@@ -1,5 +1,6 @@
 package com.aplicacionesmoviles.alamutt_running.features.RunHistory
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,10 +14,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aplicacionesmoviles.alamutt_running.model.Run
+import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,6 +33,7 @@ fun HistoryScreen(
     val history by viewModel.runHistory.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val listState = rememberLazyListState()
+    val unitSystem = viewModel.unitSystem
 
     val reachedBottom: Boolean by remember {
         derivedStateOf {
@@ -98,7 +102,7 @@ fun HistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(history) { run ->
-                    RunItem(run = run, onClick = { onRunClicked(run.id) })
+                    RunItem(run = run, unitSystem = unitSystem, onClick = { onRunClicked(run.id) })
                 }
 
                 if (isLoading) {
@@ -114,7 +118,7 @@ fun HistoryScreen(
 }
 
 @Composable
-fun RunItem(run: Run, onClick: () -> Unit) {
+fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
     val dateFormatted = try {
         SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(run.date))
     } catch (e: Exception) { "Fecha no disponible" }
@@ -141,13 +145,13 @@ fun RunItem(run: Run, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${"%.2f".format(run.distance / 1000.0)} km",
+                    text = UnitConverter.formatDistance(run.distance, unitSystem),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "${"%.2f".format(run.pace)} min/km",
+                    text = "${UnitConverter.formatPace(run.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )

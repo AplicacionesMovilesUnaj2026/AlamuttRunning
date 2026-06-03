@@ -17,9 +17,18 @@ fun CountdownScreen(
     viewModel: TrackingViewModel,
     navController: NavController
 ) {
-    var count by remember { mutableIntStateOf(3) }
+    val initialCount by viewModel.countdownTime.collectAsState()
+    var count by remember { mutableIntStateOf(initialCount) }
 
     LaunchedEffect(Unit) {
+        if (initialCount == 0) {
+            viewModel.updateRunState(RunState.Running)
+            navController.navigate("tracking") {
+                popUpTo("countdown") { inclusive = true }
+            }
+            return@LaunchedEffect
+        }
+
         viewModel.updateRunState(RunState.Countdown)
         while (count > 0) {
             delay(1000)

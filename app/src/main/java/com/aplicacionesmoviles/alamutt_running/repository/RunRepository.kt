@@ -29,6 +29,7 @@ class RunRepository {
     suspend fun getUserRunsPaginated(userId: String, lastDocument: DocumentSnapshot? = null): Pair<List<Run>, DocumentSnapshot?> {
         var query = db.collection("runs")
             .whereEqualTo("userId", userId)
+            .orderBy("date", Query.Direction.DESCENDING)
             .limit(10)
 
         if (lastDocument != null) {
