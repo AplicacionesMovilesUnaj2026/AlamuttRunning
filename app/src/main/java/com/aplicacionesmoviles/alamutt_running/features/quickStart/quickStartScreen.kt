@@ -28,13 +28,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import java.util.Calendar
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -51,20 +51,15 @@ fun QuickStartScreen(
     val scope = rememberCoroutineScope()
     val userLocation by viewModel.userLocation.collectAsState()
     val isGpsActive by viewModel.isGpsActive.collectAsState()
-    
+
     val goalDistance by trackingViewModel.goalDistance.collectAsState()
     val unitSystem by trackingViewModel.unitSystem.collectAsState()
     val countdownTime by trackingViewModel.countdownTime.collectAsState()
-    val voiceAlertsEnabled by trackingViewModel.voiceAlertsEnabled.collectAsState()
-    val voiceAlertFrequency by trackingViewModel.voiceAlertFrequency.collectAsState()
 
     var showGoalDialog by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var goalInput by remember { mutableStateOf("") }
 
-    val darkBackground = Color(0xFF0F3460)
-    val darkerHeader = Color(0xFF0A192F)
-    val accentRed = Color(0xFFE94560)
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val showNightCard = currentHour >= 20
 
@@ -118,8 +113,8 @@ fun QuickStartScreen(
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
-                darkBackground = darkBackground,
-                darkerHeader = darkerHeader,
+                darkBackground = DarkBackground,
+                darkerHeader = DarkerHeader,
                 onLogout = onLogout,
                 onNavigateToProfile = {
                     navController.navigate("profile")
@@ -147,12 +142,12 @@ fun QuickStartScreen(
     ) {
         Box(modifier = Modifier
             .fillMaxSize()
-            .background(darkBackground)) {
+            .background(DarkBackground)) {
 
             Box(modifier = Modifier.fillMaxSize()) {
                 if (isGpsActive && userLocation != null) {
                     MapViewContainer(
-                        userLocation = userLocation!!, 
+                        userLocation = userLocation!!,
                         mapStyle = "Standard",
                         onMapReady = { viewModel.onMapRenderComplete() }
                     )
@@ -160,27 +155,28 @@ fun QuickStartScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(darkBackground),
+                            .background(DarkBackground),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(
-                                color = accentRed,
+                                color = AccentRed,
                                 modifier = Modifier.size(48.dp),
                                 strokeWidth = 4.dp
                             )
                             Spacer(Modifier.height(24.dp))
                             Text(
                                 "Buscando señal GPS...",
-                                color = Color.White,
+                                color = TextWhite,
                                 fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Black
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 "Asegúrate de estar en un lugar despejado",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 14.sp
+                                color = TextGray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -189,35 +185,34 @@ fun QuickStartScreen(
 
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .background(darkerHeader)
+                .background(DarkerHeader)
                 .padding(top = 40.dp, start = 16.dp, bottom = 16.dp)
-                .align(Alignment.TopCenter), 
+                .align(Alignment.TopCenter),
                 verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { scope.launch { drawerState.open() } }) { 
-                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White) 
+                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = TextWhite)
                 }
-                Text("Carrera", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+                Text("Carrera", color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
             }
-
 
             if (goalDistance > 0.0) {
                 Card(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(top = 110.dp),
-                    colors = CardDefaults.cardColors(containerColor = accentRed.copy(alpha = 0.9f)),
-                    shape = RoundedCornerShape(20.dp)
+                    colors = CardDefaults.cardColors(containerColor = AccentRed.copy(alpha = 0.9f)),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Flag, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Flag, contentDescription = null, tint = TextWhite, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Objetivo: ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
+                            color = TextWhite,
+                            fontWeight = FontWeight.Black,
                             fontSize = 14.sp
                         )
                         Spacer(Modifier.width(8.dp))
@@ -225,7 +220,7 @@ fun QuickStartScreen(
                             onClick = { trackingViewModel.goalDistance.value = 0.0 },
                             modifier = Modifier.size(16.dp)
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Quitar", tint = Color.White.copy(alpha = 0.7f))
+                            Icon(Icons.Default.Close, contentDescription = "Quitar", tint = TextWhite.copy(alpha = 0.7f))
                         }
                     }
                 }
@@ -237,12 +232,21 @@ fun QuickStartScreen(
                         .fillMaxWidth()
                         .padding(top = 160.dp, start = 16.dp, end = 16.dp)
                         .align(Alignment.TopCenter),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = DarkerHeader)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("¿Corres en la oscuridad?", fontWeight = FontWeight.Bold, color = Color.Black)
-                        Text("Lleva una luz por motivos de seguridad.", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "¿Corres en la oscuridad?",
+                            fontWeight = FontWeight.Black,
+                            color = AccentRed,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            "Lleva una luz por motivos de seguridad.",
+                            fontSize = 13.sp,
+                            color = TextGray
+                        )
                     }
                 }
             }
@@ -255,9 +259,9 @@ fun QuickStartScreen(
                         .padding(bottom = 120.dp)
                         .size(120.dp),
                     shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                 ) {
-                    Text("COMENZAR", fontWeight = FontWeight.Black, fontSize = 12.sp, color = Color.White)
+                    Text("Comenzar", fontWeight = FontWeight.Black, fontSize = 12.sp, color = TextWhite)
                 }
 
                 IconButton(onClick = { showSettingsDialog = true }, modifier = Modifier
@@ -265,8 +269,8 @@ fun QuickStartScreen(
                     .padding(bottom = 150.dp)
                     .offset(x = (-100).dp)
                     .size(60.dp)
-                    .background(darkerHeader, CircleShape)) {
-                    Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White)
+                    .background(DarkerHeader, CircleShape)) {
+                    Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = TextWhite)
                 }
 
                 Button(
@@ -274,10 +278,10 @@ fun QuickStartScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 40.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = darkerHeader)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = DarkerHeader)
                 ) {
-                    Text("Establece un objetivo", color = Color.White, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Establece un objetivo", color = TextWhite, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
         }
@@ -286,21 +290,33 @@ fun QuickStartScreen(
     if (showSettingsDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsDialog = false },
-            title = { Text("Configuración de Carrera") },
+            containerColor = DarkerHeader,
+            titleContentColor = AccentRed,
+            textContentColor = TextWhite,
+            shape = RoundedCornerShape(16.dp),
+            title = { Text("Configuración", fontWeight = FontWeight.Black) },
             text = {
                 Column {
-                    Text("Sistema de Unidades", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Sistema de unidades", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = unitSystem == "Metric", onClick = { trackingViewModel.unitSystem.value = "Metric" })
-                        Text("Métrico (km)")
+                        RadioButton(
+                            selected = unitSystem == "Metric",
+                            onClick = { trackingViewModel.unitSystem.value = "Metric" },
+                            colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
+                        )
+                        Text("Métrico (km)", color = TextWhite)
                         Spacer(Modifier.width(16.dp))
-                        RadioButton(selected = unitSystem == "Imperial", onClick = { trackingViewModel.unitSystem.value = "Imperial" })
-                        Text("Imperial (mi)")
+                        RadioButton(
+                            selected = unitSystem == "Imperial",
+                            onClick = { trackingViewModel.unitSystem.value = "Imperial" },
+                            colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
+                        )
+                        Text("Imperial (mi)", color = TextWhite)
                     }
-                    
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-                    Text("Cuenta Regresiva", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = TextGray.copy(alpha = 0.3f))
+
+                    Text("Cuenta regresiva", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
@@ -309,39 +325,30 @@ fun QuickStartScreen(
                             FilterChip(
                                 selected = countdownTime == time,
                                 onClick = { trackingViewModel.countdownTime.value = time },
-                                label = { Text("${time}s") }
+                                label = { Text("${time}s", color = if (countdownTime == time) DarkBackground else TextWhite) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = AccentRed,
+                                    containerColor = DarkBackground,
+                                    labelColor = TextWhite,
+                                    selectedLabelColor = DarkBackground
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    borderColor = if (countdownTime == time) AccentRed else TextGray,
+                                    enabled = true,
+                                    selected = countdownTime == time
+                                )
                             )
                         }
-                    }
-
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Avisos por Voz", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            val freqFormatted = if (voiceAlertFrequency % 1.0 == 0.0) voiceAlertFrequency.toInt().toString() else String.format(Locale.US, "%.1f", voiceAlertFrequency)
-                            Text("Frecuencia: cada $freqFormatted ${UnitConverter.getUnitLabel(unitSystem)}", fontSize = 12.sp, color = Color.Gray)
-                        }
-                        Switch(
-                            checked = voiceAlertsEnabled,
-                            onCheckedChange = { trackingViewModel.voiceAlertsEnabled.value = it }
-                        )
-                    }
-
-                    if (voiceAlertsEnabled) {
-                        Slider(
-                            value = voiceAlertFrequency.toFloat(),
-                            onValueChange = { trackingViewModel.voiceAlertFrequency.value = it.toDouble() },
-                            valueRange = 0.5f..5f,
-                            steps = 8,
-                            colors = SliderDefaults.colors(thumbColor = accentRed, activeTrackColor = accentRed)
-                        )
                     }
                 }
             },
             confirmButton = {
-                Button(onClick = { showSettingsDialog = false }, colors = ButtonDefaults.buttonColors(containerColor = accentRed)) {
-                    Text("Cerrar")
+                Button(
+                    onClick = { showSettingsDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cerrar", fontWeight = FontWeight.Black)
                 }
             }
         )
@@ -349,24 +356,37 @@ fun QuickStartScreen(
 
     if (showGoalDialog) {
         AlertDialog(
-            onDismissRequest = { 
-                showGoalDialog = false 
-            },
-            title = { Text("¿Cuál es tu objetivo?") },
+            onDismissRequest = { showGoalDialog = false },
+            containerColor = DarkerHeader,
+            titleContentColor = AccentRed,
+            textContentColor = TextWhite,
+            shape = RoundedCornerShape(16.dp),
+            title = { Text("¿Cuál es tu objetivo?", fontWeight = FontWeight.Black) },
             text = {
                 Column {
                     val unitLabel = if (unitSystem == "Metric") "kilómetros" else "millas"
-                    Text("Ingresa la distancia en $unitLabel que deseas recorrer hoy.", fontSize = 14.sp)
+                    Text("Ingresa la distancia en $unitLabel que deseas recorrer hoy.", fontSize = 14.sp, color = TextWhite)
                     Spacer(Modifier.height(16.dp))
                     OutlinedTextField(
                         value = goalInput,
-                        onValueChange = { 
-                            if (it.length <= 4) goalInput = it.filter { char -> char.isDigit() || char == '.' } 
+                        onValueChange = {
+                            if (it.length <= 4) goalInput = it.filter { char -> char.isDigit() || char == '.' }
                         },
-                        label = { Text("Distancia ($unitLabel)") },
+                        label = { Text("Distancia ($unitLabel)", color = TextGray) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentRed,
+                            unfocusedBorderColor = TextGray,
+                            focusedLabelColor = AccentRed,
+                            cursorColor = AccentRed,
+                            focusedTextColor = TextWhite,
+                            unfocusedTextColor = TextWhite,
+                            focusedContainerColor = DarkBackground,
+                            unfocusedContainerColor = DarkBackground
+                        )
                     )
                 }
             },
@@ -382,16 +402,15 @@ fun QuickStartScreen(
                         trackingViewModel.goalDistance.value = distanceInMeters
                         showGoalDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = accentRed)
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Aceptar")
+                    Text("Aceptar", fontWeight = FontWeight.Black)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { 
-                    showGoalDialog = false 
-                }) {
-                    Text("Cancelar")
+                TextButton(onClick = { showGoalDialog = false }) {
+                    Text("Cancelar", color = TextGray, fontWeight = FontWeight.Bold)
                 }
             }
         )

@@ -1,6 +1,5 @@
 package com.aplicacionesmoviles.alamutt_running.features.leaderboard
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
@@ -18,18 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import kotlinx.coroutines.tasks.await
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import java.util.Locale
 
 data class LeaderboardUser(
     val uid: String = "",
@@ -47,7 +43,7 @@ enum class LeaderboardFilter(val label: String, val field: String) {
     CALORIES("Calorías", "totalCalories"),
     STEPS("Pasos", "totalSteps"),
     POINTS("Puntos", "points"),
-    PACE("Mejor Ritmo", "bestPace")
+    PACE("Ritmo", "bestPace")
 }
 
 @Composable
@@ -67,23 +63,23 @@ fun LeaderboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DarkBackground)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(DarkerHeader)
                 .padding(top = 48.dp, start = 8.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
             Text(
                 text = "Tabla de Líderes",
                 fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.Black,
+                color = TextWhite
             )
         }
 
@@ -101,21 +97,22 @@ fun LeaderboardScreen(
                     label = { 
                         Text(
                             text = filter.label,
-                            fontSize = 12.sp,
-                            fontWeight = if (selectedFilter == filter) FontWeight.Bold else FontWeight.Normal
+                            fontSize = 11.sp,
+                            color = if (selectedFilter == filter) DarkBackground else TextWhite,
+                            fontWeight = FontWeight.Black
                         ) 
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        selectedContainerColor = AccentRed,
+                        selectedLabelColor = DarkBackground,
+                        containerColor = DarkerHeader,
+                        labelColor = TextWhite
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = selectedFilter == filter,
-                        borderColor = Color.Transparent,
-                        selectedBorderColor = Color.Transparent
+                        borderColor = TextGray.copy(alpha = 0.3f),
+                        selectedBorderColor = AccentRed
                     )
                 )
             }
@@ -123,11 +120,11 @@ fun LeaderboardScreen(
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = AccentRed)
             }
         } else if (users.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No hay datos disponibles", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("No hay datos disponibles", color = Color.White.copy(alpha = 0.6f))
             }
         } else {
             LazyColumn(
@@ -175,8 +172,9 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
             .fillMaxWidth()
             .clickable { onUserClick() },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = DarkerHeader
         ),
+        shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -197,9 +195,9 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                         2 -> "🥉"
                         else -> (index + 1).toString()
                     },
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Black,
                     fontSize = if (index < 3) 18.sp else 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = TextWhite
                 )
             }
 
@@ -210,7 +208,8 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(DarkBackground)
+                    .border(1.dp, if (index < 3) rankColor else TextGray.copy(alpha = 0.3f), CircleShape)
             ) {
                 if (user.photoUrl.isNotEmpty()) {
                     AsyncImage(
@@ -224,7 +223,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                         Icons.Default.Person,
                         contentDescription = "Default Profile",
                         modifier = Modifier.align(Alignment.Center).size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = TextGray
                     )
                 }
             }
@@ -234,23 +233,24 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
             Text(
                 text = user.name.ifEmpty { "Usuario" },
                 modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Black,
+                fontSize = 15.sp,
+                color = TextWhite,
                 maxLines = 1
             )
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = displayValue,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Black,
                     fontSize = 17.sp,
-                    color = if (index < 3) rankColor else MaterialTheme.colorScheme.primary
+                    color = if (index < 3) rankColor else AccentRed
                 )
                 Text(
                     text = unitLabel,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = 10.sp,
+                    color = TextGray,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

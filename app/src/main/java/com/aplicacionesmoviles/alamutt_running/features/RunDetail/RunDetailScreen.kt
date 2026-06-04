@@ -1,6 +1,5 @@
 package com.aplicacionesmoviles.alamutt_running.features.RunDetail
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,12 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,24 +38,24 @@ fun RunDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DarkBackground)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(DarkerHeader)
                 .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.onSurface)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
             }
-            Text("Detalle de carrera", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Text("Detalle de Carrera", fontSize = 22.sp, fontWeight = FontWeight.Black, color = TextWhite)
         }
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = AccentRed)
             }
         } else if (run != null) {
             val r = run!!
@@ -68,9 +68,9 @@ fun RunDetailScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(text = dateFormatted, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.padding(start = 8.dp))
+                Text(text = dateFormatted, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.padding(start = 8.dp))
 
-                StatCardFeatured(title = "Distancia (${UnitConverter.getUnitLabel(unitSystem)})", value = UnitConverter.formatDistance(r.distance, unitSystem).removeSuffix(" ${UnitConverter.getUnitLabel(unitSystem)}"))
+                StatCardFeatured(title = "Distancia", value = UnitConverter.formatDistance(r.distance, unitSystem))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
@@ -91,7 +91,7 @@ fun RunDetailScreen(
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Calorías", value = "${r.calories} kcal")
+                        StatCardSmall(title = "Calorías", value = r.calories.toString())
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         StatCardSmall(title = "Pasos", value = r.steps.toString())
@@ -104,20 +104,20 @@ fun RunDetailScreen(
 
 @Composable
 fun StatCardFeatured(title: String, value: String) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))) {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = DarkerHeader)) {
         Column(modifier = Modifier.padding(24.dp)) {
-            Text(title, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontSize = 14.sp)
-            Text(value, color = MaterialTheme.colorScheme.primary, fontSize = 48.sp, fontWeight = FontWeight.Black)
+            Text(title, color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = AccentRed, fontSize = 48.sp, fontWeight = FontWeight.Black)
         }
     }
 }
 
 @Composable
 fun StatCardSmall(title: String, value: String) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))) {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = DarkerHeader)) {
         Column(modifier = Modifier.padding(18.dp)) {
-            Text(title, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontSize = 13.sp)
-            Text(value, color = MaterialTheme.colorScheme.onSurface, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(title, color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black)
         }
     }
 }

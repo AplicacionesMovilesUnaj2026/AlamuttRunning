@@ -1,6 +1,5 @@
 package com.aplicacionesmoviles.alamutt_running.features.stats
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,20 +7,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.google.firebase.auth.FirebaseAuth
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import java.util.Locale
-
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -36,122 +39,156 @@ fun StatsScreen(
     val totalSteps = viewModel.totalSteps
     val isLoading = viewModel.isLoading
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Row(
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .background(DarkBackground)
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Text(
-                text = "Estadísticas",
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-            }
-        } else {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .fillMaxWidth()
+                    .background(DarkerHeader)
+                    .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                StatCardFeatured(
-                    title = "Distancia Total",
-                    value = UnitConverter.formatDistanceKm(totalDistanceKm, unitSystem)
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "Estadísticas",
+                    color = TextWhite,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black
                 )
+            }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AccentRed)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Carreras", value = totalRuns.toString())
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Calorías", value = "$totalCalories kcal")
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        maxItemsInEachRow = 2
+                    ) {
+                        val itemModifier = Modifier.weight(1f).height(125.dp)
+
+                        StatCard(
+                            label = "Distancia Total",
+                            value = UnitConverter.formatDistanceKm(totalDistanceKm, unitSystem).split(" ")[0],
+                            unit = UnitConverter.getUnitLabel(unitSystem),
+                            icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                            modifier = itemModifier,
+                            inlineUnit = true
+                        )
+                        StatCard(
+                            label = "Carreras",
+                            value = totalRuns.toString(),
+                            icon = Icons.Default.History,
+                            modifier = itemModifier
+                        )
+                        StatCard(
+                            label = "Calorías",
+                            value = totalCalories.toString(),
+                            unit = "kcal",
+                            icon = Icons.Default.LocalFireDepartment,
+                            modifier = itemModifier
+                        )
+                        StatCard(
+                            label = "Pasos Totales",
+                            value = String.format(Locale.US, "%,d", totalSteps),
+                            icon = Icons.AutoMirrored.Filled.ShowChart,
+                            modifier = itemModifier
+                        )
                     }
                 }
-
-                StatCardSmall(
-                    title = "Pasos Totales",
-                    value = String.format(Locale.US, "%,d", totalSteps)
-                )
             }
         }
     }
 }
 
 @Composable
-fun StatCardFeatured(title: String, value: String) {
+fun StatCard(
+    label: String,
+    value: String,
+    unit: String = "",
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    inlineUnit: Boolean = false
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
-        )
+            containerColor = DarkerHeader
+        ),
+        shape = RoundedCornerShape(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = AccentRed,
+                modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-    }
-}
+            
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = value,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 24.sp,
+                    color = TextWhite
+                )
+                if (unit.isNotEmpty() && inlineUnit) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = unit,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextWhite,
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
+            }
 
-@Composable
-fun StatCardSmall(title: String, value: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-        )
-    ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+            if (unit.isNotEmpty() && !inlineUnit) {
+                Text(
+                    text = unit,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AccentRed
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
+                text = label,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextGray
             )
         }
     }

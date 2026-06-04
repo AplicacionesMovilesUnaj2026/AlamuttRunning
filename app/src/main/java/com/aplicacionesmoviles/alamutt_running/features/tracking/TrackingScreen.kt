@@ -6,6 +6,7 @@ import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -19,7 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
@@ -94,146 +99,148 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
         }
     }
 
-    Box(Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text("TIEMPO", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
-            Text(
-                formattedTime,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            Text("DISTANCIA", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
-            Text(
-                UnitConverter.formatDistance(distance, unitSystem),
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            if (goalDistance > 0.0) {
-                LinearProgressIndicator(
-                    progress = { (distance / goalDistance).coerceIn(0.0, 1.0).toFloat() },
-                    modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .padding(top = 8.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-                Text(
-                    text = "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(Modifier.height(24.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Box(Modifier
+            .fillMaxSize()
+            .background(DarkBackground)) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
+                Text("Tiempo", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    formattedTime,
+                    color = TextWhite,
+                    fontSize = 64.sp,
+                    fontWeight = FontWeight.Black
+                )
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "PASOS",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp
-                    )
+                Spacer(Modifier.height(24.dp))
 
-                    Text(
-                        steps.toString(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Text("Distancia", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                val distanceText = if (goalDistance > 0.0) {
+                    "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance, unitSystem)}"
+                } else {
+                    UnitConverter.formatDistance(distance, unitSystem)
+                }
+                Text(
+                    text = distanceText,
+                    color = if (goalDistance > 0.0) AccentRed else TextWhite,
+                    fontSize = if (goalDistance > 0.0) 36.sp else 48.sp,
+                    fontWeight = FontWeight.Black
+                )
+                Spacer(Modifier.height(32.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Pasos",
+                            color = TextGray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            steps.toString(),
+                            color = TextWhite,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Ritmo",
+                            color = TextGray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            UnitConverter.formatPace(pace, unitSystem),
+                            color = TextWhite,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Calorías",
+                            color = TextGray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            calories.toString(),
+                            color = TextWhite,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
                 }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "RITMO",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp
-                    )
+                Spacer(Modifier.height(56.dp))
 
-                    Text(
-                        UnitConverter.formatPace(pace, unitSystem),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        onClick = {
+                            FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+                                viewModel.finishAndSaveRun(userId) { runId ->
+                                    onFinish(runId ?: "CANCELLED")
+                                }
+                            }
+                        },
+                        modifier = Modifier.size(90.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
+                    ) {
+                        Icon(
+                            Icons.Default.Stop,
+                            contentDescription = "Finalizar",
+                            tint = TextWhite,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "CAL",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp
-                    )
+                    Spacer(Modifier.width(40.dp))
 
-                    Text(
-                        calories.toString(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Button(
+                        onClick = { viewModel.updateRunState(if (runState is RunState.Running) RunState.Paused else RunState.Running) },
+                        modifier = Modifier.size(90.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = DarkerHeader)
+                    ) {
+                        Icon(
+                            imageVector = if (runState is RunState.Running) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = "Estado",
+                            tint = TextWhite,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
                 }
             }
-
-            Spacer(Modifier.height(48.dp))
-
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(
-                    onClick = {
-                        FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
-                            viewModel.finishAndSaveRun(userId) { runId ->
-                                onFinish(runId ?: "CANCELLED")
-                            }
-                        }
-                    },
-                    modifier = Modifier.size(90.dp),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
-                        Icons.Default.Stop,
-                        contentDescription = "Finalizar",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-
-                Spacer(Modifier.width(40.dp))
-
-                Button(
-                    onClick = { viewModel.updateRunState(if (runState is RunState.Running) RunState.Paused else RunState.Running) },
-                    modifier = Modifier.size(90.dp),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-                ) {
-                    Icon(
-                        imageVector = if (runState is RunState.Running) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = "Estado",
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp)
+            ) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = DarkerHeader,
+                    contentColor = TextWhite,
+                    actionColor = AccentRed,
+                    shape = RoundedCornerShape(4.dp)
+                )
             }
         }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp)
-        )
     }
 }
 

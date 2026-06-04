@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
@@ -23,7 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -33,6 +36,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.canhub.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,199 +72,211 @@ fun ProfileScreen(
         viewModel.loadUserData(uid)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Text(
-                    text = "Perfil",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .background(DarkBackground)
             ) {
-                if (pendingCropUri != null) {
-                    Box(
-                        modifier = Modifier
-                            .size(250.dp)
-                            .clip(RectangleShape)
-                    ) {
-                        AndroidView(factory = {
-                            cropImageView.apply {
-                                layoutParams = FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT
-                                )
-                                cropShape = CropImageView.CropShape.OVAL
-                                guidelines = CropImageView.Guidelines.ON
-                                setFixedAspectRatio(true)
-                                setAspectRatio(1, 1)
-                                setImageUriAsync(pendingCropUri)
-                            }
-                        })
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(DarkerHeader)
+                        .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            tint = TextWhite
+                        )
                     }
-                    Spacer(Modifier.height(24.dp))
-                    Row(horizontalArrangement = Arrangement.Center) {
-                        TextButton(onClick = {
-                            pendingCropUri = null
-                            isEditing = false
-                        }) {
-                            Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Button(
-                            onClick = {
-                                isUploading = true
-                                scope.launch(Dispatchers.Default) {
-                                    val bitmap = cropImageView.croppedImage
-                                    bitmap?.let { b ->
-                                        val file = File(
-                                            context.cacheDir,
-                                            "cp_${System.currentTimeMillis()}.jpg"
-                                        )
-                                        FileOutputStream(file).use { out ->
-                                            b.compress(
-                                                Bitmap.CompressFormat.JPEG,
-                                                80,
-                                                out
-                                            )
-                                        }
-                                        val uri = Uri.fromFile(file)
-                                        val url = cloudinaryRepository.uploadImage(context, uri)
-                                        scope.launch(Dispatchers.Main) {
-                                            url?.let {
-                                                userRepository.updatePhoto(uid, it)
-                                                viewModel.photoUrl = it
-                                            }
-                                            pendingCropUri = null
-                                            isUploading = false
-                                        }
-                                    } ?: run { isUploading = false }
+                    Text(
+                        text = "Mi Perfil",
+                        color = TextWhite,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (pendingCropUri != null) {
+                        Box(
+                            modifier = Modifier
+                                .size(250.dp)
+                                .clip(RectangleShape)
+                        ) {
+                            AndroidView(factory = {
+                                cropImageView.apply {
+                                    layoutParams = FrameLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.MATCH_PARENT
+                                    )
+                                    cropShape = CropImageView.CropShape.OVAL
+                                    guidelines = CropImageView.Guidelines.ON
+                                    setFixedAspectRatio(true)
+                                    setAspectRatio(1, 1)
+                                    setImageUriAsync(pendingCropUri)
                                 }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text("Recortar y Guardar", color = MaterialTheme.colorScheme.onPrimary)
+                            })
                         }
-                    }
-                } else {
-                    ProfileImage(
-                        viewModel.photoUrl,
-                        isEditing
-                    ) { imagePicker.launch(arrayOf("image/*")) }
-                    Spacer(Modifier.height(24.dp))
-                    if (!isEditing) {
-                        Text(
-                            viewModel.name.ifBlank { "Nombre de usuario" },
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(Modifier.height(8.dp))
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                "${viewModel.points} puntos",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFFD700)
-                            )
-                        }
-                        
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            viewModel.bio.ifBlank { "Sin biografía" },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                        Spacer(Modifier.height(24.dp))
-                        val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
-                        val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
-
-                        Text(
-                            "Peso: ${viewModel.weightKg} $weightLabel",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "Altura: ${viewModel.heightCm} $heightLabel",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(Modifier.height(32.dp))
-                        Button(
-                            onClick = {
-                                viewModel.editName = viewModel.name
-                                viewModel.editBio = viewModel.bio
-                                viewModel.editWeightKg = viewModel.weightKg
-                                viewModel.editHeightCm = viewModel.heightCm
-                                isEditing = true
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
-                        ) {
-                            Text("Editar Perfil", color = MaterialTheme.colorScheme.onSurface)
-                        }
-                    } else {
-                        ProfileFields(viewModel)
                         Spacer(Modifier.height(24.dp))
                         Row(horizontalArrangement = Arrangement.Center) {
-                            TextButton(onClick = { isEditing = false }) {
-                                Text(
-                                    "Cancelar",
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                            TextButton(onClick = {
+                                pendingCropUri = null
+                                isEditing = false
+                            }) {
+                                Text("Cancelar", color = TextWhite)
                             }
                             Spacer(Modifier.width(16.dp))
                             Button(
-                                onClick = { viewModel.saveChanges(uid) { isEditing = false } },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                onClick = {
+                                    isUploading = true
+                                    scope.launch(Dispatchers.Default) {
+                                        val bitmap = cropImageView.croppedImage
+                                        bitmap?.let { b ->
+                                            val file = File(
+                                                context.cacheDir,
+                                                "cp_${System.currentTimeMillis()}.jpg"
+                                            )
+                                            FileOutputStream(file).use { out ->
+                                                b.compress(
+                                                    Bitmap.CompressFormat.JPEG,
+                                                    80,
+                                                    out
+                                                )
+                                            }
+                                            val uri = Uri.fromFile(file)
+                                            val url = cloudinaryRepository.uploadImage(context, uri)
+                                            scope.launch(Dispatchers.Main) {
+                                                url?.let {
+                                                    userRepository.updatePhoto(uid, it)
+                                                    viewModel.photoUrl = it
+                                                }
+                                                pendingCropUri = null
+                                                isUploading = false
+                                            }
+                                        } ?: run { isUploading = false }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                             ) {
-                                if (viewModel.isSaving) CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                Text("Recortar y Guardar", color = TextWhite, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    } else {
+                        ProfileImage(
+                            viewModel.photoUrl,
+                            isEditing
+                        ) { imagePicker.launch(arrayOf("image/*")) }
+                        Spacer(Modifier.height(24.dp))
+                        if (!isEditing) {
+                            Text(
+                                viewModel.name.ifBlank { "Nombre de usuario" },
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Black,
+                                color = TextWhite
+                            )
+                            Spacer(Modifier.height(8.dp))
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    "${viewModel.points} PUNTOS",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color(0xFFFFD700)
                                 )
-                                else Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
+                            }
+                            
+                            Spacer(Modifier.height(16.dp))
+                            Text(
+                                viewModel.bio.ifBlank { "Sin biografía" },
+                                fontSize = 14.sp,
+                                color = TextWhite.copy(alpha = 0.6f)
+                            )
+                            Spacer(Modifier.height(32.dp))
+                            
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = DarkerHeader),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(20.dp)) {
+                                    val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
+                                    val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
+
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                        Text("PESO", color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text("${viewModel.weightKg} $weightLabel", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Black)
+                                    }
+                                    Spacer(Modifier.height(12.dp))
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                        Text("ALTURA", color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text("${viewModel.heightCm} $heightLabel", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Black)
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.height(32.dp))
+                            Button(
+                                onClick = {
+                                    viewModel.editName = viewModel.name
+                                    viewModel.editBio = viewModel.bio
+                                    viewModel.editWeightKg = viewModel.weightKg
+                                    viewModel.editHeightCm = viewModel.heightCm
+                                    isEditing = true
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text("EDITAR PERFIL", color = TextWhite, fontWeight = FontWeight.Bold)
+                            }
+                        } else {
+                            ProfileFields(viewModel)
+                            Spacer(Modifier.height(24.dp))
+                            Row(horizontalArrangement = Arrangement.Center) {
+                                TextButton(onClick = { isEditing = false }) {
+                                    Text(
+                                        "Cancelar",
+                                        color = TextWhite
+                                    )
+                                }
+                                Spacer(Modifier.width(16.dp))
+                                Button(
+                                    onClick = { viewModel.saveChanges(uid) { isEditing = false } },
+                                    colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    if (viewModel.isSaving) CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = TextWhite
+                                    )
+                                    else Text("GUARDAR", color = TextWhite, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        if (isUploading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            if (isUploading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = AccentRed)
+                }
             }
         }
     }
@@ -272,7 +288,7 @@ fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .size(120.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(DarkerHeader)
             .clickable(enabled = isEditing, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -290,7 +306,7 @@ fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
             loading = {
                 CircularProgressIndicator(
                     modifier = Modifier.size(30.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    color = AccentRed
                 )
             }
         )
@@ -312,13 +328,28 @@ fun ProfileImage(url: String?, isEditing: Boolean, onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileFields(viewModel: ProfileViewModel) {
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = TextWhite,
+        unfocusedTextColor = TextWhite,
+        focusedBorderColor = AccentRed,
+        unfocusedBorderColor = TextWhite.copy(alpha = 0.3f),
+        focusedLabelColor = AccentRed,
+        unfocusedLabelColor = TextWhite.copy(alpha = 0.5f),
+        cursorColor = AccentRed,
+        focusedContainerColor = DarkerHeader,
+        unfocusedContainerColor = DarkerHeader
+    )
+
     OutlinedTextField(
         value = viewModel.editName,
         onValueChange = { viewModel.editName = it },
         label = { Text("Nombre") },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = fieldColors
     )
     Spacer(Modifier.height(12.dp))
     OutlinedTextField(
@@ -326,7 +357,9 @@ fun ProfileFields(viewModel: ProfileViewModel) {
         onValueChange = { viewModel.editBio = it },
         label = { Text("Biografía") },
         modifier = Modifier.fillMaxWidth(),
-        minLines = 3
+        minLines = 3,
+        shape = RoundedCornerShape(12.dp),
+        colors = fieldColors
     )
     Spacer(Modifier.height(12.dp))
     val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
@@ -336,13 +369,17 @@ fun ProfileFields(viewModel: ProfileViewModel) {
         value = viewModel.editWeightKg.toString(),
         onValueChange = { viewModel.editWeightKg = it.toDoubleOrNull() ?: 0.0 },
         label = { Text("Peso ($weightLabel)") },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = fieldColors
     )
     Spacer(Modifier.height(12.dp))
     OutlinedTextField(
         value = viewModel.editHeightCm.toString(),
         onValueChange = { viewModel.editHeightCm = it.toIntOrNull() ?: 0 },
         label = { Text("Altura ($heightLabel)") },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = fieldColors
     )
 }

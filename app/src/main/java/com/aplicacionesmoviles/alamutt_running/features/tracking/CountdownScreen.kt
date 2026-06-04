@@ -49,9 +49,9 @@ fun CountdownScreen(
     ) {
         Text(
             text = if (count > 0) count.toString() else "¡YA!",
-            fontSize = 80.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            fontSize = 120.sp,
+            fontWeight = FontWeight.Black,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

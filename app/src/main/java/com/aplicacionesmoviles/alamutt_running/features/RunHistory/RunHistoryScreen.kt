@@ -1,6 +1,6 @@
 package com.aplicacionesmoviles.alamutt_running.features.RunHistory
 
-import android.content.Context
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,12 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aplicacionesmoviles.alamutt_running.model.Run
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,12 +61,12 @@ fun HistoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DarkBackground)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(DarkerHeader)
                 .padding(top = 40.dp, start = 8.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -73,14 +74,14 @@ fun HistoryScreen(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Volver",
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = Color.White
                 )
             }
             Text(
-                text = "Mi historial",
-                color = MaterialTheme.colorScheme.onSurface,
+                text = "Actividad",
+                color = TextWhite,
                 fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Black
             )
         }
 
@@ -91,7 +92,7 @@ fun HistoryScreen(
             ) {
                 Text(
                     text = "No hay carreras registradas",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = Color.White.copy(alpha = 0.6f),
                     fontSize = 16.sp
                 )
             }
@@ -109,7 +110,7 @@ fun HistoryScreen(
                 if (isLoading) {
                     item {
                         Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(color = AccentRed)
                         }
                     }
                 }
@@ -128,16 +129,16 @@ fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+            containerColor = DarkerHeader
         )
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = dateFormatted,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = Color.White.copy(alpha = 0.6f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -148,13 +149,14 @@ fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
                 Text(
                     text = UnitConverter.formatDistance(run.distance, unitSystem),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Black,
+                    color = AccentRed
                 )
                 Text(
                     text = "${UnitConverter.formatPace(run.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = TextWhite,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

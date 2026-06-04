@@ -6,31 +6,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.FiberManualRecord
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,24 +40,20 @@ fun ChallengesScreen(navController: NavController) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val prefs = remember { context.getSharedPreferences("tracking_prefs", Context.MODE_PRIVATE) }
     val unitSystem = remember { prefs.getString("unit_system", "Metric") ?: "Metric" }
-    
+
     var activeChallenges by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
     var completedChallenges by remember { mutableStateOf<List<String>>(emptyList()) }
     var points by remember { mutableStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
 
-    val darkBackground = Color(0xFF0F3460)
-    val darkerHeader = Color(0xFF1A1A2E)
-    val accentRed = Color(0xFFE94560)
     val successGreen = Color(0xFF4ECCA3)
-
     val availableChallenges = listOf(5.0, 10.0, 21.0, 42.0)
 
     fun loadData() {
         scope.launch {
             val userData = userRepository.getUserData(userId)
-            activeChallenges = (userData?.get("activeChallenges") as? Map<String, Any>)?.mapValues { 
-                (it.value as? Number)?.toDouble() ?: 0.0 
+            activeChallenges = (userData?.get("activeChallenges") as? Map<String, Any>)?.mapValues {
+                (it.value as? Number)?.toDouble() ?: 0.0
             } ?: emptyMap()
             completedChallenges = (userData?.get("completedChallenges") as? List<String>) ?: emptyList()
             points = (userData?.get("points") as? Long)?.toInt() ?: 0
@@ -66,164 +61,97 @@ fun ChallengesScreen(navController: NavController) {
         }
     }
 
-    LaunchedEffect(Unit) {
-        loadData()
-    }
+    LaunchedEffect(Unit) { loadData() }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Desafíos", color = Color.White, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Desafíos", color = TextWhite, fontWeight = FontWeight.Black, fontSize = 20.sp) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkerHeader)
+                )
+            },
+            containerColor = DarkBackground
+        ) { padding ->
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AccentRed)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(vertical = 20.dp)
+                ) {
+                    item {
+                        PointsOverviewCard(points = points)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = darkerHeader)
-            )
-        },
-        containerColor = darkBackground
-    ) { padding ->
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = accentRed)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF111D35)),
-                        shape = RoundedCornerShape(24.dp),
-                        elevation = CardDefaults.cardElevation(8.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(28.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.FiberManualRecord,
-                                contentDescription = null,
-                                tint = Color(0xFFFFD700),
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                "Puntos Acumulados",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Text(
-                                "$points",
-                                color = Color.White,
-                                fontSize = 42.sp,
-                                fontWeight = FontWeight.Black
-                            )
-                            Text(
-                                "PUNTOS",
-                                color = Color(0xFFFFD700),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 2.sp
+
+                    if (activeChallenges.isNotEmpty()) {
+                        item {
+                            SectionHeader(title = "Desafíos en curso", icon = Icons.AutoMirrored.Filled.DirectionsRun)
+                        }
+                        items(activeChallenges.toList()) { (distStr, progress) ->
+                            val target = distStr.toDoubleOrNull() ?: 1.0
+                            ChallengeActiveCard(
+                                distance = target,
+                                progress = progress,
+                                unitSystem = unitSystem,
+                                accentColor = AccentRed,
+                                cardBg = DarkerHeader,
+                                onUnsubscribe = {
+                                    scope.launch {
+                                        userRepository.unsubscribeFromChallenge(userId, target)
+                                        loadData()
+                                    }
+                                }
                             )
                         }
                     }
-                }
 
-                if (activeChallenges.isNotEmpty()) {
                     item {
-                        Text("Desafíos en curso", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        SectionHeader(title = "Nuevos desafíos", icon = Icons.Default.AddCircleOutline)
                     }
-                    items(activeChallenges.toList()) { (distStr, progress) ->
-                        val target = distStr.toDoubleOrNull() ?: 1.0
-                        ChallengeActiveCard(
-                            distance = target,
-                            progress = progress,
+                    items(availableChallenges.filter { !activeChallenges.containsKey(it.toString()) }) { distance ->
+                        ChallengeSubscribeCard(
+                            distance = distance,
                             unitSystem = unitSystem,
-                            accentColor = accentRed,
-                            onUnsubscribe = {
-                                val currentChallenges = activeChallenges
-                                activeChallenges = activeChallenges.filterKeys { it != distStr }
+                            accentColor = AccentRed,
+                            cardBg = DarkerHeader,
+                            onSubscribe = {
                                 scope.launch {
-                                    try {
-                                        userRepository.unsubscribeFromChallenge(userId, target)
-                                        loadData()
-                                    } catch (e: Exception) {
-                                        activeChallenges = currentChallenges
-                                    }
+                                    userRepository.subscribeToChallenge(userId, distance)
+                                    loadData()
                                 }
                             }
                         )
                     }
-                }
 
-                item {
-                    Text("Suscribirse a nuevos retos", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                }
-                
-                items(availableChallenges.filter { !activeChallenges.containsKey(it.toString()) }) { distance ->
-                    ChallengeSubscribeCard(
-                        distance = distance,
-                        unitSystem = unitSystem,
-                        accentColor = accentRed,
-                        onSubscribe = {
-                            val distKey = distance.toString()
-                            val currentChallenges = activeChallenges
-                            activeChallenges = activeChallenges + (distKey to 0.0)
-                            scope.launch {
-                                try {
-                                    userRepository.subscribeToChallenge(userId, distance)
-                                    loadData()
-                                } catch (e: Exception) {
-                                    activeChallenges = currentChallenges
-                                }
-                            }
+                    if (completedChallenges.isNotEmpty()) {
+                        item {
+                            SectionHeader(title = "Tus medallas", icon = Icons.Default.EmojiEvents)
                         }
-                    )
-                }
+                        items(completedChallenges.reversed()) { completionId ->
+                            val parts = completionId.split("-")
+                            val dist = parts.getOrNull(0)?.toDoubleOrNull() ?: 0.0
+                            val week = parts.getOrNull(2) ?: "?"
+                            val year = parts.getOrNull(1) ?: "?"
 
-                if (completedChallenges.isNotEmpty()) {
-                    item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.History, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Historial de Logros", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                    items(completedChallenges.reversed()) { completionId ->
-                        val parts = completionId.split("-")
-                        val dist = parts.getOrNull(0) ?: "?"
-                        val week = parts.getOrNull(2) ?: "?"
-                        val year = parts.getOrNull(1) ?: "?"
-                        
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.05f))
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = successGreen)
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column {
-                                    val formattedChallengeDist = UnitConverter.formatDistanceKm(dist.toDoubleOrNull() ?: 0.0, unitSystem)
-                                    Text("Desafío $formattedChallengeDist Completado", color = Color.White, fontWeight = FontWeight.Bold)
-                                    Text("Semana $week, $year", color = Color.Gray, fontSize = 12.sp)
-                                }
-                            }
+                            CompletedChallengeCard(
+                                distance = dist,
+                                week = week,
+                                year = year,
+                                unitSystem = unitSystem,
+                                successColor = successGreen
+                            )
                         }
                     }
                 }
@@ -233,55 +161,106 @@ fun ChallengesScreen(navController: NavController) {
 }
 
 @Composable
+fun PointsOverviewCard(points: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = DarkerHeader),
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = AccentRed, modifier = Modifier.size(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = points.toString(), color = TextWhite, fontSize = 42.sp, fontWeight = FontWeight.Black)
+            Text(text = "puntos", color = AccentRed, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("Puntos totales", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) {
+        Icon(icon, contentDescription = null, tint = AccentRed, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(title, color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+    }
+}
+
+@Composable
 fun ChallengeActiveCard(
     distance: Double,
     progress: Double,
     unitSystem: String,
     accentColor: Color,
+    cardBg: Color,
     onUnsubscribe: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E)),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                IconButton(onClick = onUnsubscribe) {
-                    Icon(Icons.Default.Close, contentDescription = "Abandonar", tint = Color.Gray.copy(alpha = 0.5f))
+                Text(
+                    text = "${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner",
+                    color = TextWhite,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp
+                )
+                IconButton(onClick = onUnsubscribe, modifier = Modifier.size(28.dp)) {
+                    Icon(Icons.Default.Cancel, contentDescription = "Abandonar", tint = TextGray)
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             val progressPercent = (progress / distance).coerceIn(0.0, 1.0).toFloat()
-            
-            LinearProgressIndicator(
-                progress = { progressPercent },
-                modifier = Modifier.fillMaxWidth().height(8.dp),
-                color = accentColor,
-                trackColor = Color.White.copy(alpha = 0.1f),
-                strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
-            )
-            
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(TextWhite.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(progressPercent)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(accentColor)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${UnitConverter.formatDistanceKm(progress, unitSystem)} / ${UnitConverter.formatDistanceKm(distance, unitSystem)}",
-                    color = Color.Gray,
-                    fontSize = 13.sp
+                    text = "${UnitConverter.formatDistanceKm(progress, unitSystem)} de ${UnitConverter.formatDistanceKm(distance, unitSystem)}",
+                    color = TextGray,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "${(progressPercent * 100).toInt()}%",
                     color = accentColor,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontWeight = FontWeight.Black,
+                    fontSize = 14.sp
                 )
             }
         }
@@ -293,30 +272,80 @@ fun ChallengeSubscribeCard(
     distance: Double,
     unitSystem: String,
     accentColor: Color,
+    cardBg: Color,
     onSubscribe: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF16213E)),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
         shape = RoundedCornerShape(16.dp),
         onClick = onSubscribe
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                Text("Recompensa: ${(distance * 10).toInt()} puntos", color = Color.Gray, fontSize = 13.sp)
+                Text(
+                    text = "${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner",
+                    color = TextWhite,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp
+                )
+                Text(
+                    text = "Recompensa: ${(distance * 10).toInt()} puntos",
+                    color = AccentRed,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
-            
+
             Button(
                 onClick = onSubscribe,
                 colors = ButtonDefaults.buttonColors(containerColor = accentColor),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
-                Text("Retar", fontWeight = FontWeight.Bold)
+                Text("Retar", fontWeight = FontWeight.Black, fontSize = 14.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun CompletedChallengeCard(
+    distance: Double,
+    week: String,
+    year: String,
+    unitSystem: String,
+    successColor: Color
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.05f)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                color = successColor.copy(alpha = 0.2f),
+                shape = CircleShape,
+                modifier = Modifier.size(44.dp)
+            ) {
+                Icon(
+                    Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = successColor,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                val distFormatted = UnitConverter.formatDistanceKm(distance, unitSystem)
+                Text("Reto $distFormatted", color = successColor, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                Text("Completado en la Semana $week, $year", color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

@@ -4,6 +4,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.runtime.CompositionLocalProvider
+
 private val AlamuttColorScheme = darkColorScheme(
     primary = AccentRed,
     background = DarkBackground,
@@ -19,6 +23,10 @@ fun AlamuttRunningTheme(
     MaterialTheme(
         colorScheme = AlamuttColorScheme,
         typography = Typography,
-        content = content
+        content = {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                content()
+            }
+        }
     )
 }
