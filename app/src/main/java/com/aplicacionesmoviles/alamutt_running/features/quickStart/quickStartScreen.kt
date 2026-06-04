@@ -1,6 +1,8 @@
 package com.aplicacionesmoviles.alamutt_running.features.quickStart
 
 import android.Manifest
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -25,6 +27,7 @@ import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewMod
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
@@ -67,6 +70,23 @@ fun QuickStartScreen(
     var userName by remember { mutableStateOf<String?>(null) }
 
     val userRepository = remember { UserRepository() }
+
+    // --- BLOQUEO DE ORIENTACIÓN VERTICAL ---
+    DisposableEffect(context) {
+        val activity = context as? Activity
+        val originalOrientation = activity?.requestedOrientation
+
+        // Forzamos vertical fija
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        onDispose {
+            // Al salir de la pantalla, restauramos la orientación previa
+            if (originalOrientation != null) {
+                activity.requestedOrientation = originalOrientation
+            }
+        }
+    }
+    // ----------------------------------------
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

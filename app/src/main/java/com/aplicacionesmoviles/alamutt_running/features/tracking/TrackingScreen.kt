@@ -1,8 +1,12 @@
 package com.aplicacionesmoviles.alamutt_running.features.tracking
 
 import android.Manifest
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +51,17 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     val formattedTime by remember(timer) {
         derivedStateOf {
             String.format(Locale.US, "%02d:%02d", timer / 60, timer % 60)
+        }
+    }
+
+    DisposableEffect(context) {
+        val activity = context as? Activity
+        val originalOrientation = activity?.requestedOrientation
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose {
+            if (originalOrientation != null) {
+                activity.requestedOrientation = originalOrientation
+            }
         }
     }
 
@@ -200,7 +215,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                             }
                         },
                         modifier = Modifier.size(90.dp),
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                     ) {
                         Icon(
@@ -216,7 +231,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     Button(
                         onClick = { viewModel.updateRunState(if (runState is RunState.Running) RunState.Paused else RunState.Running) },
                         modifier = Modifier.size(90.dp),
-                        shape = RoundedCornerShape(4.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = DarkerHeader)
                     ) {
                         Icon(
@@ -237,7 +252,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     containerColor = DarkerHeader,
                     contentColor = TextWhite,
                     actionColor = AccentRed,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(16.dp)
                 )
             }
         }
