@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
+import android.speech.tts.TextToSpeech
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.aplicacionesmoviles.alamutt_running.model.Run
@@ -14,7 +15,7 @@ import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.services.TrackingService
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import android.speech.tts.TextToSpeech
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,7 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     private val context = application
     private val userRepository = UserRepository()
     private val runRepository = RunRepository()
-    private var user: User = User()
+    private var user: User = User(weightKg = 70.0)
     private val metricsCalculator = RunMetricsCalculator(application)
     
     private var tts: TextToSpeech? = null
@@ -63,6 +64,7 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     init {
         context.registerReceiver(controlReceiver, IntentFilter("CONTROL_RUN"), Context.RECEIVER_EXPORTED)
         tts = TextToSpeech(application, this)
+        loadUserData()
 
         viewModelScope.launch {
             unitSystem.collect { prefs.edit().putString("unit_system", it).apply() }
@@ -78,6 +80,25 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
         }
         viewModelScope.launch {
             goalDistance.collect { prefs.edit().putFloat("goal_distance", it.toFloat()).apply() }
+        }
+    }
+
+    private fun loadUserData() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        viewModelScope.launch {
+            try {
+                val data = userRepository.getUserData(userId)
+                data?.let {
+                    val weight = (it["weightKg"] as? Number)?.toDouble() ?: 70.0
+                    user = User(
+                        uid = userId,
+                        weightKg = if (weight > 0.0) weight else 70.0,
+                        name = it["name"] as? String ?: ""
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -166,6 +187,8 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
             val m = metricsCalculator.updateMetrics(loc)
             distance.value = m.distanceMeters
             pace.value = m.currentPace
+            
+            // Caloria : distancia(km) * peso(kg) * coeficiente de eficiencia 1.036
             calories.value = ((m.distanceMeters / 1000.0) * user.weightKg * 1.036).toInt()
 
             if (goalDistance.value > 0.0 && !isGoalReached.value) {
@@ -228,7 +251,11 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
 
     override fun onCleared() {
         super.onCleared()
-        context.unregisterReceiver(controlReceiver)
+        try {
+            context.unregisterReceiver(controlReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         tts?.stop()
         tts?.shutdown()
         resetTracking()

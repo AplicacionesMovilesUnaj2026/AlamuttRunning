@@ -62,7 +62,6 @@ class TrackingService : Service() {
             .setContentIntent(activityIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setSound(null)
             .addAction(
                 if (running) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
                 if (running) "Pausar" else "Continuar",
@@ -80,7 +79,7 @@ class TrackingService : Service() {
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .build()
 
-            val channel = NotificationChannel(CHANNEL_ID, "Seguimiento", NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val channel = NotificationChannel(CHANNEL_ID, "Seguimiento", NotificationManager.IMPORTANCE_HIGH).apply {
                 setSound(soundUri, audioAttributes)
             }
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
