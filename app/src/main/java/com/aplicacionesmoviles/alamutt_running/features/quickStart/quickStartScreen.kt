@@ -64,29 +64,25 @@ fun QuickStartScreen(
     var goalInput by remember { mutableStateOf("") }
 
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
-    val showNightCard = currentHour >= 20
+    val showNightCard = currentHour !in 6..<20
 
     var profileImageUrl by remember { mutableStateOf<String?>(null) }
     var userName by remember { mutableStateOf<String?>(null) }
 
     val userRepository = remember { UserRepository() }
 
-    // --- BLOQUEO DE ORIENTACIÓN VERTICAL ---
     DisposableEffect(context) {
         val activity = context as? Activity
         val originalOrientation = activity?.requestedOrientation
 
-        // Forzamos vertical fija
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         onDispose {
-            // Al salir de la pantalla, restauramos la orientación previa
             if (originalOrientation != null) {
                 activity.requestedOrientation = originalOrientation
             }
         }
     }
-    // ----------------------------------------
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -203,70 +199,78 @@ fun QuickStartScreen(
                 }
             }
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .background(DarkerHeader)
-                .padding(top = 40.dp, start = 16.dp, bottom = 16.dp)
-                .align(Alignment.TopCenter),
-                verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = TextWhite)
-                }
-                Text("Carrera", color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
-            }
-
-            if (goalDistance > 0.0) {
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 110.dp),
-                    colors = CardDefaults.cardColors(containerColor = AccentRed.copy(alpha = 0.9f)),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Flag, contentDescription = null, tint = TextWhite, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = "Objetivo: ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
-                            color = TextWhite,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 14.sp
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        IconButton(
-                            onClick = { trackingViewModel.goalDistance.value = 0.0 },
-                            modifier = Modifier.size(16.dp)
-                        ) {
-                            Icon(Icons.Default.Close, contentDescription = "Quitar", tint = TextWhite.copy(alpha = 0.7f))
-                        }
-                    }
-                }
-            }
-
-            if (showNightCard && userLocation != null) {
-                Card(
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 160.dp, start = 16.dp, end = 16.dp)
-                        .align(Alignment.TopCenter),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = DarkerHeader)
+                        .background(DarkerHeader)
+                        .padding(top = 40.dp, start = 16.dp, bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            "¿Corres en la oscuridad?",
-                            fontWeight = FontWeight.Black,
-                            color = AccentRed,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            "Lleva una luz por motivos de seguridad.",
-                            fontSize = 13.sp,
-                            color = TextGray
-                        )
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú", tint = TextWhite)
+                    }
+                    Text("Carrera", color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
+                }
+
+                // Las tarjetas ahora están supeditadas a la disponibilidad del mapa y del GPS activo
+                if (isGpsActive && userLocation != null) {
+                    if (goalDistance > 0.0) {
+                        Card(
+                            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                            colors = CardDefaults.cardColors(containerColor = AccentRed.copy(alpha = 0.9f)),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Flag, contentDescription = null, tint = TextWhite, modifier = Modifier.size(16.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "Objetivo: ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
+                                    color = TextWhite,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 14.sp
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                IconButton(
+                                    onClick = { trackingViewModel.goalDistance.value = 0.0 },
+                                    modifier = Modifier.size(16.dp)
+                                ) {
+                                    Icon(Icons.Default.Close, contentDescription = "Quitar", tint = TextWhite.copy(alpha = 0.7f))
+                                }
+                            }
+                        }
+                    }
+
+                    if (showNightCard && userLocation != null) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = DarkerHeader.copy(alpha = 0.95f))
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "¿Corres en la oscuridad?",
+                                    fontWeight = FontWeight.Black,
+                                    color = AccentRed,
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    "Lleva una luz por motivos de seguridad.",
+                                    fontSize = 13.sp,
+                                    color = TextGray
+                                )
+                            }
+                        }
                     }
                 }
             }
