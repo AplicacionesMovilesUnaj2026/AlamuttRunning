@@ -51,7 +51,8 @@ fun HistoryScreen(
     }
 
     LaunchedEffect(userId) {
-        if (userId.isNotEmpty() && history.isEmpty()) {
+        if (userId.isNotEmpty()) {
+            android.util.Log.d("HistoryScreen", "Initializing history for userId: $userId")
             viewModel.loadMoreRuns(userId)
         }
     }

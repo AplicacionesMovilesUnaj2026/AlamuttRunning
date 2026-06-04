@@ -124,7 +124,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
             if (goalDistance > 0.0) {
                 LinearProgressIndicator(
-                    progress = { (distance / (goalDistance * 1000.0)).coerceIn(0.0, 1.0).toFloat() },
+                    progress = { (distance / goalDistance).coerceIn(0.0, 1.0).toFloat() },
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(top = 8.dp),
@@ -132,7 +132,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
                 Text(
-                    text = "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance * 1000.0, unitSystem)}",
+                    text = "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

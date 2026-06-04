@@ -40,6 +40,20 @@ android {
     }
 }
 
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            val baseName = "Alamutt_Running_Club"
+            val version = android.defaultConfig.versionName
+            val buildType = variant.name
+            output.versionName.set(version)
+
+            val mainOutput = output as? com.android.build.api.variant.impl.VariantOutputImpl
+            mainOutput?.outputFileName?.set("${baseName}_v${version}_${buildType}.apk")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

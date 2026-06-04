@@ -25,25 +25,34 @@ class RunHistoryViewModel(application: Application) : AndroidViewModel(applicati
     val isLoading: StateFlow<Boolean> = _isLoading
 
     fun loadMoreRuns(userId: String) {
-        if (_isLoading.value || isLastPage || userId.isEmpty()) return
+        val cleanId = userId.trim()
+        if (_isLoading.value || isLastPage || cleanId.isEmpty()) return
 
         _isLoading.value = true
+        
         viewModelScope.launch {
             try {
-                val (newRuns, newLastDoc) = repository.getUserRunsPaginated(userId, lastDocument)
+                val (newRuns, newLastDoc) = repository.getUserRunsPaginated(cleanId, lastDocument)
 
                 if (newRuns.isEmpty()) {
                     isLastPage = true
                 } else {
                     lastDocument = newLastDoc
-                    _runHistory.value = _runHistory.value + newRuns
+                    _runHistory.value += newRuns
                     if (newRuns.size < 10) isLastPage = true
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // Error handling
             } finally {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun refreshHistory(userId: String) {
+        lastDocument = null
+        isLastPage = false
+        _runHistory.value = emptyList()
+        loadMoreRuns(userId)
     }
 }

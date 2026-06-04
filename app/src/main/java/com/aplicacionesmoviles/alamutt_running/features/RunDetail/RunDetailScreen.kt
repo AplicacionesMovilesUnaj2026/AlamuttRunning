@@ -77,7 +77,15 @@ fun RunDetailScreen(
                         StatCardSmall(title = "Ritmo", value = "${UnitConverter.formatPace(r.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}")
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Tiempo", value = "${r.duration / 60000} min")
+                        val hours = r.duration / 3600
+                        val minutes = (r.duration % 3600) / 60
+                        val seconds = r.duration % 60
+                        val timeString = if (hours > 0) {
+                            String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds)
+                        } else {
+                            String.format(Locale.US, "%02d:%02d", minutes, seconds)
+                        }
+                        StatCardSmall(title = "Tiempo", value = timeString)
                     }
                 }
 

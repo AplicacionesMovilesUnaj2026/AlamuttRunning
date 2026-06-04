@@ -91,11 +91,13 @@ class AuthViewModel : ViewModel() {
                             userRepository.saveUser(user)
                         }
                         uiState = AuthUiState.Success
-                        onResult(true)
+                        onResult(true) // Nuevo usuario -> Onboarding
                     } else {
-                        val weight = data["weightKg"] as? Double ?: 0.0
-                        val height = (data["heightCm"] as? Long)?.toInt() ?: 0
+                        val weight = (data["weightKg"] as? Number)?.toDouble() ?: 0.0
+                        val height = (data["heightCm"] as? Number)?.toInt() ?: 0
+                        
                         uiState = AuthUiState.Success
+                        // Si user no tiene peso o altura, debe ir al onboarding
                         onResult(weight <= 0.0 || height <= 0)
                     }
                 }
@@ -114,10 +116,15 @@ class AuthViewModel : ViewModel() {
         uiState = AuthUiState.Loading
         viewModelScope.launch {
             val data = userRepository.getUserData(currentUid)
-            val weight = data?.get("weightKg") as? Double ?: 0.0
-            val height = (data?.get("heightCm") as? Long)?.toInt() ?: 0
-            uiState = AuthUiState.Success
-            onResult(weight <= 0.0 || height <= 0)
+            if (data == null) {
+                uiState = AuthUiState.Success
+                onResult(true) 
+            } else {
+                val weight = (data["weightKg"] as? Number)?.toDouble() ?: 0.0
+                val height = (data["heightCm"] as? Number)?.toInt() ?: 0
+                uiState = AuthUiState.Success
+                onResult(weight <= 0.0 || height <= 0)
+            }
         }
     }
 

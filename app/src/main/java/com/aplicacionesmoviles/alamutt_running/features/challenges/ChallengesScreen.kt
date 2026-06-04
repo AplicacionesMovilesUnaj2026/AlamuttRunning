@@ -154,9 +154,15 @@ fun ChallengesScreen(navController: NavController) {
                             unitSystem = unitSystem,
                             accentColor = accentRed,
                             onUnsubscribe = {
+                                val currentChallenges = activeChallenges
+                                activeChallenges = activeChallenges.filterKeys { it != distStr }
                                 scope.launch {
-                                    userRepository.unsubscribeFromChallenge(userId, target)
-                                    loadData()
+                                    try {
+                                        userRepository.unsubscribeFromChallenge(userId, target)
+                                        loadData()
+                                    } catch (e: Exception) {
+                                        activeChallenges = currentChallenges
+                                    }
                                 }
                             }
                         )
@@ -173,9 +179,16 @@ fun ChallengesScreen(navController: NavController) {
                         unitSystem = unitSystem,
                         accentColor = accentRed,
                         onSubscribe = {
+                            val distKey = distance.toString()
+                            val currentChallenges = activeChallenges
+                            activeChallenges = activeChallenges + (distKey to 0.0)
                             scope.launch {
-                                userRepository.subscribeToChallenge(userId, distance)
-                                loadData()
+                                try {
+                                    userRepository.subscribeToChallenge(userId, distance)
+                                    loadData()
+                                } catch (e: Exception) {
+                                    activeChallenges = currentChallenges
+                                }
                             }
                         }
                     )
