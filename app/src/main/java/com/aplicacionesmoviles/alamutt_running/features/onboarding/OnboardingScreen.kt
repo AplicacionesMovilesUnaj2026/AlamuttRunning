@@ -133,7 +133,7 @@ fun OnboardingScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    "¡TE DAMOS LA BIENVENIDA AL CLUB! ¿CÓMO TE LLAMAS?",
+                                    "¡TE DAMOS LA BIENVENIDA AL CLUB! ¿CÓMO TE LLAMÁS?",
                                     color = TextWhite,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Black,
@@ -200,10 +200,14 @@ fun OnboardingScreen(
                                 )
                                 OutlinedTextField(
                                     value = weightKg,
-                                    onValueChange = { weightKg = it },
+                                    onValueChange = {
+                                        if (it.all { char -> char.isDigit() || char == '.' || char == ',' }) {
+                                            weightKg = it.replace(",", ".")
+                                        }
+                                    },
                                     label = { Text("Peso (kg)") },
                                     singleLine = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(4.dp),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -221,7 +225,11 @@ fun OnboardingScreen(
                                 Spacer(modifier = Modifier.height(16.dp))
                                 OutlinedTextField(
                                     value = heightCm,
-                                    onValueChange = { heightCm = it },
+                                    onValueChange = { 
+                                        if (it.all { char -> char.isDigit() }) {
+                                            heightCm = it
+                                        }
+                                    },
                                     label = { Text("Altura (cm)") },
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -407,10 +415,13 @@ fun OnboardingScreen(
                                         step = 2
                                     }
                                 } else if (step == 2) {
-                                    if (weightKg.isBlank() || heightCm.isBlank()) {
+                                    val weight = weightKg.toDoubleOrNull() ?: 0.0
+                                    val height = heightCm.toIntOrNull() ?: 0
+                                    
+                                    if (weight <= 0.0 || height <= 0) {
                                         Toast.makeText(
                                             context,
-                                            "Por favor completa los campos",
+                                            "Por favor ingresa valores válidos (mayores a 0)",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
@@ -26,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -232,8 +234,8 @@ fun ProfileScreen(
                                 onClick = {
                                     viewModel.editName = viewModel.name
                                     viewModel.editBio = viewModel.bio
-                                    viewModel.editWeightKg = viewModel.weightKg
-                                    viewModel.editHeightCm = viewModel.heightCm
+                                    viewModel.editWeightKg = viewModel.weightKg.toString()
+                                    viewModel.editHeightCm = viewModel.heightCm.toString()
                                     isEditing = true
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
@@ -253,7 +255,15 @@ fun ProfileScreen(
                                 }
                                 Spacer(Modifier.width(16.dp))
                                 Button(
-                                    onClick = { viewModel.saveChanges(uid) { isEditing = false } },
+                                    onClick = {
+                                        val weight = viewModel.editWeightKg.toDoubleOrNull() ?: 0.0
+                                        val height = viewModel.editHeightCm.toIntOrNull() ?: 0
+                                        if (weight <= 0.0 || height <= 0) {
+                                            android.widget.Toast.makeText(context, "Por favor ingresa valores válidos", android.widget.Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            viewModel.saveChanges(uid) { isEditing = false }
+                                        }
+                                    },
                                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
@@ -366,20 +376,30 @@ fun ProfileFields(viewModel: ProfileViewModel) {
     val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
 
     OutlinedTextField(
-        value = viewModel.editWeightKg.toString(),
-        onValueChange = { viewModel.editWeightKg = it.toDoubleOrNull() ?: 0.0 },
+        value = viewModel.editWeightKg,
+        onValueChange = { 
+            if (it.isEmpty() || it.matches(Regex("^\\d*[.,]?\\d*$"))) {
+                viewModel.editWeightKg = it.replace(",", ".")
+            }
+        },
         label = { Text("Peso ($weightLabel)") },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = fieldColors
+        colors = fieldColors,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
     )
     Spacer(Modifier.height(12.dp))
     OutlinedTextField(
-        value = viewModel.editHeightCm.toString(),
-        onValueChange = { viewModel.editHeightCm = it.toIntOrNull() ?: 0 },
+        value = viewModel.editHeightCm,
+        onValueChange = { 
+            if (it.isEmpty() || it.all { char -> char.isDigit() }) {
+                viewModel.editHeightCm = it
+            }
+        },
         label = { Text("Altura ($heightLabel)") },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = fieldColors
+        colors = fieldColors,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }

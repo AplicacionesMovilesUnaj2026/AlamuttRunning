@@ -27,8 +27,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     var editName by mutableStateOf("")
     var editBio by mutableStateOf("")
-    var editWeightKg by mutableStateOf(70.0)
-    var editHeightCm by mutableStateOf(170)
+    var editWeightKg by mutableStateOf("")
+    var editHeightCm by mutableStateOf("")
 
     var isSaving by mutableStateOf(false)
 
@@ -45,21 +45,29 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
                 editName = name
                 editBio = bio
-                editWeightKg = weightKg
-                editHeightCm = heightCm
+                editWeightKg = weightKg.toString()
+                editHeightCm = heightCm.toString()
             }
         }
     }
 
     fun saveChanges(uid: String, onComplete: () -> Unit) {
+        val newWeight = editWeightKg.toDoubleOrNull() ?: 0.0
+        val newHeight = editHeightCm.toIntOrNull() ?: 0
+
+        if (newWeight <= 0.0 || newHeight <= 0) {
+            // Podríamos añadir un estado de error aquí si quisiéramos mostrar un mensaje
+            return
+        }
+
         isSaving = true
-        userRepository.updateUserData(uid, editName, editBio, editWeightKg, editHeightCm) { success ->
+        userRepository.updateUserData(uid, editName, editBio, newWeight, newHeight) { success ->
             isSaving = false
             if (success) {
                 name = editName
                 bio = editBio
-                weightKg = editWeightKg
-                heightCm = editHeightCm
+                weightKg = newWeight
+                heightCm = newHeight
                 onComplete()
             }
         }
