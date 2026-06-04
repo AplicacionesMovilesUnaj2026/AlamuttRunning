@@ -4,12 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Looper
-import androidx.annotation.RequiresApi
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
@@ -36,6 +34,11 @@ import java.util.Locale
 @Composable
 fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     val context = LocalContext.current
+
+    BackHandler(enabled = true) {
+
+    }
+
     val runState by viewModel.runState.collectAsState()
     val timer by viewModel.timerSeconds.collectAsState()
     val distance by viewModel.distance.collectAsState()

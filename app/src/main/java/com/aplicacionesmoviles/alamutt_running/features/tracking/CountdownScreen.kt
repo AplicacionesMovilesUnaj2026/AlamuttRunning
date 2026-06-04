@@ -2,6 +2,7 @@ package com.aplicacionesmoviles.alamutt_running.features.tracking
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -21,6 +22,10 @@ fun CountdownScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
+
+    BackHandler(enabled = true) {
+    }
+
     val initialCount by viewModel.countdownTime.collectAsState()
     var count by remember { mutableIntStateOf(initialCount) }
 
