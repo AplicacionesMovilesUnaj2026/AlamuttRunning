@@ -1,0 +1,24 @@
+<resources>
+
+    <string name="app_name">Alamutt Running</string>
+
+    <string name="start">СТАРТ</string>
+    <string name="statistics">Статистика</string>
+    <string name="leaderboard">Таблица лидеров</string>
+    <string name="settings">Настройки</string>
+    <string name="logout">Выход</string>
+    <string name="run">Забег</string>
+    <string name="activity">Активность</string>
+    <string name="challenges">Испытания</string>
+    <string name="inbox">Входящие</string>
+    <string name="hello_user">Привет, %1$s</string>
+    <string name="default_user">Пользователь</string>
+    <string name="logout_success">Вы успешно вышли</string>
+    <string name="run_screen">Забег</string>
+    <string name="menu">Меню</string>
+    <string name="night_run_title">Бегаете в темноте?</string>
+    <string name="night_run_desc">Возьмите фонарь для безопасности.</string>
+    <string name="set_goal">Установить цель</string>
+    <string name="language">Язык</string>
+
+</resources>

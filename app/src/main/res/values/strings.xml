@@ -1,4 +1,25 @@
 <resources>
+
     <string name="app_name">Alamutt Running Club</string>
     <string name="title_activity_asfa">asfa</string>
+
+    <string name="start">COMENZAR</string>
+    <string name="statistics">Estadísticas</string>
+    <string name="leaderboard">Tabla de líderes</string>
+    <string name="settings">Configuración</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="run">Carrera</string>
+    <string name="activity">Actividad</string>
+    <string name="challenges">Desafíos</string>
+    <string name="inbox">Bandeja de entrada</string>
+    <string name="hello_user">Hola, %1$s</string>
+    <string name="default_user">Usuario</string>
+    <string name="logout_success">Sesión cerrada exitosamente</string>
+    <string name="night_run_title">¿Corres en la oscuridad?</string>
+    <string name="night_run_desc">Lleva una luz por motivos de seguridad.</string>
+    <string name="set_goal">Establece un objetivo</string>
+    <string name="run_screen">Carrera</string>
+    <string name="menu">Menú</string>
+    <string name="language">Idioma</string>
+
 </resources>

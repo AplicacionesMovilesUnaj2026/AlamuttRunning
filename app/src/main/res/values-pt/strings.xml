@@ -1,0 +1,24 @@
+<resources>
+
+    <string name="app_name">Alamutt Running</string>
+
+    <string name="start">INICIAR</string>
+    <string name="statistics">Estatísticas</string>
+    <string name="leaderboard">Ranking</string>
+    <string name="settings">Configurações</string>
+    <string name="logout">Sair</string>
+    <string name="run">Corrida</string>
+    <string name="activity">Atividade</string>
+    <string name="challenges">Desafios</string>
+    <string name="inbox">Caixa de entrada</string>
+    <string name="hello_user">Olá, %1$s</string>
+    <string name="default_user">Usuário</string>
+    <string name="logout_success">Sessão encerrada com sucesso</string>
+    <string name="run_screen">Corrida</string>
+    <string name="menu">Menu</string>
+    <string name="night_run_title">Correndo no escuro?</string>
+    <string name="night_run_desc">Leve uma luz por motivos de segurança.</string>
+    <string name="set_goal">Definir meta</string>
+    <string name="language">Idioma</string>
+
+</resources>

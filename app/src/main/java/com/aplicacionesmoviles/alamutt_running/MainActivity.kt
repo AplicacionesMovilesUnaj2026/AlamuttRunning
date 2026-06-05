@@ -52,6 +52,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.aplicacionesmoviles.alamutt_running.features.settings.SettingsScreen
+import com.aplicacionesmoviles.alamutt_running.features.settings.LanguageScreen
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 class MainActivity : ComponentActivity() {
 
@@ -97,6 +101,21 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences(
+            "settings",
+            MODE_PRIVATE
+        )
+
+        val language = prefs.getString(
+            "language",
+            "es"
+        ) ?: "es"
+
+        android.util.Log.d("LANGUAGE_STARTUP", language)
+
+        AppCompatDelegate.setApplicationLocales(
+            LocaleListCompat.forLanguageTags(language)
+        )
         super.onCreate(savedInstanceState)
         checkNotificationPermission()
 
@@ -205,19 +224,37 @@ class MainActivity : ComponentActivity() {
                             ProfileScreen(uid = uid, navController = navController)
                         }
                         composable("leaderboard") { LeaderboardScreen(navController = navController) }
-                        composable("challenges") { ChallengesScreen(navController = navController) }
+                        composable("challenges") {
+                            ChallengesScreen(navController = navController)
+                        }
+
                         composable(
                             "runner_profile/{uid}",
                             arguments = listOf(navArgument("uid") { type = NavType.StringType })
                         ) { backStackEntry ->
                             val uid = backStackEntry.arguments?.getString("uid") ?: ""
-                            RunnerProfileScreen(uid = uid, navController = navController)
+                            RunnerProfileScreen(
+                                uid = uid,
+                                navController = navController
+                            )
+                        }
+
+                        composable("settings") {
+                            SettingsScreen(
+                                navController = navController
+                            )
+                        }
+
+                        composable("language") {
+                            LanguageScreen(
+                                navController = navController
+                            )
+                        }
                         }
                     }
                 }
             }
         }
-    }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

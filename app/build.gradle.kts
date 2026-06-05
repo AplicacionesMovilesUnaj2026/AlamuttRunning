@@ -89,4 +89,5 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.android.image.cropper)
     implementation(libs.play.services.auth)
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
