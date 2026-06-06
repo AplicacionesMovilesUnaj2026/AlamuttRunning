@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,12 +40,12 @@ data class LeaderboardUser(
     val bestPace: Double = 0.0
 )
 
-enum class LeaderboardFilter(val label: String, val field: String) {
-    DISTANCE("Distancia", "totalDistance"),
-    CALORIES("Calorías", "totalCalories"),
-    STEPS("Pasos", "totalSteps"),
-    POINTS("Puntos", "points"),
-    PACE("Ritmo", "bestPace")
+enum class LeaderboardFilter(val labelRes: Int, val field: String) {
+    DISTANCE(R.string.distance, "totalDistance"),
+    CALORIES(R.string.calories, "totalCalories"),
+    STEPS(R.string.steps, "totalSteps"),
+    POINTS(R.string.points, "points"),
+    PACE(R.string.pace, "bestPace")
 }
 
 @Composable
@@ -73,10 +75,10 @@ fun LeaderboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
             }
             Text(
-                text = "Tabla de Líderes",
+                text = stringResource(R.string.leaderboard),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 color = TextWhite
@@ -96,7 +98,7 @@ fun LeaderboardScreen(
                     onClick = { viewModel.updateFilter(filter) },
                     label = { 
                         Text(
-                            text = filter.label,
+                            text = stringResource(filter.labelRes),
                             fontSize = 11.sp,
                             color = if (selectedFilter == filter) DarkBackground else TextWhite,
                             fontWeight = FontWeight.Black
@@ -124,7 +126,7 @@ fun LeaderboardScreen(
             }
         } else if (users.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No hay datos disponibles", color = Color.White.copy(alpha = 0.6f))
+                Text(stringResource(R.string.no_data), color = Color.White.copy(alpha = 0.6f))
             }
         } else {
             LazyColumn(
@@ -162,8 +164,8 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
     val unitLabel = when (filter) {
         LeaderboardFilter.DISTANCE -> UnitConverter.getUnitLabel(unitSystem)
         LeaderboardFilter.CALORIES -> "kcal"
-        LeaderboardFilter.STEPS -> "pasos"
-        LeaderboardFilter.POINTS -> "pts"
+        LeaderboardFilter.STEPS -> stringResource(R.string.steps_unit)
+        LeaderboardFilter.POINTS -> stringResource(R.string.pts)
         LeaderboardFilter.PACE -> UnitConverter.getPaceUnitLabel(unitSystem)
     }
 
@@ -214,14 +216,14 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                 if (user.photoUrl.isNotEmpty()) {
                     AsyncImage(
                         model = user.photoUrl,
-                        contentDescription = "Profile Picture",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 } else {
                     Icon(
                         Icons.Default.Person,
-                        contentDescription = "Default Profile",
+                        contentDescription = null,
                         modifier = Modifier.align(Alignment.Center).size(24.dp),
                         tint = TextGray
                     )
@@ -231,7 +233,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = user.name.ifEmpty { "Usuario" },
+                text = user.name.ifEmpty { stringResource(R.string.default_user) },
                 modifier = Modifier.weight(1f),
                 fontWeight = FontWeight.Black,
                 fontSize = 15.sp,

@@ -18,8 +18,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,7 +28,6 @@ import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewMod
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
@@ -36,7 +36,6 @@ import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import org.osmdroid.util.GeoPoint
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -58,6 +57,8 @@ fun QuickStartScreen(
     val goalDistance by trackingViewModel.goalDistance.collectAsState()
     val unitSystem by trackingViewModel.unitSystem.collectAsState()
     val countdownTime by trackingViewModel.countdownTime.collectAsState()
+    val voiceAlertsEnabled by trackingViewModel.voiceAlertsEnabled.collectAsState()
+    val voiceAlertFrequency by trackingViewModel.voiceAlertFrequency.collectAsState()
 
     var showGoalDialog by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
@@ -119,7 +120,6 @@ fun QuickStartScreen(
 
             userName = dbName.takeIf { !it.isNullOrBlank() }
                 ?: user.displayName?.takeIf { it.isNotBlank() }
-                        ?: "Usuario"
             profileImageUrl = photo.takeIf { !it.isNullOrBlank() }
                 ?: user.photoUrl?.toString()
         }
@@ -149,6 +149,9 @@ fun QuickStartScreen(
                 },
                 onNavigateToHistory = {
                     onNavigateToHistory()
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
@@ -182,14 +185,14 @@ fun QuickStartScreen(
                             )
                             Spacer(Modifier.height(24.dp))
                             Text(
-                                "Buscando señal GPS...",
+                                stringResource(R.string.searching_gps),
                                 color = TextWhite,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Black
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "Asegúrate de estar en un lugar despejado",
+                                stringResource(R.string.gps_hint),
                                 color = TextGray,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
@@ -213,9 +216,9 @@ fun QuickStartScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menú", tint = TextWhite)
+                        Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.menu), tint = TextWhite)
                     }
-                    Text("Carrera", color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
+                    Text(stringResource(R.string.run), color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
                 }
 
                 // Las tarjetas ahora están supeditadas a la disponibilidad del mapa y del GPS activo
@@ -233,7 +236,7 @@ fun QuickStartScreen(
                                 Icon(Icons.Default.Flag, contentDescription = null, tint = TextWhite, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text = "Objetivo: ${UnitConverter.formatDistance(goalDistance, unitSystem)}",
+                                    text = stringResource(R.string.goal_prefix, UnitConverter.formatDistance(goalDistance, unitSystem)),
                                     color = TextWhite,
                                     fontWeight = FontWeight.Black,
                                     fontSize = 14.sp
@@ -243,13 +246,13 @@ fun QuickStartScreen(
                                     onClick = { trackingViewModel.goalDistance.value = 0.0 },
                                     modifier = Modifier.size(16.dp)
                                 ) {
-                                    Icon(Icons.Default.Close, contentDescription = "Quitar", tint = TextWhite.copy(alpha = 0.7f))
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.remove), tint = TextWhite.copy(alpha = 0.7f))
                                 }
                             }
                         }
                     }
 
-                    if (showNightCard && userLocation != null) {
+                    if (showNightCard) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -259,13 +262,13 @@ fun QuickStartScreen(
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    "¿Corres en la oscuridad?",
+                                    stringResource(R.string.night_run_title),
                                     fontWeight = FontWeight.Black,
                                     color = AccentRed,
                                     fontSize = 16.sp
                                 )
                                 Text(
-                                    "Lleva una luz por motivos de seguridad.",
+                                    stringResource(R.string.night_run_desc),
                                     fontSize = 13.sp,
                                     color = TextGray
                                 )
@@ -285,7 +288,7 @@ fun QuickStartScreen(
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                 ) {
-                    Text("Comenzar", fontWeight = FontWeight.Black, fontSize = 12.sp, color = TextWhite)
+                    Text(stringResource(R.string.start), fontWeight = FontWeight.Black, fontSize = 12.sp, color = TextWhite)
                 }
 
                 IconButton(onClick = { showSettingsDialog = true }, modifier = Modifier
@@ -294,7 +297,7 @@ fun QuickStartScreen(
                     .offset(x = (-100).dp)
                     .size(60.dp)
                     .background(DarkerHeader, CircleShape)) {
-                    Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = TextWhite)
+                    Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings), tint = TextWhite)
                 }
 
                 Button(
@@ -305,7 +308,7 @@ fun QuickStartScreen(
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = DarkerHeader)
                 ) {
-                    Text("Establece un objetivo", color = TextWhite, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.set_goal), color = TextWhite, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
         }
@@ -318,29 +321,61 @@ fun QuickStartScreen(
             titleContentColor = AccentRed,
             textContentColor = TextWhite,
             shape = RoundedCornerShape(16.dp),
-            title = { Text("Configuración", fontWeight = FontWeight.Black) },
+            title = { Text(stringResource(R.string.settings), fontWeight = FontWeight.Black) },
             text = {
                 Column {
-                    Text("Sistema de unidades", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
+                    Text(stringResource(R.string.units_system), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = unitSystem == "Metric",
                             onClick = { trackingViewModel.unitSystem.value = "Metric" },
                             colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
                         )
-                        Text("Métrico (km)", color = TextWhite)
+                        Text(stringResource(R.string.metric), color = TextWhite)
                         Spacer(Modifier.width(16.dp))
                         RadioButton(
                             selected = unitSystem == "Imperial",
                             onClick = { trackingViewModel.unitSystem.value = "Imperial" },
                             colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
                         )
-                        Text("Imperial (mi)", color = TextWhite)
+                        Text(stringResource(R.string.imperial), color = TextWhite)
                     }
 
                     HorizontalDivider(Modifier.padding(vertical = 8.dp), color = TextGray.copy(alpha = 0.3f))
 
-                    Text("Cuenta regresiva", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.voice_alerts), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
+                        Switch(
+                            checked = voiceAlertsEnabled,
+                            onCheckedChange = { trackingViewModel.voiceAlertsEnabled.value = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = AccentRed, checkedTrackColor = AccentRed.copy(alpha = 0.5f))
+                        )
+                    }
+
+                    if (voiceAlertsEnabled) {
+                        Spacer(Modifier.height(8.dp))
+                        val freqLabel = if (unitSystem == "Metric") "$voiceAlertFrequency km" else "$voiceAlertFrequency mi"
+                        Text(
+                            stringResource(R.string.frequency, freqLabel),
+                            color = TextWhite,
+                            fontSize = 12.sp
+                        )
+                        Slider(
+                            value = voiceAlertFrequency.toFloat(),
+                            onValueChange = { trackingViewModel.voiceAlertFrequency.value = it.toDouble() },
+                            valueRange = 0.5f..5.0f,
+                            steps = 8, // 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0
+                            colors = SliderDefaults.colors(thumbColor = AccentRed, activeTrackColor = AccentRed)
+                        )
+                    }
+
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = TextGray.copy(alpha = 0.3f))
+
+                    Text(stringResource(R.string.countdown), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
@@ -349,7 +384,7 @@ fun QuickStartScreen(
                             FilterChip(
                                 selected = countdownTime == time,
                                 onClick = { trackingViewModel.countdownTime.value = time },
-                                label = { Text("${time}s", color = if (countdownTime == time) DarkBackground else TextWhite) },
+                                label = { Text(stringResource(R.string.seconds_suffix, time), color = if (countdownTime == time) DarkBackground else TextWhite) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = AccentRed,
                                     containerColor = DarkBackground,
@@ -372,7 +407,7 @@ fun QuickStartScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Cerrar", fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.close), fontWeight = FontWeight.Black)
                 }
             }
         )
@@ -385,18 +420,18 @@ fun QuickStartScreen(
             titleContentColor = AccentRed,
             textContentColor = TextWhite,
             shape = RoundedCornerShape(16.dp),
-            title = { Text("¿Cuál es tu objetivo?", fontWeight = FontWeight.Black) },
+            title = { Text(stringResource(R.string.goal_dialog_title), fontWeight = FontWeight.Black) },
             text = {
                 Column {
-                    val unitLabel = if (unitSystem == "Metric") "kilómetros" else "millas"
-                    Text("Ingresa la distancia en $unitLabel que deseas recorrer hoy.", fontSize = 14.sp, color = TextWhite)
+                    val unitLabel = if (unitSystem == "Metric") stringResource(R.string.kilometers) else stringResource(R.string.miles)
+                    Text(stringResource(R.string.goal_dialog_desc, unitLabel), fontSize = 14.sp, color = TextWhite)
                     Spacer(Modifier.height(16.dp))
                     OutlinedTextField(
                         value = goalInput,
                         onValueChange = {
                             if (it.length <= 4) goalInput = it.filter { char -> char.isDigit() || char == '.' }
                         },
-                        label = { Text("Distancia ($unitLabel)", color = TextGray) },
+                        label = { Text(stringResource(R.string.distance_label, unitLabel), color = TextGray) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -429,12 +464,12 @@ fun QuickStartScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Aceptar", fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.accept), fontWeight = FontWeight.Black)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showGoalDialog = false }) {
-                    Text("Cancelar", color = TextGray, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.cancel), color = TextGray, fontWeight = FontWeight.Bold)
                 }
             }
         )

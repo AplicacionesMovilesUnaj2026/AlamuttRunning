@@ -1,7 +1,7 @@
 <resources>
-
     <string name="app_name">Alamutt Running</string>
 
+    <!-- Navigation & Common -->
     <string name="start">INICIAR</string>
     <string name="statistics">Estatísticas</string>
     <string name="leaderboard">Ranking</string>
@@ -14,11 +14,79 @@
     <string name="hello_user">Olá, %1$s</string>
     <string name="default_user">Usuário</string>
     <string name="logout_success">Sessão encerrada com sucesso</string>
-    <string name="run_screen">Corrida</string>
     <string name="menu">Menu</string>
+    <string name="back">Voltar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="accept">Aceitar</string>
+    <string name="close">Fechar</string>
+
+    <!-- Auth Screen -->
+    <string name="join_club">Juntar-se ao clube</string>
+    <string name="login">Entrar</string>
+    <string name="or_divider"> ou </string>
+    <string name="continue_google">Continuar com Google</string>
+    <string name="email">E-mail</string>
+    <string name="password">Senha</string>
+    <string name="confirm_password">Confirmar senha</string>
+    <string name="enter_club">Entrar no clube</string>
+    <string name="register_me">Registrar-me</string>
+    <string name="quote_1">A dor é temporária, o orgulho é para sempre.</string>
+    <string name="quote_2">Seu único rival é a pessoa que você foi ontem.</string>
+    <string name="quote_3">A constância vence a genética.</string>
+    <string name="quote_4">Suas pernas não estão cansadas, sua mente está mentindo para você.</string>
+    <string name="quote_5">Corra como se estivessem te procurando para pagar o aluguel.</string>
+    <string name="quote_6">Sem desculpas. Sem limites.</string>
+
+    <!-- Quick Start -->
+    <string name="searching_gps">Buscando sinal GPS&#8230;</string>
+    <string name="gps_hint">Certifique-se de estar em um local aberto</string>
     <string name="night_run_title">Correndo no escuro?</string>
     <string name="night_run_desc">Leve uma luz por motivos de segurança.</string>
     <string name="set_goal">Definir meta</string>
-    <string name="language">Idioma</string>
+    <string name="goal_dialog_title">Qual é a sua meta?</string>
+    <string name="goal_dialog_desc">Insira a distância em %1$s que deseja percorrer hoje.</string>
+    <string name="goal_prefix">Meta: %1$s</string>
+    <string name="distance_label">Distância (%1$s)</string>
+    <string name="kilometers">quilômetros</string>
+    <string name="miles">milhas</string>
+    <string name="remove">Remover</string>
+    <string name="seconds_suffix">%1$ss</string>
 
+    <!-- Settings -->
+    <string name="language">Idioma</string>
+    <string name="general">Geral</string>
+    <string name="training">Treinamento</string>
+    <string name="units_system">Sistema de unidades</string>
+    <string name="metric">Métrico (km)</string>
+    <string name="imperial">Imperial (mi)</string>
+    <string name="voice_alerts">Alertas de voz</string>
+    <string name="frequency">Frequência: a cada %1$s</string>
+    <string name="countdown">Contagem regressiva</string>
+
+    <!-- Tracking -->
+    <string name="finish">Finalizar</string>
+    <string name="pause">Pausar</string>
+    <string name="resume">Retomar</string>
+    <string name="distance">Distância</string>
+    <string name="time">Tempo</string>
+    <string name="pace">Ritmo</string>
+    <string name="calories">Calorias</string>
+    <string name="steps">Passos</string>
+    <string name="goal_reached">Objetivo alcançado! Continue assim.</string>
+    <string name="challenge_completed">Desafio concluído: %1$s! +%2$d pts</string>
+    <string name="run_status">Estado</string>
+    <string name="no_pace">--:--</string>
+    <string name="go">JÁ!</string>
+    <!-- Leaderboard -->
+    <string name="no_data">Dados indisponíveis</string>
+    <string name="points">Pontos</string>
+    <string name="pts">pts</string>
+    <string name="steps_unit">passos</string>
+
+    <!-- Run Detail -->
+    <string name="run_detail">Detalhes da Corrida</string>
+
+    <!-- History -->
+    <string name="no_runs">Nenhuma corrida registrada</string>
+    <string name="date_unavailable">Data indisponível</string>
 </resources>

@@ -30,10 +30,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.aplicacionesmoviles.alamutt_running.features.RunDetail.RunDetailScreen
-import com.aplicacionesmoviles.alamutt_running.features.RunDetail.RunDetailViewModel
-import com.aplicacionesmoviles.alamutt_running.features.RunHistory.HistoryScreen
-import com.aplicacionesmoviles.alamutt_running.features.RunHistory.RunHistoryViewModel
+import com.aplicacionesmoviles.alamutt_running.features.runDetail.RunDetailScreen
+import com.aplicacionesmoviles.alamutt_running.features.runDetail.RunDetailViewModel
+import com.aplicacionesmoviles.alamutt_running.features.runHistory.HistoryScreen
+import com.aplicacionesmoviles.alamutt_running.features.runHistory.RunHistoryViewModel
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
 import com.aplicacionesmoviles.alamutt_running.features.challenges.ChallengesScreen
@@ -241,7 +241,8 @@ class MainActivity : ComponentActivity() {
 
                         composable("settings") {
                             SettingsScreen(
-                                navController = navController
+                                navController = navController,
+                                trackingViewModel = trackingViewModel
                             )
                         }
 

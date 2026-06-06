@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.google.android.gms.location.*
@@ -80,7 +82,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     LaunchedEffect(isGoalReached) {
         if (isGoalReached) {
             snackbarHostState.showSnackbar(
-                message = "¡Objetivo alcanzado! Sigue así.",
+                message = context.getString(R.string.goal_reached),
                 duration = SnackbarDuration.Long
             )
         }
@@ -90,7 +92,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
         if (completedChallenges.isNotEmpty()) {
             val challengeText = completedChallenges.joinToString(", ") { "${it.toInt()}km" }
             snackbarHostState.showSnackbar(
-                message = "¡Desafío completado: $challengeText! +${(completedChallenges.sumOf { it } * 10).toInt()} pts",
+                message = context.getString(R.string.challenge_completed, challengeText, (completedChallenges.sumOf { it } * 10).toInt()),
                 duration = SnackbarDuration.Long
             )
         }
@@ -128,7 +130,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Tiempo", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.time), color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 Text(
                     formattedTime,
                     color = TextWhite,
@@ -138,7 +140,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
                 Spacer(Modifier.height(24.dp))
 
-                Text("Distancia", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.distance), color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 val distanceText = if (goalDistance > 0.0) {
                     "${UnitConverter.formatDistance(distance, unitSystem)} / ${UnitConverter.formatDistance(goalDistance, unitSystem)}"
                 } else {
@@ -159,7 +161,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Pasos",
+                            stringResource(R.string.steps),
                             color = TextGray,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -175,7 +177,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Ritmo",
+                            stringResource(R.string.pace),
                             color = TextGray,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -191,7 +193,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Calorías",
+                            stringResource(R.string.calories),
                             color = TextGray,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -223,7 +225,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     ) {
                         Icon(
                             Icons.Default.Stop,
-                            contentDescription = "Finalizar",
+                            contentDescription = stringResource(R.string.finish),
                             tint = TextWhite,
                             modifier = Modifier.size(40.dp)
                         )
@@ -239,7 +241,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     ) {
                         Icon(
                             imageVector = if (runState is RunState.Running) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = "Estado",
+                            contentDescription = stringResource(R.string.run_status),
                             tint = TextWhite,
                             modifier = Modifier.size(40.dp)
                         )

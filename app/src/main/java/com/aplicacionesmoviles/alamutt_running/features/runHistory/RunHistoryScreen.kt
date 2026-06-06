@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.RunHistory
+package com.aplicacionesmoviles.alamutt_running.features.runHistory
 
 
 import androidx.compose.foundation.background
@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.model.Run
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
@@ -73,12 +75,12 @@ fun HistoryScreen(
             IconButton(onClick = onBack) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver",
+                    contentDescription = stringResource(R.string.back),
                     tint = Color.White
                 )
             }
             Text(
-                text = "Actividad",
+                text = stringResource(R.string.activity),
                 color = TextWhite,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black
@@ -91,7 +93,7 @@ fun HistoryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No hay carreras registradas",
+                    text = stringResource(R.string.no_runs),
                     color = Color.White.copy(alpha = 0.6f),
                     fontSize = 16.sp
                 )
@@ -123,7 +125,7 @@ fun HistoryScreen(
 fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
     val dateFormatted = try {
         SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(run.date))
-    } catch (e: Exception) { "Fecha no disponible" }
+    } catch (e: Exception) { stringResource(R.string.date_unavailable) }
 
     Card(
         modifier = Modifier

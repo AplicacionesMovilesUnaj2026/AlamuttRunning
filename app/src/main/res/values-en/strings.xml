@@ -21,4 +21,54 @@
     <string name="menu">Menu</string>
     <string name="language">Language</string>
 
+    <!-- Settings and Training -->
+    <string name="general">General</string>
+    <string name="training">Training</string>
+    <string name="units_system">Unit system</string>
+    <string name="metric">Metric (km)</string>
+    <string name="imperial">Imperial (mi)</string>
+    <string name="voice_alerts">Voice alerts</string>
+    <string name="frequency">Frequency: every %1$s</string>
+    <string name="countdown">Countdown</string>
+    <string name="searching_gps">Searching GPS signal&#8230;</string>
+    <string name="gps_hint">Make sure you are in an open area</string>
+    <string name="goal_dialog_title">What is your goal?</string>
+    <string name="goal_dialog_desc">Enter the distance in %1$s that you want to cover today.</string>
+    <string name="goal_prefix">Goal: %1$s</string>
+    <string name="distance_label">Distance (%1$s)</string>
+    <string name="kilometers">kilometers</string>
+    <string name="miles">miles</string>
+    <string name="remove">Remove</string>
+    <string name="seconds_suffix">%1$ss</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="accept">Accept</string>
+    <string name="close">Close</string>
+
+    <!-- Tracking -->
+    <string name="finish">Finish</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="distance">Distance</string>
+    <string name="time">Time</string>
+    <string name="pace">Pace</string>
+    <string name="calories">Calories</string>
+    <string name="steps">Steps</string>
+    <string name="goal_reached">Goal reached! Keep it up.</string>
+    <string name="challenge_completed">Challenge completed: %1$s! +%2$d pts</string>
+    <string name="run_status">Status</string>
+    <string name="no_pace">--:--</string>
+    <string name="go">GO!</string>
+    <!-- Leaderboard -->
+    <string name="no_data">No data available</string>
+    <string name="points">Points</string>
+    <string name="pts">pts</string>
+    <string name="steps_unit">steps</string>
+
+    <!-- Run Detail -->
+    <string name="run_detail">Run Detail</string>
+
+    <!-- History -->
+    <string name="no_runs">No runs recorded</string>
+    <string name="date_unavailable">Date unavailable</string>
 </resources>

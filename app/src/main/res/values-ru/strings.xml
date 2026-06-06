@@ -1,7 +1,7 @@
 <resources>
-
     <string name="app_name">Alamutt Running</string>
 
+    <!-- Navigation & Common -->
     <string name="start">СТАРТ</string>
     <string name="statistics">Статистика</string>
     <string name="leaderboard">Таблица лидеров</string>
@@ -14,11 +14,79 @@
     <string name="hello_user">Привет, %1$s</string>
     <string name="default_user">Пользователь</string>
     <string name="logout_success">Вы успешно вышли</string>
-    <string name="run_screen">Забег</string>
     <string name="menu">Меню</string>
+    <string name="back">Назад</string>
+    <string name="cancel">Отмена</string>
+    <string name="accept">ОК</string>
+    <string name="close">Закрыть</string>
+
+    <!-- Auth Screen -->
+    <string name="join_club">Присоединиться к клубу</string>
+    <string name="login">Вход</string>
+    <string name="or_divider"> или </string>
+    <string name="continue_google">Продолжить через Google</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="enter_club">Войти в клуб</string>
+    <string name="register_me">Зарегистрироваться</string>
+    <string name="quote_1">Боль временна, триумф вечен.</string>
+    <string name="quote_2">Твой единственный соперник — ты вчерашний.</string>
+    <string name="quote_3">Постоянство побеждает генетику.</string>
+    <string name="quote_4">Твои ноги не устали, это твой мозг лжет тебе.</string>
+    <string name="quote_5">Беги так, будто за тобой гонятся коллекторы.</string>
+    <string name="quote_6">Без оправданий. Без границ.</string>
+
+    <!-- Quick Start -->
+    <string name="searching_gps">Поиск GPS сигнала&#8230;</string>
+    <string name="gps_hint">Убедитесь, что вы находитесь на открытой местности</string>
     <string name="night_run_title">Бегаете в темноте?</string>
     <string name="night_run_desc">Возьмите фонарь для безопасности.</string>
     <string name="set_goal">Установить цель</string>
-    <string name="language">Язык</string>
+    <string name="goal_dialog_title">Какая у вас цель?</string>
+    <string name="goal_dialog_desc">Введите дистанцию в %1$s, которую хотите пробежать сегодня.</string>
+    <string name="goal_prefix">Цель: %1$s</string>
+    <string name="distance_label">Дистанция (%1$s)</string>
+    <string name="kilometers">километры</string>
+    <string name="miles">мили</string>
+    <string name="remove">Удалить</string>
+    <string name="seconds_suffix">%1$sс</string>
 
+    <!-- Settings -->
+    <string name="language">Язык</string>
+    <string name="general">Общие</string>
+    <string name="training">Тренировка</string>
+    <string name="units_system">Система единиц</string>
+    <string name="metric">Метрическая (км)</string>
+    <string name="imperial">Имперская (мили)</string>
+    <string name="voice_alerts">Голосовые оповещения</string>
+    <string name="frequency">Частота: каждые %1$s</string>
+    <string name="countdown">Обратный отсчет</string>
+
+    <!-- Tracking -->
+    <string name="finish">Завершить</string>
+    <string name="pause">Пауза</string>
+    <string name="resume">Продолжить</string>
+    <string name="distance">Дистанция</string>
+    <string name="time">Время</string>
+    <string name="pace">Темп</string>
+    <string name="calories">Калории</string>
+    <string name="steps">Шаги</string>
+    <string name="goal_reached">Цель достигнута! Так держать.</string>
+    <string name="challenge_completed">Испытание завершено: %1$s! +%2$d очков</string>
+    <string name="run_status">Статус</string>
+    <string name="no_pace">--:--</string>
+    <string name="go">ПОЕХАЛИ!</string>
+    <!-- Leaderboard -->
+    <string name="no_data">Данные недоступны</string>
+    <string name="points">Очки</string>
+    <string name="pts">очк</string>
+    <string name="steps_unit">шагов</string>
+
+    <!-- Run Detail -->
+    <string name="run_detail">Детали забега</string>
+
+    <!-- History -->
+    <string name="no_runs">Забегов не зарегистрировано</string>
+    <string name="date_unavailable">Дата недоступна</string>
 </resources>

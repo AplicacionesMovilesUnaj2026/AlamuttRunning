@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import kotlinx.coroutines.delay
 
@@ -72,7 +74,7 @@ fun CountdownScreen(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (count > 0) count.toString() else "¡YA!",
+            text = if (count > 0) count.toString() else stringResource(R.string.go),
             fontSize = 120.sp,
             fontWeight = FontWeight.Black,
             color = AccentRed

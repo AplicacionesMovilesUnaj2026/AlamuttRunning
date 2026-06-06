@@ -72,18 +72,16 @@ class TrackingService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val soundUri = Settings.System.DEFAULT_NOTIFICATION_URI
-            val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .build()
+        val soundUri = Settings.System.DEFAULT_NOTIFICATION_URI
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build()
 
-            val channel = NotificationChannel(CHANNEL_ID, "Seguimiento", NotificationManager.IMPORTANCE_HIGH).apply {
-                setSound(soundUri, audioAttributes)
-            }
-            getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
+        val channel = NotificationChannel(CHANNEL_ID, "Seguimiento", NotificationManager.IMPORTANCE_HIGH).apply {
+            setSound(soundUri, audioAttributes)
         }
+        getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         startForeground(NOTIFICATION_ID, createNotification("00:00", true))
     }
 

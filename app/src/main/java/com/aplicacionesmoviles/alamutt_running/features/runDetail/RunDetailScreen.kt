@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.RunDetail
+package com.aplicacionesmoviles.alamutt_running.features.runDetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import java.text.SimpleDateFormat
@@ -48,9 +50,9 @@ fun RunDetailScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
             }
-            Text("Detalle de Carrera", fontSize = 22.sp, fontWeight = FontWeight.Black, color = TextWhite)
+            Text(stringResource(R.string.run_detail), fontSize = 22.sp, fontWeight = FontWeight.Black, color = TextWhite)
         }
 
         if (isLoading) {
@@ -70,11 +72,11 @@ fun RunDetailScreen(
             ) {
                 Text(text = dateFormatted, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.padding(start = 8.dp))
 
-                StatCardFeatured(title = "Distancia", value = UnitConverter.formatDistance(r.distance, unitSystem))
+                StatCardFeatured(title = stringResource(R.string.distance), value = UnitConverter.formatDistance(r.distance, unitSystem))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Ritmo", value = "${UnitConverter.formatPace(r.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}")
+                        StatCardSmall(title = stringResource(R.string.pace), value = "${UnitConverter.formatPace(r.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}")
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         val hours = r.duration / 3600
@@ -85,16 +87,16 @@ fun RunDetailScreen(
                         } else {
                             String.format(Locale.US, "%02d:%02d", minutes, seconds)
                         }
-                        StatCardSmall(title = "Tiempo", value = timeString)
+                        StatCardSmall(title = stringResource(R.string.time), value = timeString)
                     }
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Calorías", value = r.calories.toString())
+                        StatCardSmall(title = stringResource(R.string.calories), value = r.calories.toString())
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = "Pasos", value = r.steps.toString())
+                        StatCardSmall(title = stringResource(R.string.steps), value = r.steps.toString())
                     }
                 }
             }

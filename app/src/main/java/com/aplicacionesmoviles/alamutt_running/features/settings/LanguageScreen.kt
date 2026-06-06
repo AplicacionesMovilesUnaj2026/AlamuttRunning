@@ -3,6 +3,7 @@ package com.aplicacionesmoviles.alamutt_running.features.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -10,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,36 +68,52 @@ fun LanguageScreen(
 
             Text(
                 text = "Español 🇪🇸",
-                modifier = Modifier.clickable {
-                    LanguageManager.setLanguage(context, "es")
-                }
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        LanguageManager.setLanguage(context, "es")
+                    }
+                    .padding(vertical = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
 
             Text(
                 text = "English 🇺🇸",
-                modifier = Modifier.clickable {
-                    LanguageManager.setLanguage(context, "en")
-                }
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        LanguageManager.setLanguage(context, "en")
+                    }
+                    .padding(vertical = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
 
             Text(
                 text = "Português 🇧🇷",
-                modifier = Modifier.clickable {
-                    LanguageManager.setLanguage(context, "pt")
-                }
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        LanguageManager.setLanguage(context, "pt")
+                    }
+                    .padding(vertical = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
 
             Text(
                 text = "Русский 🇷🇺",
-                modifier = Modifier.clickable {
-                    LanguageManager.setLanguage(context, "ru")
-                }
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        LanguageManager.setLanguage(context, "ru")
+                    }
+                    .padding(vertical = 12.dp)
             )
         }
     }

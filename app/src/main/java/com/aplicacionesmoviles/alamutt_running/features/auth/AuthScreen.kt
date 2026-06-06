@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import kotlinx.coroutines.delay
@@ -38,12 +39,12 @@ fun AuthScreen(
 
     val frasesMotivacionales = remember {
         listOf(
-            "El dolor es temporal, el orgullo es para siempre.",
-            "Tu único rival es la persona que fuiste ayer.",
-            "La constancia vence a la genética.",
-            "Tus piernas no están cansadas, tu mente te miente.",
-            "Corre como si te buscaran para pagar la renta.",
-            "Sin excusas. Sin límites."
+            R.string.quote_1,
+            R.string.quote_2,
+            R.string.quote_3,
+            R.string.quote_4,
+            R.string.quote_5,
+            R.string.quote_6
         )
     }
     val fraseDelDia = remember { frasesMotivacionales.random() }
@@ -127,7 +128,7 @@ fun AuthScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "\"$fraseDelDia\"",
+                        text = "\"${stringResource(fraseDelDia)}\"",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextWhite,
@@ -164,7 +165,7 @@ fun AuthScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                                 shape = RoundedCornerShape(4.dp)
                             ) {
-                                Text("Unirse al club", fontSize = 16.sp, fontWeight = FontWeight.Black, color = TextWhite)
+                                Text(stringResource(R.string.join_club), fontSize = 16.sp, fontWeight = FontWeight.Black, color = TextWhite)
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
@@ -173,7 +174,7 @@ fun AuthScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = DarkerHeader),
                                 shape = RoundedCornerShape(4.dp)
                             ) {
-                                Text("Iniciar sesión", fontSize = 16.sp, fontWeight = FontWeight.Black, color = TextWhite)
+                                Text(stringResource(R.string.login), fontSize = 16.sp, fontWeight = FontWeight.Black, color = TextWhite)
                             }
                             Spacer(modifier = Modifier.height(24.dp))
                             Row(
@@ -182,7 +183,7 @@ fun AuthScreen(
                             ) {
                                 HorizontalDivider(modifier = Modifier.weight(1f), color = TextWhite.copy(alpha = 0.2f))
                                 Text(
-                                    " o ",
+                                    stringResource(R.string.or_divider),
                                     color = TextWhite.copy(alpha = 0.4f),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
@@ -206,7 +207,7 @@ fun AuthScreen(
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    Text("Continuar con Google", fontSize = 14.sp, fontWeight = FontWeight.Black)
+                                    Text(stringResource(R.string.continue_google), fontSize = 14.sp, fontWeight = FontWeight.Black)
                                 }
                             }
                         }
@@ -229,7 +230,7 @@ fun AuthScreen(
                             OutlinedTextField(
                                 value = email,
                                 onValueChange = { email = it },
-                                label = { Text("Email") },
+                                label = { Text(stringResource(R.string.email)) },
                                 leadingIcon = { Icon(Icons.Default.Email, null, tint = TextWhite.copy(alpha = 0.5f)) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
@@ -240,7 +241,7 @@ fun AuthScreen(
                             OutlinedTextField(
                                 value = password,
                                 onValueChange = { password = it },
-                                label = { Text("Contraseña") },
+                                label = { Text(stringResource(R.string.password)) },
                                 leadingIcon = { Icon(Icons.Default.Lock, null, tint = TextWhite.copy(alpha = 0.5f)) },
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),
@@ -260,14 +261,14 @@ fun AuthScreen(
                                 if (state is AuthUiState.Loading) {
                                     CircularProgressIndicator(color = TextWhite, modifier = Modifier.size(24.dp))
                                 } else {
-                                    Text("Entrar al club", fontWeight = FontWeight.Black, color = TextWhite)
+                                    Text(stringResource(R.string.enter_club), fontWeight = FontWeight.Black, color = TextWhite)
                                 }
                             }
                             TextButton(
                                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp),
                                 onClick = { mostrarFormularioLogin = false; viewModel.resetState() }
                             ) {
-                                Text("Volver atrás", color = TextWhite.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.back), color = TextWhite.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -277,7 +278,7 @@ fun AuthScreen(
                             OutlinedTextField(
                                 value = email,
                                 onValueChange = { email = it },
-                                label = { Text("Email") },
+                                label = { Text(stringResource(R.string.email)) },
                                 leadingIcon = { Icon(Icons.Default.Email, null, tint = TextWhite.copy(alpha = 0.5f)) },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
@@ -288,7 +289,7 @@ fun AuthScreen(
                             OutlinedTextField(
                                 value = password,
                                 onValueChange = { password = it },
-                                label = { Text("Contraseña") },
+                                label = { Text(stringResource(R.string.password)) },
                                 leadingIcon = { Icon(Icons.Default.Lock, null, tint = TextWhite.copy(alpha = 0.5f)) },
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),
@@ -301,7 +302,7 @@ fun AuthScreen(
                             OutlinedTextField(
                                 value = confirmPassword,
                                 onValueChange = { confirmPassword = it },
-                                label = { Text("Confirmar contraseña") },
+                                label = { Text(stringResource(R.string.confirm_password)) },
                                 leadingIcon = { Icon(Icons.Default.Lock, null, tint = TextWhite.copy(alpha = 0.5f)) },
                                 singleLine = true,
                                 visualTransformation = PasswordVisualTransformation(),
@@ -321,14 +322,14 @@ fun AuthScreen(
                                 if (state is AuthUiState.Loading) {
                                     CircularProgressIndicator(color = TextWhite, modifier = Modifier.size(24.dp))
                                 } else {
-                                    Text("Registrarme", fontWeight = FontWeight.Black, color = TextWhite)
+                                    Text(stringResource(R.string.register_me), fontWeight = FontWeight.Black, color = TextWhite)
                                 }
                             }
                             TextButton(
                                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp),
                                 onClick = { mostrarFormularioRegistro = false; viewModel.resetState() }
                             ) {
-                                Text("Volver atrás", color = TextWhite.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.back), color = TextWhite.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
                             }
                         }
                     }

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 
@@ -38,6 +40,7 @@ fun AppDrawer(
     onLeaderboardClick: () -> Unit,
     onChallengesClick: () -> Unit,
     onNavigateToHistory: () -> Unit,
+    onSettingsClick: () -> Unit,
     onCloseDrawer: () -> Unit
 ) {
     val context = LocalContext.current
@@ -78,7 +81,7 @@ fun AppDrawer(
                 }
             }
             Text(
-                text = "Hola, ${userName ?: "Usuario"}",
+                text = stringResource(R.string.hello_user, userName ?: stringResource(R.string.default_user)),
                 fontWeight = FontWeight.Black,
                 fontSize = 18.sp,
                 color = TextWhite,
@@ -88,7 +91,7 @@ fun AppDrawer(
         HorizontalDivider(color = DarkBackground)
 
         NavigationDrawerItem(
-            label = { Text("Carrera", color = TextWhite, fontWeight = FontWeight.Bold) }, 
+            label = { Text(stringResource(R.string.run), color = TextWhite, fontWeight = FontWeight.Bold) }, 
             selected = false, 
             icon = { Icon(Icons.AutoMirrored.Filled.DirectionsRun, null, tint = TextWhite) }, 
             onClick = { onCloseDrawer() },
@@ -96,7 +99,7 @@ fun AppDrawer(
         )
 
         NavigationDrawerItem(
-            label = { Text("Actividad", color = TextWhite, fontWeight = FontWeight.Bold) },
+            label = { Text(stringResource(R.string.activity), color = TextWhite, fontWeight = FontWeight.Bold) },
             selected = false,
             icon = { Icon(Icons.Default.History, null, tint = TextWhite) },
             onClick = { 
@@ -107,7 +110,7 @@ fun AppDrawer(
         )
 
         NavigationDrawerItem(
-            label = { Text("Estadísticas", color = TextWhite, fontWeight = FontWeight.Bold) },
+            label = { Text(stringResource(R.string.statistics), color = TextWhite, fontWeight = FontWeight.Bold) },
             selected = false,
             icon = { Icon(Icons.Default.BarChart, null, tint = TextWhite) },
             onClick = {
@@ -118,7 +121,7 @@ fun AppDrawer(
         )
 
         NavigationDrawerItem(
-            label = { Text("Tabla de líderes", color = TextWhite, fontWeight = FontWeight.Bold) },
+            label = { Text(stringResource(R.string.leaderboard), color = TextWhite, fontWeight = FontWeight.Bold) },
             selected = false,
             icon = { Icon(Icons.Default.Leaderboard, null, tint = TextWhite) },
             onClick = {
@@ -129,7 +132,7 @@ fun AppDrawer(
         )
 
         NavigationDrawerItem(
-            label = { Text("Desafíos", color = TextWhite, fontWeight = FontWeight.Bold) },
+            label = { Text(stringResource(R.string.challenges), color = TextWhite, fontWeight = FontWeight.Bold) },
             selected = false,
             icon = { Icon(Icons.Default.EmojiEvents, null, tint = TextWhite) },
             onClick = {
@@ -143,21 +146,24 @@ fun AppDrawer(
 
         HorizontalDivider(color = DarkBackground)
         NavigationDrawerItem(
-            label = { Text("Configuración", color = TextWhite, fontWeight = FontWeight.Bold) }, 
+            label = { Text(stringResource(R.string.settings), color = TextWhite, fontWeight = FontWeight.Bold) }, 
             selected = false, 
             icon = { Icon(Icons.Default.Settings, null, tint = TextWhite) }, 
-            onClick = { onCloseDrawer() },
+            onClick = { 
+                onCloseDrawer()
+                onSettingsClick()
+            },
             colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
         )
         
         NavigationDrawerItem(
-            label = { Text("Cerrar sesión", color = AccentRed, fontWeight = FontWeight.Black) },
+            label = { Text(stringResource(R.string.logout), color = AccentRed, fontWeight = FontWeight.Black) },
             selected = false,
             icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = AccentRed) },
             onClick = {
                 onCloseDrawer()
                 FirebaseAuth.getInstance().signOut()
-                Toast.makeText(context, "Sesión cerrada exitosamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.logout_success), Toast.LENGTH_SHORT).show()
                 onLogout()
             },
             colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)

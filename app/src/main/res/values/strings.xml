@@ -1,8 +1,7 @@
 <resources>
-
     <string name="app_name">Alamutt Running Club</string>
-    <string name="title_activity_asfa">asfa</string>
 
+    <!-- Navigation & Common -->
     <string name="start">COMENZAR</string>
     <string name="statistics">Estadísticas</string>
     <string name="leaderboard">Tabla de líderes</string>
@@ -15,11 +14,79 @@
     <string name="hello_user">Hola, %1$s</string>
     <string name="default_user">Usuario</string>
     <string name="logout_success">Sesión cerrada exitosamente</string>
+    <string name="menu">Menú</string>
+    <string name="back">Volver atrás</string>
+    <string name="cancel">Cancelar</string>
+    <string name="accept">Aceptar</string>
+    <string name="close">Cerrar</string>
+
+    <!-- Auth Screen -->
+    <string name="join_club">Unirse al club</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="or_divider"> o </string>
+    <string name="continue_google">Continuar con Google</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="enter_club">Entrar al club</string>
+    <string name="register_me">Registrarme</string>
+    <string name="quote_1">El dolor es temporal, el orgullo es para siempre.</string>
+    <string name="quote_2">Tu único rival es la persona que fuiste ayer.</string>
+    <string name="quote_3">La constancia vence a la genética.</string>
+    <string name="quote_4">Tus piernas no están cansadas, tu mente te miente.</string>
+    <string name="quote_5">Corre como si te buscaran para pagar la renta.</string>
+    <string name="quote_6">Sin excusas. Sin límites.</string>
+
+    <!-- Quick Start -->
+    <string name="searching_gps">Buscando señal GPS&#8230;</string>
+    <string name="gps_hint">Asegúrate de estar en un lugar despejado</string>
     <string name="night_run_title">¿Corres en la oscuridad?</string>
     <string name="night_run_desc">Lleva una luz por motivos de seguridad.</string>
     <string name="set_goal">Establece un objetivo</string>
-    <string name="run_screen">Carrera</string>
-    <string name="menu">Menú</string>
-    <string name="language">Idioma</string>
+    <string name="goal_dialog_title">¿Cuál es tu objetivo?</string>
+    <string name="goal_dialog_desc">Ingresa la distancia en %1$s que deseas recorrer hoy.</string>
+    <string name="goal_prefix">Objetivo: %1$s</string>
+    <string name="distance_label">Distancia (%1$s)</string>
+    <string name="kilometers">kilómetros</string>
+    <string name="miles">millas</string>
+    <string name="remove">Quitar</string>
+    <string name="seconds_suffix">%1$ss</string>
 
+    <!-- Settings -->
+    <string name="language">Idioma</string>
+    <string name="general">General</string>
+    <string name="training">Entrenamiento</string>
+    <string name="units_system">Sistema de unidades</string>
+    <string name="metric">Métrico (km)</string>
+    <string name="imperial">Imperial (mi)</string>
+    <string name="voice_alerts">Alertas de voz</string>
+    <string name="frequency">Frecuencia: cada %1$s</string>
+    <string name="countdown">Cuenta regresiva</string>
+
+    <!-- Tracking -->
+    <string name="finish">Finalizar</string>
+    <string name="pause">Pausar</string>
+    <string name="resume">Reanudar</string>
+    <string name="distance">Distancia</string>
+    <string name="time">Tiempo</string>
+    <string name="pace">Ritmo</string>
+    <string name="calories">Calorías</string>
+    <string name="steps">Pasos</string>
+    <string name="goal_reached">¡Objetivo alcanzado! Sigue así.</string>
+    <string name="challenge_completed">¡Desafío completado: %1$s! +%2$d pts</string>
+    <string name="run_status">Estado</string>
+    <string name="no_pace">--:--</string>
+    <string name="go">¡YA!</string>
+    <!-- Leaderboard -->
+    <string name="no_data">No hay datos disponibles</string>
+    <string name="points">Puntos</string>
+    <string name="pts">pts</string>
+    <string name="steps_unit">pasos</string>
+
+    <!-- Run Detail -->
+    <string name="run_detail">Detalle de Carrera</string>
+
+    <!-- History -->
+    <string name="no_runs">No hay carreras registradas</string>
+    <string name="date_unavailable">Fecha no disponible</string>
 </resources>

@@ -43,7 +43,7 @@ class LeaderboardViewModel(application: Application) : AndroidViewModel(applicat
                 users = result.documents.map {
                     LeaderboardUser(
                         uid = it.id,
-                        name = it.getString("name") ?: "Usuario",
+                        name = it.getString("name") ?: "",
                         photoUrl = it.getString("photoUrl") ?: "",
                         totalDistance = it.getDouble("totalDistance") ?: 0.0,
                         totalCalories = it.getLong("totalCalories")?.toInt() ?: 0,
