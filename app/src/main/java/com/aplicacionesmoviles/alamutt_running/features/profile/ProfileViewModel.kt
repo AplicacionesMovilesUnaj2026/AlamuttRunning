@@ -56,7 +56,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         val newHeight = editHeightCm.toIntOrNull() ?: 0
 
         if (newWeight <= 0.0 || newHeight <= 0) {
-            // Podríamos añadir un estado de error aquí si quisiéramos mostrar un mensaje
             return
         }
 

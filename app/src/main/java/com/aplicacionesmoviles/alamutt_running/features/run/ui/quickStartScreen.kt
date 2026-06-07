@@ -214,7 +214,6 @@ fun QuickStartScreen(
                     Text(stringResource(R.string.run), color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
                 }
 
-                // Las tarjetas ahora están supeditadas a la disponibilidad del mapa y del GPS activo
                 if (isGpsActive && userLocation != null) {
                     if (goalDistance > 0.0) {
                         Card(
