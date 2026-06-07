@@ -8,5 +8,6 @@ data class Run(
     val duration: Long = 0L,
     val calories: Int = 0,
     val steps: Int = 0,
+    val points: Int = 0,
     val date: Long = 0L,
 )

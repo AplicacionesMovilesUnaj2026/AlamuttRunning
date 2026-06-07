@@ -134,36 +134,63 @@ fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = DarkerHeader
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = dateFormatted,
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.White.copy(alpha = 0.6f)
+                text = dateFormatted.uppercase(),
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextGray,
+                letterSpacing = 1.sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Bottom
             ) {
-                Text(
-                    text = UnitConverter.formatDistance(run.distance, unitSystem),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Black,
-                    color = AccentRed
-                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = UnitConverter.formatDistance(run.distance, unitSystem).split(" ")[0],
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black,
+                        color = TextWhite,
+                        letterSpacing = (-1).sp
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = UnitConverter.getUnitLabel(unitSystem).uppercase(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TextGray,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+
+                val paceValue = UnitConverter.formatPace(run.pace, unitSystem)
                 val paceUnit = if (unitSystem == "Metric") stringResource(R.string.unit_pace_metric) else stringResource(R.string.unit_pace_imperial)
-                Text(
-                    text = "${UnitConverter.formatPace(run.pace, unitSystem)} $paceUnit",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextWhite,
-                    fontWeight = FontWeight.Bold
-                )
+                
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = paceValue,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = TextWhite
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = paceUnit.uppercase(),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextGray,
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
             }
         }
     }

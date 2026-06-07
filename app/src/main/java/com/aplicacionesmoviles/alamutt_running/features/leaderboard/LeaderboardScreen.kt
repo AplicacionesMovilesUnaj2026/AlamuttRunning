@@ -163,7 +163,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
     
     val unitLabel = when (filter) {
         LeaderboardFilter.DISTANCE -> UnitConverter.getUnitLabel(unitSystem)
-        LeaderboardFilter.CALORIES -> "kcal"
+        LeaderboardFilter.CALORIES -> stringResource(R.string.kcal)
         LeaderboardFilter.STEPS -> stringResource(R.string.steps_unit)
         LeaderboardFilter.POINTS -> stringResource(R.string.pts)
         LeaderboardFilter.PACE -> UnitConverter.getPaceUnitLabel(unitSystem)
@@ -245,14 +245,16 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                 Text(
                     text = displayValue,
                     fontWeight = FontWeight.Black,
-                    fontSize = 17.sp,
-                    color = if (index < 3) rankColor else AccentRed
+                    fontSize = 18.sp,
+                    color = if (index < 3) rankColor else TextWhite,
+                    letterSpacing = (-0.5).sp
                 )
                 Text(
-                    text = unitLabel,
+                    text = unitLabel.uppercase(),
                     fontSize = 10.sp,
                     color = TextGray,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 0.5.sp
                 )
             }
         }

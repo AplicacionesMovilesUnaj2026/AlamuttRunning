@@ -1,19 +1,25 @@
 package com.aplicacionesmoviles.alamutt_running.features.run.data
 
 import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.os.*
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.aplicacionesmoviles.alamutt_running.MainActivity
+import com.aplicacionesmoviles.alamutt_running.features.settings.LanguageManager
 import com.aplicacionesmoviles.alamutt_running.R
 
-class TrackingService : Service() {
+class TrackingNotificationService : Service() {
     private val CHANNEL_ID = "tracking_channel_v2"
     private val NOTIFICATION_ID = 1
     private var isRunning = true
     private var lastTime = "00:00"
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LanguageManager.wrapContext(newBase))
+    }
 
     companion object {
         const val ACTION_PAUSE = "ACTION_PAUSE"
@@ -46,7 +52,7 @@ class TrackingService : Service() {
         val activityIntent = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val nextAction = if (running) ACTION_PAUSE else ACTION_RESUME
-        val actionIntent = Intent(this, TrackingService::class.java).apply { action = nextAction }
+        val actionIntent = Intent(this, TrackingNotificationService::class.java).apply { action = nextAction }
 
         val actionPI = PendingIntent.getService(
             this,
@@ -55,16 +61,20 @@ class TrackingService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        val title = getString(R.string.run_in_progress)
+        val timeLabel = getString(R.string.time)
+        val actionLabel = if (running) getString(R.string.pause) else getString(R.string.resume)
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Carrera en curso")
-            .setContentText("Tiempo: $time")
+            .setContentTitle(title)
+            .setContentText("$timeLabel: $time")
             .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentIntent(activityIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .addAction(
                 if (running) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
-                if (running) "Pausar" else "Continuar",
+                actionLabel,
                 actionPI
             )
             .build()
@@ -78,7 +88,8 @@ class TrackingService : Service() {
             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
             .build()
 
-        val channel = NotificationChannel(CHANNEL_ID, "Seguimiento", NotificationManager.IMPORTANCE_HIGH).apply {
+        val channelName = getString(R.string.tracking_channel_name)
+        val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH).apply {
             setSound(soundUri, audioAttributes)
         }
         getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)

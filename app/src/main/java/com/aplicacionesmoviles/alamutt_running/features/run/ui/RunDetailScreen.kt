@@ -70,15 +70,30 @@ fun RunDetailScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(text = dateFormatted, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    text = dateFormatted.uppercase(),
+                    color = TextGray,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
 
-                StatCardFeatured(title = stringResource(R.string.distance), value = UnitConverter.formatDistance(r.distance, unitSystem))
+                StatCardFeatured(
+                    title = stringResource(R.string.distance),
+                    value = UnitConverter.formatDistance(r.distance, unitSystem).split(" ")[0],
+                    unit = UnitConverter.getUnitLabel(unitSystem)
+                )
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = stringResource(R.string.pace), value = "${UnitConverter.formatPace(r.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}")
+                        StatCardSmall(
+                            title = stringResource(R.string.pace),
+                            value = UnitConverter.formatPace(r.pace, unitSystem),
+                            unit = UnitConverter.getPaceUnitLabel(unitSystem)
+                        )
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         val hours = r.duration / 3600
@@ -93,12 +108,18 @@ fun RunDetailScreen(
                     }
                 }
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = stringResource(R.string.calories), value = r.calories.toString())
+                        StatCardSmall(
+                            title = stringResource(R.string.calories),
+                            value = r.calories.toString(),
+                        )
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        StatCardSmall(title = stringResource(R.string.steps), value = r.steps.toString())
+                        StatCardSmall(
+                            title = stringResource(R.string.steps),
+                            value = String.format(Locale.US, "%,d", r.steps)
+                        )
                     }
                 }
             }
@@ -107,21 +128,85 @@ fun RunDetailScreen(
 }
 
 @Composable
-fun StatCardFeatured(title: String, value: String) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = DarkerHeader)) {
-        Column(modifier = Modifier.padding(24.dp)) {
-            Text(title, color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            Text(value, color = AccentRed, fontSize = 48.sp, fontWeight = FontWeight.Black)
+fun StatCardFeatured(title: String, value: String, unit: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkerHeader),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title.uppercase(),
+                color = TextGray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.2.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = value,
+                    color = TextWhite,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = (-2).sp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = unit.uppercase(),
+                    color = TextGray,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun StatCardSmall(title: String, value: String) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = DarkerHeader)) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Text(title, color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-            Text(value, color = TextWhite, fontSize = 20.sp, fontWeight = FontWeight.Black)
+fun StatCardSmall(title: String, value: String, unit: String = "") {
+    Card(
+        modifier = Modifier.fillMaxWidth().height(100.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkerHeader),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(12.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title.uppercase(),
+                color = TextGray,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = value,
+                    color = TextWhite,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black
+                )
+                if (unit.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = unit.uppercase(),
+                        color = TextGray,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
+            }
         }
     }
 }

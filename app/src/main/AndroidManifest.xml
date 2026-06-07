@@ -37,7 +37,7 @@
         </service>
 
         <service
-            android:name=".features.run.data.TrackingService"
+            android:name=".features.run.data.TrackingNotificationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />

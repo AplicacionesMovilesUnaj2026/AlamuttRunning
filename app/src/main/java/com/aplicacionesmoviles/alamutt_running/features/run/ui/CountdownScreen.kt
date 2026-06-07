@@ -61,6 +61,9 @@ fun CountdownScreen(
             delay(1000)
             count--
         }
+
+        delay(600)
+
         viewModel.updateRunState(RunState.Running)
 
         navController.navigate("tracking") {

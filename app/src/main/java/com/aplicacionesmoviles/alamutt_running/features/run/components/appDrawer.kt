@@ -156,6 +156,7 @@ fun AppDrawer(
             colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
         )
         
+        val logoutSuccessMessage = stringResource(R.string.logout_success)
         NavigationDrawerItem(
             label = { Text(stringResource(R.string.logout), color = AccentRed, fontWeight = FontWeight.Black) },
             selected = false,
@@ -163,10 +164,31 @@ fun AppDrawer(
             onClick = {
                 onCloseDrawer()
                 FirebaseAuth.getInstance().signOut()
-                Toast.makeText(context, context.getString(R.string.logout_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, logoutSuccessMessage, Toast.LENGTH_SHORT).show()
                 onLogout()
             },
             colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        val versionName = try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        } catch (_: Exception) {
+            "1.0"
+        }
+
+        Text(
+            text = "ALAMUTT RUNNING CLUB\nVERSION $versionName",
+            color = TextWhite.copy(alpha = 0.2f),
+            fontSize = 9.sp,
+            lineHeight = 12.sp,
+            letterSpacing = 1.5.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }
 }

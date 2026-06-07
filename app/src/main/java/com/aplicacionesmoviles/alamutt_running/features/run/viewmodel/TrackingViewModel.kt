@@ -14,7 +14,7 @@ import com.aplicacionesmoviles.alamutt_running.core.domain.model.Run
 import com.aplicacionesmoviles.alamutt_running.core.domain.model.User
 import com.aplicacionesmoviles.alamutt_running.core.data.repository.RunRepository
 import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
-import com.aplicacionesmoviles.alamutt_running.features.run.data.TrackingService
+import com.aplicacionesmoviles.alamutt_running.features.run.data.TrackingNotificationService
 import com.aplicacionesmoviles.alamutt_running.features.run.domain.RunMetricsCalculator
 import com.google.firebase.auth.FirebaseAuth
 import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
@@ -57,8 +57,8 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     private val controlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.getStringExtra("action")) {
-                TrackingService.ACTION_PAUSE -> updateRunState(RunState.Paused)
-                TrackingService.ACTION_RESUME -> updateRunState(RunState.Running)
+                TrackingNotificationService.ACTION_PAUSE -> updateRunState(RunState.Paused)
+                TrackingNotificationService.ACTION_RESUME -> updateRunState(RunState.Running)
             }
         }
     }
@@ -117,8 +117,8 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun updateServiceNotification(time: String) {
-        val intent = Intent(context, TrackingService::class.java).apply {
-            action = TrackingService.ACTION_UPDATE
+        val intent = Intent(context, TrackingNotificationService::class.java).apply {
+            action = TrackingNotificationService.ACTION_UPDATE
             putExtra("time", time)
         }
         context.startService(intent)
@@ -169,7 +169,7 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
 
     private fun startTimer() {
         timerJob?.cancel()
-        context.startService(Intent(context, TrackingService::class.java))
+        context.startService(Intent(context, TrackingNotificationService::class.java))
 
         timerJob = viewModelScope.launch {
             while (runState.value is RunState.Running) {
@@ -248,7 +248,7 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
         isGoalReached.value = false
         lastSpokenKm = 0
         runState.value = RunState.Idle
-        context.stopService(Intent(context, TrackingService::class.java))
+        context.stopService(Intent(context, TrackingNotificationService::class.java))
     }
 
     override fun onCleared() {

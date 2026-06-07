@@ -152,7 +152,7 @@ fun RunnerProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             maxItemsInEachRow = 2
                         ) {
-                            val itemModifier = Modifier.weight(1f).height(130.dp)
+                            val itemModifier = Modifier.weight(1f).height(110.dp)
                             
                             StatCard(
                                 label = stringResource(R.string.distance),
@@ -160,7 +160,7 @@ fun RunnerProfileScreen(
                                 unit = UnitConverter.getUnitLabel(unitSystem),
                                 icon = Icons.AutoMirrored.Filled.DirectionsRun,
                                 modifier = itemModifier,
-                                inlineUnit = true
+                                inlineUnit = false
                             )
                             StatCard(
                                 label = stringResource(R.string.runs),
@@ -171,7 +171,6 @@ fun RunnerProfileScreen(
                             StatCard(
                                 label = stringResource(R.string.calories),
                                 value = user.totalCalories.toString(),
-                                unit = stringResource(R.string.kcal),
                                 icon = Icons.Default.LocalFireDepartment,
                                 modifier = itemModifier
                             )
@@ -211,13 +210,13 @@ fun StatCard(
         colors = CardDefaults.cardColors(
             containerColor = DarkerHeader
         ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(12.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -225,43 +224,52 @@ fun StatCard(
                 icon,
                 contentDescription = null,
                 tint = AccentRed,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.height(4.dp))
             
-            Row(verticalAlignment = Alignment.Bottom) {
+            Spacer(modifier = Modifier.height(2.dp))
+            
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = value,
                     fontWeight = FontWeight.Black,
                     fontSize = 24.sp,
-                    color = TextWhite
+                    color = TextWhite,
+                    letterSpacing = (-1).sp
                 )
                 if (unit.isNotEmpty() && inlineUnit) {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = unit,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextWhite,
-                        modifier = Modifier.padding(bottom = 2.dp)
+                        text = unit.uppercase(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TextGray,
+                        modifier = Modifier.padding(bottom = 3.dp)
                     )
                 }
             }
 
             if (unit.isNotEmpty() && !inlineUnit) {
                 Text(
-                    text = unit,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = AccentRed
+                    text = unit.uppercase(),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextGray,
+                    letterSpacing = 0.5.sp
                 )
             }
+
             Spacer(modifier = Modifier.height(2.dp))
+
             Text(
-                text = label,
-                fontSize = 11.sp,
+                text = label.uppercase(),
+                fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextGray
+                color = TextGray,
+                letterSpacing = 1.2.sp
             )
         }
     }
