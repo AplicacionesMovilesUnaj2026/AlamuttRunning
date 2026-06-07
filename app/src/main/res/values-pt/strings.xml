@@ -89,4 +89,54 @@
     <!-- History -->
     <string name="no_runs">Nenhuma corrida registrada</string>
     <string name="date_unavailable">Data indisponível</string>
+
+    <!-- Stats -->
+    <string name="total_distance">Distância total</string>
+    <string name="runs">Corridas</string>
+    <string name="total_calories">Calorias totais</string>
+    <string name="total_steps">Passos totais</string>
+    <string name="kcal">kcal</string>
+
+    <!-- Challenges -->
+    <string name="challenges_title">Desafios</string>
+    <string name="points_lower">pontos</string>
+    <string name="total_points">Pontos totais</string>
+    <string name="active_challenges">Desafios em curso</string>
+    <string name="new_challenges">Novos desafios</string>
+    <string name="your_medals">Suas medalhas</string>
+    <string name="runner_badge">%1$s Runner</string>
+    <string name="reward_points">Recompensa: %1$d pontos</string>
+    <string name="challenge_progress">%1$s de %2$s</string>
+    <string name="challenge_completed_date">Concluído na Semana %1$s, %2$s</string>
+    <string name="challenge_card_title">Desafio %1$s</string>
+    <string name="challenge_btn">Desafiar</string>
+    <string name="abandon">Abandonar</string>
+    <!-- Profile -->
+    <string name="my_profile">Meu Perfil</string>
+    <string name="cut_and_save">Recortar e Salvar</string>
+    <string name="default_username">Nome de usuário</string>
+    <string name="no_bio">Sem biografia</string>
+    <string name="weight">PESO</string>
+    <string name="height">ALTURA</string>
+    <string name="edit_profile">EDITAR PERFIL</string>
+    <string name="invalid_values_error">Por favor, insira valores válidos</string>
+    <string name="save_upper">SALVAR</string>
+    <string name="name">Nome</string>
+    <string name="bio">Biografia</string>
+    <string name="weight_with_unit">Peso (%1$s)</string>
+    <string name="height_with_unit">Altura (%1$s)</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_km">km</string>
+    <string name="unit_mi">mi</string>
+    <string name="unit_pace_metric">min/km</string>
+    <string name="unit_pace_imperial">min/mi</string>
+    <!-- Runner Profile -->
+    <string name="runner_profile_title">Perfil do Corredor</string>
+    <string name="unknown_error">Erro desconhecido</string>
+    <string name="no_name">Sem Nome</string>
+    <string name="total_stats">Estatísticas Totais</string>
+    <string name="best_pace">Melhor ritmo</string>
 </resources>

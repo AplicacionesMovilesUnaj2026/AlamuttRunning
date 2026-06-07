@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import java.util.Locale
@@ -55,12 +57,12 @@ fun StatsScreen(
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver",
+                        contentDescription = stringResource(R.string.back),
                         tint = Color.White
                     )
                 }
                 Text(
-                    text = "Estadísticas",
+                    text = stringResource(R.string.statistics),
                     color = TextWhite,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Black
@@ -88,7 +90,7 @@ fun StatsScreen(
                         val itemModifier = Modifier.weight(1f).height(125.dp)
 
                         StatCard(
-                            label = "Distancia Total",
+                            label = stringResource(R.string.total_distance),
                             value = UnitConverter.formatDistanceKm(totalDistanceKm, unitSystem).split(" ")[0],
                             unit = UnitConverter.getUnitLabel(unitSystem),
                             icon = Icons.AutoMirrored.Filled.DirectionsRun,
@@ -96,20 +98,20 @@ fun StatsScreen(
                             inlineUnit = true
                         )
                         StatCard(
-                            label = "Carreras",
+                            label = stringResource(R.string.runs),
                             value = totalRuns.toString(),
                             icon = Icons.Default.History,
                             modifier = itemModifier
                         )
                         StatCard(
-                            label = "Calorías",
+                            label = stringResource(R.string.calories),
                             value = totalCalories.toString(),
-                            unit = "kcal",
+                            unit = stringResource(R.string.kcal),
                             icon = Icons.Default.LocalFireDepartment,
                             modifier = itemModifier
                         )
                         StatCard(
-                            label = "Pasos Totales",
+                            label = stringResource(R.string.total_steps),
                             value = String.format(Locale.US, "%,d", totalSteps),
                             icon = Icons.AutoMirrored.Filled.ShowChart,
                             modifier = itemModifier

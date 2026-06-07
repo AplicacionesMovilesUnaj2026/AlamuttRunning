@@ -5,9 +5,10 @@ import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -67,8 +68,16 @@ fun OnboardingScreen(
 
     val cropImageView = remember { CropImageView(context) }
 
+    BackHandler(enabled = true) {
+        if (step > 1) {
+            step--
+        } else {
+            navController.popBackStack()
+        }
+    }
+
     val imagePicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let { pendingCropUri = it }
     }
@@ -339,7 +348,7 @@ fun OnboardingScreen(
                                             .size(140.dp)
                                             .clip(CircleShape)
                                             .background(DarkerHeader)
-                                            .clickable { imagePicker.launch(arrayOf("image/*")) },
+                                            .clickable { imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         val optimizedUrl = photoUrl?.let {
@@ -444,7 +453,10 @@ fun OnboardingScreen(
                                             isSavingProfile = false
                                             if (success) {
                                                 navController.navigate("quick_start") {
-                                                    popUpTo("onboarding") { inclusive = true }
+                                                    popUpTo(navController.graph.id) {
+                                                        inclusive = true
+                                                    }
+                                                    launchSingleTop = true
                                                 }
                                             } else {
                                                 Toast.makeText(

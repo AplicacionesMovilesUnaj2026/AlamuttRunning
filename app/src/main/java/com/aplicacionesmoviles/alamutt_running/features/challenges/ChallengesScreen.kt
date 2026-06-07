@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
@@ -67,10 +69,10 @@ fun ChallengesScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Desafíos", color = TextWhite, fontWeight = FontWeight.Black, fontSize = 20.sp) },
+                    title = { Text(stringResource(R.string.challenges_title), color = TextWhite, fontWeight = FontWeight.Black, fontSize = 20.sp) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = TextWhite)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkerHeader)
@@ -97,7 +99,7 @@ fun ChallengesScreen(navController: NavController) {
 
                     if (activeChallenges.isNotEmpty()) {
                         item {
-                            SectionHeader(title = "Desafíos en curso", icon = Icons.AutoMirrored.Filled.DirectionsRun)
+                            SectionHeader(title = stringResource(R.string.active_challenges), icon = Icons.AutoMirrored.Filled.DirectionsRun)
                         }
                         items(activeChallenges.toList()) { (distStr, progress) ->
                             val target = distStr.toDoubleOrNull() ?: 1.0
@@ -118,7 +120,7 @@ fun ChallengesScreen(navController: NavController) {
                     }
 
                     item {
-                        SectionHeader(title = "Nuevos desafíos", icon = Icons.Default.AddCircleOutline)
+                        SectionHeader(title = stringResource(R.string.new_challenges), icon = Icons.Default.AddCircleOutline)
                     }
                     items(availableChallenges.filter { !activeChallenges.containsKey(it.toString()) }) { distance ->
                         ChallengeSubscribeCard(
@@ -137,7 +139,7 @@ fun ChallengesScreen(navController: NavController) {
 
                     if (completedChallenges.isNotEmpty()) {
                         item {
-                            SectionHeader(title = "Tus medallas", icon = Icons.Default.EmojiEvents)
+                            SectionHeader(title = stringResource(R.string.your_medals), icon = Icons.Default.EmojiEvents)
                         }
                         items(completedChallenges.reversed()) { completionId ->
                             val parts = completionId.split("-")
@@ -175,9 +177,9 @@ fun PointsOverviewCard(points: Int) {
             Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = AccentRed, modifier = Modifier.size(40.dp))
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = points.toString(), color = TextWhite, fontSize = 42.sp, fontWeight = FontWeight.Black)
-            Text(text = "puntos", color = AccentRed, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(R.string.points_lower), color = AccentRed, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Puntos totales", color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.total_points), color = TextGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -212,13 +214,13 @@ fun ChallengeActiveCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner",
+                    text = stringResource(R.string.runner_badge, UnitConverter.formatDistanceKm(distance, unitSystem)),
                     color = TextWhite,
                     fontWeight = FontWeight.Black,
                     fontSize = 18.sp
                 )
                 IconButton(onClick = onUnsubscribe, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.Cancel, contentDescription = "Abandonar", tint = TextGray)
+                    Icon(Icons.Default.Cancel, contentDescription = stringResource(R.string.abandon), tint = TextGray)
                 }
             }
 
@@ -251,7 +253,7 @@ fun ChallengeActiveCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${UnitConverter.formatDistanceKm(progress, unitSystem)} de ${UnitConverter.formatDistanceKm(distance, unitSystem)}",
+                    text = stringResource(R.string.challenge_progress, UnitConverter.formatDistanceKm(progress, unitSystem), UnitConverter.formatDistanceKm(distance, unitSystem)),
                     color = TextGray,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
@@ -287,13 +289,13 @@ fun ChallengeSubscribeCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${UnitConverter.formatDistanceKm(distance, unitSystem)} Runner",
+                    text = stringResource(R.string.runner_badge, UnitConverter.formatDistanceKm(distance, unitSystem)),
                     color = TextWhite,
                     fontWeight = FontWeight.Black,
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "Recompensa: ${(distance * 10).toInt()} puntos",
+                    text = stringResource(R.string.reward_points, (distance * 10).toInt()),
                     color = AccentRed,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
@@ -306,7 +308,7 @@ fun ChallengeSubscribeCard(
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
-                Text("Retar", fontWeight = FontWeight.Black, fontSize = 14.sp)
+                Text(stringResource(R.string.challenge_btn), fontWeight = FontWeight.Black, fontSize = 14.sp)
             }
         }
     }
@@ -344,8 +346,8 @@ fun CompletedChallengeCard(
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 val distFormatted = UnitConverter.formatDistanceKm(distance, unitSystem)
-                Text("Reto $distFormatted", color = successColor, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                Text("Completado en la Semana $week, $year", color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.challenge_card_title, distFormatted), color = successColor, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                Text(stringResource(R.string.challenge_completed_date, week, year), color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

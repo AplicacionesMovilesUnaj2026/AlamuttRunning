@@ -1,11 +1,12 @@
 package com.aplicacionesmoviles.alamutt_running
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -17,12 +18,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -30,10 +28,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.aplicacionesmoviles.alamutt_running.features.runDetail.RunDetailScreen
-import com.aplicacionesmoviles.alamutt_running.features.runDetail.RunDetailViewModel
-import com.aplicacionesmoviles.alamutt_running.features.runHistory.HistoryScreen
-import com.aplicacionesmoviles.alamutt_running.features.runHistory.RunHistoryViewModel
+import com.aplicacionesmoviles.alamutt_running.features.runDetailFeature.RunDetailScreen
+import com.aplicacionesmoviles.alamutt_running.features.runHistoryFeature.HistoryScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
 import com.aplicacionesmoviles.alamutt_running.features.challenges.ChallengesScreen
@@ -54,10 +50,11 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.aplicacionesmoviles.alamutt_running.features.settings.SettingsScreen
 import com.aplicacionesmoviles.alamutt_running.features.settings.LanguageScreen
+import com.aplicacionesmoviles.alamutt_running.features.settings.LanguageManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val googleSignInClient: GoogleSignInClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -99,23 +96,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LanguageManager.wrapContext(newBase))
+    }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
-        val prefs = getSharedPreferences(
-            "settings",
-            MODE_PRIVATE
-        )
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val language = prefs.getString("language", "es") ?: "es"
 
-        val language = prefs.getString(
-            "language",
-            "es"
-        ) ?: "es"
-
-        android.util.Log.d("LANGUAGE_STARTUP", language)
-
-        AppCompatDelegate.setApplicationLocales(
-            LocaleListCompat.forLanguageTags(language)
-        )
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language))
+        
         super.onCreate(savedInstanceState)
         checkNotificationPermission()
 
@@ -212,9 +203,7 @@ class MainActivity : ComponentActivity() {
                                 runId = runId,
                                 viewModel = viewModel(),
                                 onBack = {
-                                    navController.navigate("quick_start") {
-                                        popUpTo("quick_start") { inclusive = true }
-                                    }
+                                    navController.popBackStack()
                                 }
                             )
                         }
@@ -251,11 +240,11 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-                        }
                     }
                 }
             }
         }
+    }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.runHistory
+package com.aplicacionesmoviles.alamutt_running.features.runHistoryFeature
 
 
 import androidx.compose.foundation.background
@@ -154,8 +154,9 @@ fun RunItem(run: Run, unitSystem: String, onClick: () -> Unit) {
                     fontWeight = FontWeight.Black,
                     color = AccentRed
                 )
+                val paceUnit = if (unitSystem == "Metric") stringResource(R.string.unit_pace_metric) else stringResource(R.string.unit_pace_imperial)
                 Text(
-                    text = "${UnitConverter.formatPace(run.pace, unitSystem)} ${UnitConverter.getPaceUnitLabel(unitSystem)}",
+                    text = "${UnitConverter.formatPace(run.pace, unitSystem)} $paceUnit",
                     style = MaterialTheme.typography.bodyLarge,
                     color = TextWhite,
                     fontWeight = FontWeight.Bold

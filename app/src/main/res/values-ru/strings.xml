@@ -89,4 +89,54 @@
     <!-- History -->
     <string name="no_runs">Забегов не зарегистрировано</string>
     <string name="date_unavailable">Дата недоступна</string>
+
+    <!-- Stats -->
+    <string name="total_distance">Общая дистанция</string>
+    <string name="runs">Забеги</string>
+    <string name="total_calories">Всего калорий</string>
+    <string name="total_steps">Всего шагов</string>
+    <string name="kcal">ккал</string>
+
+    <!-- Challenges -->
+    <string name="challenges_title">Испытания</string>
+    <string name="points_lower">очков</string>
+    <string name="total_points">Всего очков</string>
+    <string name="active_challenges">Текущие испытания</string>
+    <string name="new_challenges">Новые испытания</string>
+    <string name="your_medals">Ваши медали</string>
+    <string name="runner_badge">%1$s Runner</string>
+    <string name="reward_points">Награда: %1$d очков</string>
+    <string name="challenge_progress">%1$s из %2$s</string>
+    <string name="challenge_completed_date">Завершено на неделе %1$s, %2$s</string>
+    <string name="challenge_card_title">Испытание %1$s</string>
+    <string name="challenge_btn">Принять вызов</string>
+    <string name="abandon">Отказаться</string>
+    <!-- Profile -->
+    <string name="my_profile">Мой профиль</string>
+    <string name="cut_and_save">Обрезать и сохранить</string>
+    <string name="default_username">Имя пользователя</string>
+    <string name="no_bio">О себе не заполнено</string>
+    <string name="weight">ВЕС</string>
+    <string name="height">РОСТ</string>
+    <string name="edit_profile">РЕДАКТИРОВАТЬ ПРОФИЛЬ</string>
+    <string name="invalid_values_error">Пожалуйста, введите корректные значения</string>
+    <string name="save_upper">СОХРАНИТЬ</string>
+    <string name="name">Имя</string>
+    <string name="bio">О себе</string>
+    <string name="weight_with_unit">Вес (%1$s)</string>
+    <string name="height_with_unit">Рост (%1$s)</string>
+    <string name="unit_kg">кг</string>
+    <string name="unit_lb">фунт</string>
+    <string name="unit_cm">см</string>
+    <string name="unit_in">дюйм</string>
+    <string name="unit_km">км</string>
+    <string name="unit_mi">мили</string>
+    <string name="unit_pace_metric">мин/км</string>
+    <string name="unit_pace_imperial">мин/мили</string>
+    <!-- Runner Profile -->
+    <string name="runner_profile_title">Профиль бегуна</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="no_name">Без имени</string>
+    <string name="total_stats">Общая статистика</string>
+    <string name="best_pace">Лучший темп</string>
 </resources>

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
@@ -62,7 +65,7 @@ fun ProfileScreen(
     val cropImageView = remember { CropImageView(context) }
 
     val imagePicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let {
             pendingCropUri = it
@@ -96,7 +99,7 @@ fun ProfileScreen(
                         )
                     }
                     Text(
-                        text = "Mi Perfil",
+                        text = stringResource(R.string.my_profile),
                         color = TextWhite,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Black
@@ -136,7 +139,7 @@ fun ProfileScreen(
                                 pendingCropUri = null
                                 isEditing = false
                             }) {
-                                Text("Cancelar", color = TextWhite)
+                                Text(stringResource(R.string.cancel), color = TextWhite)
                             }
                             Spacer(Modifier.width(16.dp))
                             Button(
@@ -171,18 +174,18 @@ fun ProfileScreen(
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = AccentRed)
                             ) {
-                                Text("Recortar y Guardar", color = TextWhite, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.cut_and_save), color = TextWhite, fontWeight = FontWeight.Bold)
                             }
                         }
                     } else {
                         ProfileImage(
                             viewModel.photoUrl,
                             isEditing
-                        ) { imagePicker.launch(arrayOf("image/*")) }
+                        ) { imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
                         Spacer(Modifier.height(24.dp))
                         if (!isEditing) {
                             Text(
-                                viewModel.name.ifBlank { "Nombre de usuario" },
+                                viewModel.name.ifBlank { stringResource(R.string.default_username) },
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Black,
                                 color = TextWhite
@@ -193,7 +196,7 @@ fun ProfileScreen(
                                 Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(20.dp))
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "${viewModel.points} PUNTOS",
+                                    "${viewModel.points} ${stringResource(R.string.points).uppercase()}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Black,
                                     color = Color(0xFFFFD700)
@@ -202,7 +205,7 @@ fun ProfileScreen(
                             
                             Spacer(Modifier.height(16.dp))
                             Text(
-                                viewModel.bio.ifBlank { "Sin biografía" },
+                                viewModel.bio.ifBlank { stringResource(R.string.no_bio) },
                                 fontSize = 14.sp,
                                 color = TextWhite.copy(alpha = 0.6f)
                             )
@@ -214,16 +217,16 @@ fun ProfileScreen(
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Column(modifier = Modifier.padding(20.dp)) {
-                                    val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
-                                    val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
+                                    val weightLabel = if (viewModel.unitSystem == "Metric") stringResource(R.string.unit_kg) else stringResource(R.string.unit_lb)
+                                    val heightLabel = if (viewModel.unitSystem == "Metric") stringResource(R.string.unit_cm) else stringResource(R.string.unit_in)
 
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text("PESO", color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text(stringResource(R.string.weight), color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                         Text("${viewModel.weightKg} $weightLabel", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Black)
                                     }
                                     Spacer(Modifier.height(12.dp))
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text("ALTURA", color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text(stringResource(R.string.height), color = TextWhite.copy(alpha = 0.5f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                         Text("${viewModel.heightCm} $heightLabel", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Black)
                                     }
                                 }
@@ -241,7 +244,7 @@ fun ProfileScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("EDITAR PERFIL", color = TextWhite, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.edit_profile), color = TextWhite, fontWeight = FontWeight.Bold)
                             }
                         } else {
                             ProfileFields(viewModel)
@@ -249,7 +252,7 @@ fun ProfileScreen(
                             Row(horizontalArrangement = Arrangement.Center) {
                                 TextButton(onClick = { isEditing = false }) {
                                     Text(
-                                        "Cancelar",
+                                        stringResource(R.string.cancel),
                                         color = TextWhite
                                     )
                                 }
@@ -259,7 +262,7 @@ fun ProfileScreen(
                                         val weight = viewModel.editWeightKg.toDoubleOrNull() ?: 0.0
                                         val height = viewModel.editHeightCm.toIntOrNull() ?: 0
                                         if (weight <= 0.0 || height <= 0) {
-                                            android.widget.Toast.makeText(context, "Por favor ingresa valores válidos", android.widget.Toast.LENGTH_SHORT).show()
+                                            android.widget.Toast.makeText(context, context.getString(R.string.invalid_values_error), android.widget.Toast.LENGTH_SHORT).show()
                                         } else {
                                             viewModel.saveChanges(uid) { isEditing = false }
                                         }
@@ -271,13 +274,14 @@ fun ProfileScreen(
                                         modifier = Modifier.size(20.dp),
                                         color = TextWhite
                                     )
-                                    else Text("GUARDAR", color = TextWhite, fontWeight = FontWeight.Bold)
+                                    else Text(stringResource(R.string.save_upper), color = TextWhite, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
                     }
                 }
             }
+
             if (isUploading) {
                 Box(
                     modifier = Modifier
@@ -356,7 +360,7 @@ fun ProfileFields(viewModel: ProfileViewModel) {
     OutlinedTextField(
         value = viewModel.editName,
         onValueChange = { viewModel.editName = it },
-        label = { Text("Nombre") },
+        label = { Text(stringResource(R.string.name)) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = fieldColors
@@ -365,15 +369,15 @@ fun ProfileFields(viewModel: ProfileViewModel) {
     OutlinedTextField(
         value = viewModel.editBio,
         onValueChange = { viewModel.editBio = it },
-        label = { Text("Biografía") },
+        label = { Text(stringResource(R.string.bio)) },
         modifier = Modifier.fillMaxWidth(),
         minLines = 3,
         shape = RoundedCornerShape(12.dp),
         colors = fieldColors
     )
     Spacer(Modifier.height(12.dp))
-    val weightLabel = UnitConverter.getWeightLabel(viewModel.unitSystem)
-    val heightLabel = UnitConverter.getHeightLabel(viewModel.unitSystem)
+    val weightLabel = if (viewModel.unitSystem == "Metric") stringResource(R.string.unit_kg) else stringResource(R.string.unit_lb)
+    val heightLabel = if (viewModel.unitSystem == "Metric") stringResource(R.string.unit_cm) else stringResource(R.string.unit_in)
 
     OutlinedTextField(
         value = viewModel.editWeightKg,
@@ -382,7 +386,7 @@ fun ProfileFields(viewModel: ProfileViewModel) {
                 viewModel.editWeightKg = it.replace(",", ".")
             }
         },
-        label = { Text("Peso ($weightLabel)") },
+        label = { Text(stringResource(R.string.weight_with_unit, weightLabel)) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = fieldColors,
@@ -396,7 +400,7 @@ fun ProfileFields(viewModel: ProfileViewModel) {
                 viewModel.editHeightCm = it
             }
         },
-        label = { Text("Altura ($heightLabel)") },
+        label = { Text(stringResource(R.string.height_with_unit, heightLabel)) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = fieldColors,

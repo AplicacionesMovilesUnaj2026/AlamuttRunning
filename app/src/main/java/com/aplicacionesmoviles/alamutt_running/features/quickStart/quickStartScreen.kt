@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.aplicacionesmoviles.alamutt_running.features.settings.TrainingSettings
 import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
@@ -56,9 +57,6 @@ fun QuickStartScreen(
 
     val goalDistance by trackingViewModel.goalDistance.collectAsState()
     val unitSystem by trackingViewModel.unitSystem.collectAsState()
-    val countdownTime by trackingViewModel.countdownTime.collectAsState()
-    val voiceAlertsEnabled by trackingViewModel.voiceAlertsEnabled.collectAsState()
-    val voiceAlertFrequency by trackingViewModel.voiceAlertFrequency.collectAsState()
 
     var showGoalDialog by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
@@ -323,83 +321,7 @@ fun QuickStartScreen(
             shape = RoundedCornerShape(16.dp),
             title = { Text(stringResource(R.string.settings), fontWeight = FontWeight.Black) },
             text = {
-                Column {
-                    Text(stringResource(R.string.units_system), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = unitSystem == "Metric",
-                            onClick = { trackingViewModel.unitSystem.value = "Metric" },
-                            colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
-                        )
-                        Text(stringResource(R.string.metric), color = TextWhite)
-                        Spacer(Modifier.width(16.dp))
-                        RadioButton(
-                            selected = unitSystem == "Imperial",
-                            onClick = { trackingViewModel.unitSystem.value = "Imperial" },
-                            colors = RadioButtonDefaults.colors(selectedColor = AccentRed, unselectedColor = TextGray)
-                        )
-                        Text(stringResource(R.string.imperial), color = TextWhite)
-                    }
-
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = TextGray.copy(alpha = 0.3f))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.voice_alerts), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
-                        Switch(
-                            checked = voiceAlertsEnabled,
-                            onCheckedChange = { trackingViewModel.voiceAlertsEnabled.value = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = AccentRed, checkedTrackColor = AccentRed.copy(alpha = 0.5f))
-                        )
-                    }
-
-                    if (voiceAlertsEnabled) {
-                        Spacer(Modifier.height(8.dp))
-                        val freqLabel = if (unitSystem == "Metric") "$voiceAlertFrequency km" else "$voiceAlertFrequency mi"
-                        Text(
-                            stringResource(R.string.frequency, freqLabel),
-                            color = TextWhite,
-                            fontSize = 12.sp
-                        )
-                        Slider(
-                            value = voiceAlertFrequency.toFloat(),
-                            onValueChange = { trackingViewModel.voiceAlertFrequency.value = it.toDouble() },
-                            valueRange = 0.5f..5.0f,
-                            steps = 8, // 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0
-                            colors = SliderDefaults.colors(thumbColor = AccentRed, activeTrackColor = AccentRed)
-                        )
-                    }
-
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = TextGray.copy(alpha = 0.3f))
-
-                    Text(stringResource(R.string.countdown), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = AccentRed)
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                    ) {
-                        listOf(0, 3, 5, 10).forEach { time ->
-                            FilterChip(
-                                selected = countdownTime == time,
-                                onClick = { trackingViewModel.countdownTime.value = time },
-                                label = { Text(stringResource(R.string.seconds_suffix, time), color = if (countdownTime == time) DarkBackground else TextWhite) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = AccentRed,
-                                    containerColor = DarkBackground,
-                                    labelColor = TextWhite,
-                                    selectedLabelColor = DarkBackground
-                                ),
-                                border = FilterChipDefaults.filterChipBorder(
-                                    borderColor = if (countdownTime == time) AccentRed else TextGray,
-                                    enabled = true,
-                                    selected = countdownTime == time
-                                )
-                            )
-                        }
-                    }
-                }
+                TrainingSettings(trackingViewModel = trackingViewModel)
             },
             confirmButton = {
                 Button(

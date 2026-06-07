@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.runHistory
+package com.aplicacionesmoviles.alamutt_running.features.runHistoryFeature
 
 import android.app.Application
 import android.content.Context

@@ -71,4 +71,70 @@
     <!-- History -->
     <string name="no_runs">No runs recorded</string>
     <string name="date_unavailable">Date unavailable</string>
+
+    <!-- Stats -->
+    <string name="total_distance">Total distance</string>
+    <string name="runs">Runs</string>
+    <string name="total_calories">Total calories</string>
+    <string name="total_steps">Total steps</string>
+    <string name="kcal">kcal</string>
+
+    <!-- Challenges -->
+    <string name="challenges_title">Challenges</string>
+    <string name="points_lower">points</string>
+    <string name="total_points">Total points</string>
+    <string name="active_challenges">Active challenges</string>
+    <string name="new_challenges">New challenges</string>
+    <string name="your_medals">Your medals</string>
+    <string name="runner_badge">%1$s Runner</string>
+    <string name="reward_points">Reward: %1$d points</string>
+    <string name="challenge_progress">%1$s of %2$s</string>
+    <string name="challenge_completed_date">Completed in Week %1$s, %2$s</string>
+    <string name="challenge_card_title">Challenge %1$s</string>
+    <string name="challenge_btn">Challenge</string>
+    <string name="abandon">Abandon</string>
+
+    <string name="join_club">Join the club</string>
+    <string name="login">Login</string>
+    <string name="or_divider"> or </string>
+    <string name="continue_google">Continue with Google</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="enter_club">Enter club</string>
+    <string name="register_me">Register me</string>
+    <string name="quote_1">Pain is temporary, pride is forever.</string>
+    <string name="quote_2">Your only rival is the person you were yesterday.</string>
+    <string name="quote_3">Consistency beats genetics.</string>
+    <string name="quote_4">Your legs are not tired, your mind is lying to you.</string>
+    <string name="quote_5">Run like you\'re being looked for to pay rent.</string>
+    <string name="quote_6">No excuses. No limits.</string>
+    <!-- Profile -->
+    <string name="my_profile">My Profile</string>
+    <string name="cut_and_save">Crop and Save</string>
+    <string name="default_username">Username</string>
+    <string name="no_bio">No bio</string>
+    <string name="weight">WEIGHT</string>
+    <string name="height">HEIGHT</string>
+    <string name="edit_profile">EDIT PROFILE</string>
+    <string name="invalid_values_error">Please enter valid values</string>
+    <string name="save_upper">SAVE</string>
+    <string name="name">Name</string>
+    <string name="bio">Bio</string>
+    <string name="weight_with_unit">Weight (%1$s)</string>
+    <string name="height_with_unit">Height (%1$s)</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_km">km</string>
+    <string name="unit_mi">mi</string>
+    <string name="unit_pace_metric">min/km</string>
+    <string name="unit_pace_imperial">min/mi</string>
+    <!-- Runner Profile -->
+    <string name="runner_profile_title">Runner Profile</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="no_name">No Name</string>
+    <string name="total_stats">Total Statistics</string>
+    <string name="best_pace">Best pace</string>
 </resources>

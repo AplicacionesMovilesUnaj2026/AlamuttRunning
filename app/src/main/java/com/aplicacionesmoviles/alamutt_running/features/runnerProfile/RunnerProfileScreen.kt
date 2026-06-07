@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.ui.theme.*
 
@@ -49,10 +51,10 @@ fun RunnerProfileScreen(
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Perfil del Corredor", fontWeight = FontWeight.Black, fontSize = 20.sp, color = TextWhite) },
+                    title = { Text(stringResource(R.string.runner_profile_title), fontWeight = FontWeight.Black, fontSize = 20.sp, color = TextWhite) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = TextWhite)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -71,7 +73,7 @@ fun RunnerProfileScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = AccentRed)
                 } else if (viewModel.error != null) {
                     Text(
-                        text = viewModel.error ?: "Error desconocido",
+                        text = viewModel.error ?: stringResource(R.string.unknown_error),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center).padding(16.dp)
                     )
@@ -92,7 +94,7 @@ fun RunnerProfileScreen(
                             if (user.photoUrl.isNotEmpty()) {
                                 AsyncImage(
                                     model = user.photoUrl,
-                                    contentDescription = "Foto de perfil",
+                                    contentDescription = stringResource(R.string.my_profile),
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
                                 )
@@ -109,7 +111,7 @@ fun RunnerProfileScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = user.name.ifEmpty { "Sin Nombre" },
+                            text = user.name.ifEmpty { stringResource(R.string.no_name) },
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Black,
                             color = TextWhite
@@ -134,7 +136,7 @@ fun RunnerProfileScreen(
                             Icon(Icons.Default.BarChart, contentDescription = null, tint = AccentRed, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Estadísticas Totales",
+                                text = stringResource(R.string.total_stats).uppercase(),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Black,
                                 color = TextWhite,
@@ -153,7 +155,7 @@ fun RunnerProfileScreen(
                             val itemModifier = Modifier.weight(1f).height(130.dp)
                             
                             StatCard(
-                                label = "Distancia",
+                                label = stringResource(R.string.distance),
                                 value = UnitConverter.formatDistanceKm(user.totalDistance, unitSystem).split(" ")[0],
                                 unit = UnitConverter.getUnitLabel(unitSystem),
                                 icon = Icons.AutoMirrored.Filled.DirectionsRun,
@@ -161,26 +163,26 @@ fun RunnerProfileScreen(
                                 inlineUnit = true
                             )
                             StatCard(
-                                label = "Carreras",
+                                label = stringResource(R.string.runs),
                                 value = user.totalRuns.toString(),
                                 icon = Icons.Default.History,
                                 modifier = itemModifier
                             )
                             StatCard(
-                                label = "Calorías",
+                                label = stringResource(R.string.calories),
                                 value = user.totalCalories.toString(),
-                                unit = "kcal",
+                                unit = stringResource(R.string.kcal),
                                 icon = Icons.Default.LocalFireDepartment,
                                 modifier = itemModifier
                             )
                             StatCard(
-                                label = "Pasos",
+                                label = stringResource(R.string.steps),
                                 value = user.totalSteps.toString(),
                                 icon = Icons.AutoMirrored.Filled.ShowChart,
                                 modifier = itemModifier
                             )
                             StatCard(
-                                label = "Mejor ritmo",
+                                label = stringResource(R.string.best_pace),
                                 value = if (user.bestPace > 0) UnitConverter.formatPace(user.bestPace, unitSystem) else "N/A",
                                 unit = if (user.bestPace > 0) UnitConverter.getPaceUnitLabel(unitSystem) else "",
                                 icon = Icons.Default.Timer,
@@ -190,6 +192,7 @@ fun RunnerProfileScreen(
                     }
                 }
             }
+
         }
     }
 }

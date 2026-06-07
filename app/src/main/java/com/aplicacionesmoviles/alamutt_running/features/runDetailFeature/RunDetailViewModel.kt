@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.runDetail
+package com.aplicacionesmoviles.alamutt_running.features.runDetailFeature
 
 import android.app.Application
 import android.content.Context

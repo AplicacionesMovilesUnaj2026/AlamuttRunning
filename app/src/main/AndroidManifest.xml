@@ -33,7 +33,7 @@
             android:exported="false">
             <meta-data
                 android:name="autoStoreLocales"
-                android:value="true" />
+                android:value="false" />
         </service>
 
         <service

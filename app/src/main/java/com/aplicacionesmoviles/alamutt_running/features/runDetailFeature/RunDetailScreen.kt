@@ -1,4 +1,4 @@
-package com.aplicacionesmoviles.alamutt_running.features.runDetail
+package com.aplicacionesmoviles.alamutt_running.features.runDetailFeature
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
