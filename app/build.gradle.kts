@@ -16,8 +16,8 @@ android {
         applicationId = "com.aplicacionesmoviles.alamutt_running"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.5"
+        versionCode = 6
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
