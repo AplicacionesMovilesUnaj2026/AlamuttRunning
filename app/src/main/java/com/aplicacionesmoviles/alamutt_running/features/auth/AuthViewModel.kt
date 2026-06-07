@@ -9,8 +9,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.aplicacionesmoviles.alamutt_running.model.User
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.domain.model.User
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
@@ -19,6 +19,30 @@ class AuthViewModel : ViewModel() {
 
     var uiState by mutableStateOf<AuthUiState>(AuthUiState.Idle)
         private set
+
+    var userName by mutableStateOf<String?>(null)
+    var userPhotoUrl by mutableStateOf<String?>(null)
+
+    fun loadUserProfile() {
+        val currentUid = auth.currentUser?.uid ?: return
+        if (userName != null) return // Ya cargado
+
+        viewModelScope.launch {
+            try {
+                val data = userRepository.getUserData(currentUid)
+                data?.let {
+                    userName = it["name"] as? String ?: auth.currentUser?.displayName
+                    userPhotoUrl = it["photoUrl"] as? String ?: auth.currentUser?.photoUrl?.toString()
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun clearCache() {
+        userName = null
+        userPhotoUrl = null
+    }
 
     fun loginWithEmail(email: String, pass: String, onSuccess: () -> Unit) {
         if (email.isBlank() || pass.isBlank()) {

@@ -35,19 +35,22 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
-import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.core.data.cloudinary.CloudinaryRepository
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import com.canhub.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
+import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
+
 @Composable
 fun OnboardingScreen(
     uid: String,
-    navController: NavController
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -452,6 +455,8 @@ fun OnboardingScreen(
                                         onResult = { success ->
                                             isSavingProfile = false
                                             if (success) {
+                                                authViewModel.userName = name
+                                                authViewModel.userPhotoUrl = photoUrl
                                                 navController.navigate("quick_start") {
                                                     popUpTo(navController.graph.id) {
                                                         inclusive = true

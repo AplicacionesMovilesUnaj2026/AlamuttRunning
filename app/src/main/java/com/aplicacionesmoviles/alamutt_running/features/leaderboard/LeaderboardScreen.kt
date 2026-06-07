@@ -25,8 +25,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import androidx.compose.ui.res.stringResource
 import com.aplicacionesmoviles.alamutt_running.R
-import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 data class LeaderboardUser(
@@ -176,7 +176,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
         colors = CardDefaults.cardColors(
             containerColor = DarkerHeader
         ),
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

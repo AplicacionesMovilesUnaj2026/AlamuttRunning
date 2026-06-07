@@ -9,8 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.aplicacionesmoviles.alamutt_running.repository.RunRepository
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.RunRepository
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 

@@ -27,9 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.ui.res.stringResource
 import com.aplicacionesmoviles.alamutt_running.R
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
-import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
