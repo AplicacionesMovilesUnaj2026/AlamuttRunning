@@ -25,8 +25,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import androidx.compose.ui.res.stringResource
 import com.aplicacionesmoviles.alamutt_running.R
-import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 data class LeaderboardUser(
@@ -147,9 +147,9 @@ fun LeaderboardScreen(
 @Composable
 fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter, unitSystem: String, onUserClick: () -> Unit) {
     val rankColor = when (index) {
-        0 -> Color(0xFFFFD700) // Gold
-        1 -> Color(0xFFC0C0C0) // Silver
-        2 -> Color(0xFFCD7F32) // Bronze
+        0 -> Color(0xFFFFD700)
+        1 -> Color(0xFFC0C0C0)
+        2 -> Color(0xFFCD7F32)
         else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
     }
 
@@ -163,7 +163,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
     
     val unitLabel = when (filter) {
         LeaderboardFilter.DISTANCE -> UnitConverter.getUnitLabel(unitSystem)
-        LeaderboardFilter.CALORIES -> "kcal"
+        LeaderboardFilter.CALORIES -> stringResource(R.string.kcal)
         LeaderboardFilter.STEPS -> stringResource(R.string.steps_unit)
         LeaderboardFilter.POINTS -> stringResource(R.string.pts)
         LeaderboardFilter.PACE -> UnitConverter.getPaceUnitLabel(unitSystem)
@@ -176,7 +176,7 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
         colors = CardDefaults.cardColors(
             containerColor = DarkerHeader
         ),
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -245,14 +245,16 @@ fun LeaderboardItem(index: Int, user: LeaderboardUser, filter: LeaderboardFilter
                 Text(
                     text = displayValue,
                     fontWeight = FontWeight.Black,
-                    fontSize = 17.sp,
-                    color = if (index < 3) rankColor else AccentRed
+                    fontSize = 18.sp,
+                    color = if (index < 3) rankColor else TextWhite,
+                    letterSpacing = (-0.5).sp
                 )
                 Text(
-                    text = unitLabel,
+                    text = unitLabel.uppercase(),
                     fontSize = 10.sp,
                     color = TextGray,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 0.5.sp
                 )
             }
         }

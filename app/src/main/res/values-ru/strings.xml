@@ -75,6 +75,8 @@
     <string name="goal_reached">Цель достигнута! Так держать.</string>
     <string name="challenge_completed">Испытание завершено: %1$s! +%2$d очков</string>
     <string name="run_status">Статус</string>
+    <string name="run_in_progress">Забег в процессе</string>
+    <string name="tracking_channel_name">Отслеживание</string>
     <string name="no_pace">--:--</string>
     <string name="go">ПОЕХАЛИ!</string>
     <!-- Leaderboard -->

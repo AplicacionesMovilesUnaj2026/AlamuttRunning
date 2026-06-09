@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
@@ -56,7 +56,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         val newHeight = editHeightCm.toIntOrNull() ?: 0
 
         if (newWeight <= 0.0 || newHeight <= 0) {
-            // Podríamos añadir un estado de error aquí si quisiéramos mostrar un mensaje
             return
         }
 

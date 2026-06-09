@@ -75,6 +75,8 @@
     <string name="goal_reached">¡Objetivo alcanzado! Sigue así.</string>
     <string name="challenge_completed">¡Desafío completado: %1$s! +%2$d pts</string>
     <string name="run_status">Estado</string>
+    <string name="run_in_progress">Carrera en curso</string>
+    <string name="tracking_channel_name">Seguimiento</string>
     <string name="no_pace">--:--</string>
     <string name="go">¡YA!</string>
     <!-- Leaderboard -->
@@ -137,4 +139,5 @@
     <!-- Run History -->
     <string name="no_runs">No se encontraron carreras</string>
     <string name="date_unavailable">Fecha no disponible</string>
+    <string name="run_screen">correr</string>
 </resources>
