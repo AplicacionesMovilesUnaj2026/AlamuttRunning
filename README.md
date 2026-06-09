@@ -46,18 +46,4 @@ La aplicación está orientada a corredores que desean mantener un historial det
 * **Descripción:** Avisos e interacciones con el usuario en contextos clave.
 * **Implementación:** Emisión de notificaciones (locales o push mediante FCM) al cumplir objetivos de distancia, recordar entrenamientos o confirmar la sincronización exitosa de los datos.
 
----
-
-## Requerimientos Opcionales Incorporados
-* **Caché Offline con Room:** Soporte completo sin conexión. Los entrenamientos se guardan localmente en la base de datos Room y se sincronizan automáticamente al recuperar la conectividad.
-* **Notificaciones Push (FCM):** Integración con Firebase Cloud Messaging para la recepción de alertas remotas.
-* **Retrofit + API Externa:** Conexión con una API de clima (ej. OpenWeather) para mostrar las condiciones meteorológicas actuales antes de iniciar la carrera.
-
----
-
-## Arquitectura y Consideraciones Técnicas
-* **Interfaz de Usuario:** Implementada de forma consistente utilizando Jetpack Compose.
-* **Seguridad:** Configuración estricta de reglas en Firestore para garantizar que los usuarios solo puedan leer y escribir sus propios documentos.
-
----
 
