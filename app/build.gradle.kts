@@ -16,8 +16,8 @@ android {
         applicationId = "com.aplicacionesmoviles.alamutt_running"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,20 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            val baseName = "Alamutt_Running_Club"
+            val version = android.defaultConfig.versionName
+            val buildType = variant.name
+            output.versionName.set(version)
+
+            val mainOutput = output as? com.android.build.api.variant.impl.VariantOutputImpl
+            mainOutput?.outputFileName?.set("${baseName}_v${version}_${buildType}.apk")
+        }
     }
 }
 
@@ -71,4 +85,9 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.osmbonuspack)
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.android.image.cropper)
+    implementation(libs.play.services.auth)
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }

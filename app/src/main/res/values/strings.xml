@@ -1,4 +1,140 @@
 <resources>
-    <string name="app_name">Alamutt-Running</string>
-    <string name="title_activity_asfa">asfa</string>
+    <string name="app_name">Alamutt Running Club</string>
+
+    <!-- Navigation & Common -->
+    <string name="start">COMENZAR</string>
+    <string name="statistics">Estadísticas</string>
+    <string name="leaderboard">Tabla de líderes</string>
+    <string name="settings">Configuración</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="run">Carrera</string>
+    <string name="activity">Actividad</string>
+    <string name="challenges">Desafíos</string>
+    <string name="inbox">Bandeja de entrada</string>
+    <string name="hello_user">Hola, %1$s</string>
+    <string name="default_user">Usuario</string>
+    <string name="logout_success">Sesión cerrada exitosamente</string>
+    <string name="menu">Menú</string>
+    <string name="back">Volver atrás</string>
+    <string name="cancel">Cancelar</string>
+    <string name="accept">Aceptar</string>
+    <string name="close">Cerrar</string>
+
+    <!-- Auth Screen -->
+    <string name="join_club">Unirse al club</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="or_divider"> o </string>
+    <string name="continue_google">Continuar con Google</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="enter_club">Entrar al club</string>
+    <string name="register_me">Registrarme</string>
+    <string name="quote_1">El dolor es temporal, el orgullo es para siempre.</string>
+    <string name="quote_2">Tu único rival es la persona que fuiste ayer.</string>
+    <string name="quote_3">La constancia vence a la genética.</string>
+    <string name="quote_4">Tus piernas no están cansadas, tu mente te miente.</string>
+    <string name="quote_5">Corre como si te buscaran para pagar la renta.</string>
+    <string name="quote_6">Sin excusas. Sin límites.</string>
+
+    <!-- Quick Start -->
+    <string name="searching_gps">Buscando señal GPS&#8230;</string>
+    <string name="gps_hint">Asegúrate de estar en un lugar despejado</string>
+    <string name="night_run_title">¿Corres en la oscuridad?</string>
+    <string name="night_run_desc">Lleva una luz por motivos de seguridad.</string>
+    <string name="set_goal">Establece un objetivo</string>
+    <string name="goal_dialog_title">¿Cuál es tu objetivo?</string>
+    <string name="goal_dialog_desc">Ingresa la distancia en %1$s que deseas recorrer hoy.</string>
+    <string name="goal_prefix">Objetivo: %1$s</string>
+    <string name="distance_label">Distancia (%1$s)</string>
+    <string name="kilometers">kilómetros</string>
+    <string name="miles">millas</string>
+    <string name="remove">Quitar</string>
+    <string name="seconds_suffix">%1$ss</string>
+
+    <!-- Settings -->
+    <string name="language">Idioma</string>
+    <string name="general">General</string>
+    <string name="training">Entrenamiento</string>
+    <string name="units_system">Sistema de unidades</string>
+    <string name="metric">Métrico (km)</string>
+    <string name="imperial">Imperial (mi)</string>
+    <string name="voice_alerts">Alertas de voz</string>
+    <string name="frequency">Frecuencia: cada %1$s</string>
+    <string name="countdown">Cuenta regresiva</string>
+
+    <!-- Tracking -->
+    <string name="finish">Finalizar</string>
+    <string name="pause">Pausar</string>
+    <string name="resume">Reanudar</string>
+    <string name="distance">Distancia</string>
+    <string name="time">Tiempo</string>
+    <string name="pace">Ritmo</string>
+    <string name="calories">Calorías</string>
+    <string name="steps">Pasos</string>
+    <string name="goal_reached">¡Objetivo alcanzado! Sigue así.</string>
+    <string name="challenge_completed">¡Desafío completado: %1$s! +%2$d pts</string>
+    <string name="run_status">Estado</string>
+    <string name="no_pace">--:--</string>
+    <string name="go">¡YA!</string>
+    <!-- Leaderboard -->
+    <string name="no_data">No hay datos disponibles</string>
+    <string name="points">Puntos</string>
+    <string name="pts">pts</string>
+    <string name="steps_unit">pasos</string>
+
+    <!-- Run Detail -->
+    <string name="run_detail">Detalle de Carrera</string>
+
+    <!-- Stats -->
+    <string name="total_distance">Distancia total</string>
+    <string name="runs">Carreras</string>
+    <string name="total_calories">Calorías totales</string>
+    <string name="total_steps">Pasos totales</string>
+    <string name="kcal">kcal</string>
+    <!-- Challenges -->
+    <string name="challenges_title">Desafíos</string>
+    <string name="points_lower">puntos</string>
+    <string name="total_points">Puntos totales</string>
+    <string name="active_challenges">Desafíos en curso</string>
+    <string name="new_challenges">Nuevos desafíos</string>
+    <string name="your_medals">Tus medallas</string>
+    <string name="runner_badge">%1$s Runner</string>
+    <string name="reward_points">Recompensa: %1$d puntos</string>
+    <string name="challenge_progress">%1$s de %2$s</string>
+    <string name="challenge_completed_date">Completado en la Semana %1$s, %2$s</string>
+    <string name="challenge_card_title">Reto %1$s</string>
+    <string name="challenge_btn">Retar</string>
+    <string name="abandon">Abandonar</string>
+    <!-- Profile -->
+    <string name="my_profile">Mi Perfil</string>
+    <string name="cut_and_save">Recortar y Guardar</string>
+    <string name="default_username">Nombre de usuario</string>
+    <string name="no_bio">Sin biografía</string>
+    <string name="weight">PESO</string>
+    <string name="height">ALTURA</string>
+    <string name="edit_profile">EDITAR PERFIL</string>
+    <string name="invalid_values_error">Por favor ingresa valores válidos</string>
+    <string name="save_upper">GUARDAR</string>
+    <string name="name">Nombre</string>
+    <string name="bio">Biografía</string>
+    <string name="weight_with_unit">Peso (%1$s)</string>
+    <string name="height_with_unit">Altura (%1$s)</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_km">km</string>
+    <string name="unit_mi">mi</string>
+    <string name="unit_pace_metric">min/km</string>
+    <string name="unit_pace_imperial">min/mi</string>
+    <!-- Runner Profile -->
+    <string name="runner_profile_title">Perfil del Corredor</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="no_name">Sin Nombre</string>
+    <string name="total_stats">Estadísticas Totales</string>
+    <string name="best_pace">Mejor ritmo</string>
+    <!-- Run History -->
+    <string name="no_runs">No se encontraron carreras</string>
+    <string name="date_unavailable">Fecha no disponible</string>
 </resources>
