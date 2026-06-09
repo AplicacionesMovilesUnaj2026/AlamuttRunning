@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,21 +31,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.aplicacionesmoviles.alamutt_running.features.runDetailFeature.RunDetailScreen
-import com.aplicacionesmoviles.alamutt_running.features.runHistoryFeature.HistoryScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.RunDetailScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.QuickStartScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.TrackingScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.HistoryScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.CountdownScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.viewmodel.TrackingViewModel
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
 import com.aplicacionesmoviles.alamutt_running.features.challenges.ChallengesScreen
 import com.aplicacionesmoviles.alamutt_running.features.leaderboard.LeaderboardScreen
 import com.aplicacionesmoviles.alamutt_running.features.onboarding.OnboardingScreen
 import com.aplicacionesmoviles.alamutt_running.features.profile.ProfileScreen
-import com.aplicacionesmoviles.alamutt_running.features.runnerProfile.RunnerProfileScreen
-import com.aplicacionesmoviles.alamutt_running.features.quickStart.QuickStartScreen
+import com.aplicacionesmoviles.alamutt_running.features.profile.RunnerProfileScreen
 import com.aplicacionesmoviles.alamutt_running.features.stats.StatsScreen
-import com.aplicacionesmoviles.alamutt_running.features.tracking.CountdownScreen
-import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingScreen
-import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewModel
-import com.aplicacionesmoviles.alamutt_running.ui.theme.AlamuttRunningTheme
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.AlamuttRunningTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -115,14 +118,16 @@ class MainActivity : AppCompatActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     navController = rememberNavController()
                     val trackingViewModel: TrackingViewModel = viewModel()
+                    val authViewModel: AuthViewModel = viewModel()
+                    sharedAuthViewModel = authViewModel
 
                     NavHost(
                         navController = navController,
                         startDestination = "splash",
-                        enterTransition = { EnterTransition.None },
-                        exitTransition = { ExitTransition.None },
-                        popEnterTransition = { EnterTransition.None },
-                        popExitTransition = { ExitTransition.None }
+                        enterTransition = { fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.95f, animationSpec = tween(300)) },
+                        exitTransition = { fadeOut(animationSpec = tween(300)) },
+                        popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+                        popExitTransition = { fadeOut(animationSpec = tween(300)) + scaleOut(targetScale = 0.95f, animationSpec = tween(300)) }
                     ) {
                         composable("splash") {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -130,6 +135,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             LaunchedEffect(Unit) {
                                 if (FirebaseAuth.getInstance().currentUser != null) {
+                                    authViewModel.loadUserProfile()
                                     navController.navigate("quick_start") { popUpTo("splash") { inclusive = true } }
                                 } else {
                                     navController.navigate("auth") { popUpTo("splash") { inclusive = true } }
@@ -137,11 +143,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                         composable("auth") {
-                            val authViewModel: AuthViewModel = viewModel()
-                            sharedAuthViewModel = authViewModel
                             AuthScreen(
                                 viewModel = authViewModel,
                                 onLoginSuccess = {
+                                    authViewModel.loadUserProfile()
                                     authViewModel.checkUserOnboardingStatus { shouldGoToOnboarding ->
                                         if (shouldGoToOnboarding) {
                                             navController.navigate("onboarding") { popUpTo("auth") { inclusive = true } }
@@ -155,14 +160,24 @@ class MainActivity : AppCompatActivity() {
                         }
                         composable("onboarding") {
                             val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                            OnboardingScreen(uid = uid, navController = navController)
+                            OnboardingScreen(
+                                uid = uid, 
+                                navController = navController,
+                                authViewModel = authViewModel
+                            )
                         }
                         composable("quick_start") {
                             QuickStartScreen(
                                 navController = navController,
                                 trackingViewModel = trackingViewModel,
+                                authViewModel = authViewModel,
                                 onStartClick = { navController.navigate("countdown") },
-                                onLogout = { googleSignInClient.signOut().addOnCompleteListener { navController.navigate("auth") { popUpTo("quick_start") { inclusive = true } } } },
+                                onLogout = { 
+                                    authViewModel.clearCache()
+                                    googleSignInClient.signOut().addOnCompleteListener { 
+                                        navController.navigate("auth") { popUpTo("quick_start") { inclusive = true } } 
+                                    } 
+                                },
                                 onNavigateToHistory = { navController.navigate("run_history") }
                             )
                         }
@@ -210,7 +225,11 @@ class MainActivity : AppCompatActivity() {
                         composable("stats") { StatsScreen(navController) }
                         composable("profile") {
                             val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                            ProfileScreen(uid = uid, navController = navController)
+                            ProfileScreen(
+                                uid = uid, 
+                                navController = navController,
+                                authViewModel = authViewModel
+                            )
                         }
                         composable("leaderboard") { LeaderboardScreen(navController = navController) }
                         composable("challenges") {

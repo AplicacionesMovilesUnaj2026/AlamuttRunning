@@ -75,6 +75,8 @@
     <string name="goal_reached">Objetivo alcançado! Continue assim.</string>
     <string name="challenge_completed">Desafio concluído: %1$s! +%2$d pts</string>
     <string name="run_status">Estado</string>
+    <string name="run_in_progress">Corrida em curso</string>
+    <string name="tracking_channel_name">Rastreamento</string>
     <string name="no_pace">--:--</string>
     <string name="go">JÁ!</string>
     <!-- Leaderboard -->

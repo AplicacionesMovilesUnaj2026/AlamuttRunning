@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aplicacionesmoviles.alamutt_running.R
-import com.aplicacionesmoviles.alamutt_running.features.tracking.TrackingViewModel
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.features.run.viewmodel.TrackingViewModel
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import java.util.Locale
 
 @Composable

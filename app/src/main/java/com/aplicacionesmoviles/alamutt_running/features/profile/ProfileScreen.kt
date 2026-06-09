@@ -38,10 +38,11 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import androidx.compose.ui.res.stringResource
 import com.aplicacionesmoviles.alamutt_running.R
-import com.aplicacionesmoviles.alamutt_running.data.cloudinary.CloudinaryRepository
-import com.aplicacionesmoviles.alamutt_running.repository.UserRepository
-import com.aplicacionesmoviles.alamutt_running.util.UnitConverter
-import com.aplicacionesmoviles.alamutt_running.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.core.data.cloudinary.CloudinaryRepository
+import com.aplicacionesmoviles.alamutt_running.core.data.repository.UserRepository
+import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
+import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
+import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
 import com.canhub.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,6 +53,7 @@ import java.io.FileOutputStream
 fun ProfileScreen(
     uid: String,
     navController: NavController,
+    authViewModel: AuthViewModel,
     viewModel: ProfileViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -165,6 +167,7 @@ fun ProfileScreen(
                                                 url?.let {
                                                     userRepository.updatePhoto(uid, it)
                                                     viewModel.photoUrl = it
+                                                    authViewModel.userPhotoUrl = it
                                                 }
                                                 pendingCropUri = null
                                                 isUploading = false
@@ -264,7 +267,10 @@ fun ProfileScreen(
                                         if (weight <= 0.0 || height <= 0) {
                                             android.widget.Toast.makeText(context, context.getString(R.string.invalid_values_error), android.widget.Toast.LENGTH_SHORT).show()
                                         } else {
-                                            viewModel.saveChanges(uid) { isEditing = false }
+                                            viewModel.saveChanges(uid) { 
+                                                authViewModel.userName = viewModel.name
+                                                isEditing = false 
+                                            }
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = AccentRed),
