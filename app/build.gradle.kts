@@ -16,8 +16,8 @@ android {
         applicationId = "com.aplicacionesmoviles.alamutt_running"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "2.0"
+        versionCode = 10
+        versionName = "3.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -90,4 +90,5 @@ dependencies {
     implementation(libs.android.image.cropper)
     implementation(libs.play.services.auth)
     implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

@@ -10,9 +10,18 @@ class RunRepository {
 
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Saves a run using a deterministic document ID to ensure idempotency.
+     * If the device is offline, the Firestore SDK queues the write locally and
+     * syncs it automatically on reconnect — no duplicate document is created.
+     * NFR-RP-3: same userId + date always produces the same document path.
+     *
+     * Throws any exception to the caller; do NOT swallow errors here.
+     */
     suspend fun saveRun(run: Run): String {
-        val documentRef = db.collection("runs").add(run).await()
-        return documentRef.id
+        val deterministicId = "${run.userId}_${run.date}"
+        db.collection("runs").document(deterministicId).set(run).await()
+        return deterministicId
     }
 
     suspend fun getAllUserRuns(userId: String): List<Run> {

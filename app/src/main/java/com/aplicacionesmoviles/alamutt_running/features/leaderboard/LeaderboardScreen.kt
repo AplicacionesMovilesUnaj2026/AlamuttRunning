@@ -57,6 +57,7 @@ fun LeaderboardScreen(
     val selectedFilter = viewModel.selectedFilter
     val users = viewModel.users
     val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
 
     LaunchedEffect(Unit) {
         viewModel.loadLeaderboard()
@@ -123,6 +124,10 @@ fun LeaderboardScreen(
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = AccentRed)
+            }
+        } else if (errorMessage != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Error: $errorMessage", color = Color.Red.copy(alpha = 0.8f), modifier = Modifier.padding(16.dp))
             }
         } else if (users.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

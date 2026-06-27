@@ -25,14 +25,14 @@ class AuthViewModel : ViewModel() {
 
     fun loadUserProfile() {
         val currentUid = auth.currentUser?.uid ?: return
-        if (userName != null) return // Ya cargado
 
         viewModelScope.launch {
             try {
                 val data = userRepository.getUserData(currentUid)
                 data?.let {
                     userName = it["name"] as? String ?: auth.currentUser?.displayName
-                    userPhotoUrl = it["photoUrl"] as? String ?: auth.currentUser?.photoUrl?.toString()
+                    userPhotoUrl = (it["photoUrl"] as? String)?.takeIf { url -> url.isNotBlank() }
+                        ?: auth.currentUser?.photoUrl?.toString()
                 }
             } catch (e: Exception) {
             }
