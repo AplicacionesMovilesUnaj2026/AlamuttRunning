@@ -19,6 +19,8 @@ class LeaderboardViewModel(application: Application) : AndroidViewModel(applicat
 
     var selectedFilter by mutableStateOf(LeaderboardFilter.DISTANCE)
     var users by mutableStateOf<List<LeaderboardUser>>(emptyList())
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
     var isLoading by mutableStateOf(true)
         private set
 
@@ -30,11 +32,12 @@ class LeaderboardViewModel(application: Application) : AndroidViewModel(applicat
     fun loadLeaderboard() {
         viewModelScope.launch {
             isLoading = true
+            errorMessage = null
             val direction = if (selectedFilter == LeaderboardFilter.PACE) Query.Direction.ASCENDING else Query.Direction.DESCENDING
-            
+
             val query = FirebaseFirestore.getInstance()
                 .collection("users")
-                .whereGreaterThan(selectedFilter.field, if (selectedFilter == LeaderboardFilter.PACE) 0.0 else 0)
+                .whereGreaterThan(selectedFilter.field, 0.0)
                 .orderBy(selectedFilter.field, direction)
                 .limit(50)
 
@@ -46,14 +49,15 @@ class LeaderboardViewModel(application: Application) : AndroidViewModel(applicat
                         name = it.getString("name") ?: "",
                         photoUrl = it.getString("photoUrl") ?: "",
                         totalDistance = it.getDouble("totalDistance") ?: 0.0,
-                        totalCalories = it.getLong("totalCalories")?.toInt() ?: 0,
-                        totalSteps = it.getLong("totalSteps")?.toInt() ?: 0,
-                        points = it.getLong("points")?.toInt() ?: 0,
+                        totalCalories = (it.get("totalCalories") as? Number)?.toInt() ?: 0,
+                        totalSteps = (it.get("totalSteps") as? Number)?.toInt() ?: 0,
+                        points = (it.get("points") as? Number)?.toInt() ?: 0,
                         bestPace = it.getDouble("bestPace") ?: 0.0
                     )
                 }
             } catch (e: Exception) {
                 users = emptyList()
+                errorMessage = e.message ?: e.javaClass.simpleName
             } finally {
                 isLoading = false
             }

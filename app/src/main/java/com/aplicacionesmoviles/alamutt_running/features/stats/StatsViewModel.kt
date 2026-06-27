@@ -56,41 +56,50 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun loadStats() {
         viewModelScope.launch {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-            if (userId != null) {
-                val userData = userRepository.getUserData(userId)
-                if (userData != null) {
-                    totalRuns = (userData["totalRuns"] as? Long)?.toInt() ?: 0
-                    totalDistanceKm = (userData["totalDistance"] as? Number)?.toDouble() ?: 0.0
-                    totalCalories = (userData["totalCalories"] as? Long)?.toInt() ?: 0
-                    totalSteps = (userData["totalSteps"] as? Long)?.toInt() ?: 0
-                    totalPoints = (userData["points"] as? Long)?.toInt() ?: 0
+            try {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                if (userId != null) {
+                    val userData = userRepository.getUserData(userId)
+                    if (userData != null) {
+                        totalRuns = (userData["totalRuns"] as? Number)?.toInt() ?: 0
+                        totalDistanceKm = (userData["totalDistance"] as? Number)?.toDouble() ?: 0.0
+                        totalCalories = (userData["totalCalories"] as? Number)?.toInt() ?: 0
+                        totalSteps = (userData["totalSteps"] as? Number)?.toInt() ?: 0
+                        totalPoints = (userData["points"] as? Number)?.toInt() ?: 0
 
-                    // Fetch ranks in parallel
-                    val db = FirebaseFirestore.getInstance()
-                    val usersColl = db.collection("users")
+                        val db = FirebaseFirestore.getInstance()
+                        val usersColl = db.collection("users")
 
-                    val rDist = async { usersColl.whereGreaterThan("totalDistance", totalDistanceKm).count().get(AggregateSource.SERVER).await().count + 1 }
-                    val rCal = async { usersColl.whereGreaterThan("totalCalories", totalCalories).count().get(AggregateSource.SERVER).await().count + 1 }
-                    val rSteps = async { usersColl.whereGreaterThan("totalSteps", totalSteps).count().get(AggregateSource.SERVER).await().count + 1 }
-                    val rPoints = async { usersColl.whereGreaterThan("points", totalPoints).count().get(AggregateSource.SERVER).await().count + 1 }
-                    val rRuns = async { usersColl.whereGreaterThan("totalRuns", totalRuns).count().get(AggregateSource.SERVER).await().count + 1 }
+                        fun safeRank(field: String, value: Any) = async {
+                            try { usersColl.whereGreaterThan(field, value).count().get(AggregateSource.SERVER).await().count + 1 }
+                            catch (_: Exception) { 0L }
+                        }
 
-                    rankDistance = rDist.await().toInt()
-                    rankCalories = rCal.await().toInt()
-                    rankSteps = rSteps.await().toInt()
-                    rankPoints = rPoints.await().toInt()
-                    rankRuns = rRuns.await().toInt()
-                } else {
-                    val runs = runRepository.getAllUserRuns(userId)
-                    totalRuns = runs.size
-                    totalDistanceKm = runs.sumOf { it.distance } / 1000.0
-                    totalCalories = runs.sumOf { it.calories }
-                    totalSteps = runs.sumOf { it.steps }
-                    totalPoints = runs.sumOf { it.points }
+                        val rDist   = safeRank("totalDistance", totalDistanceKm)
+                        val rCal    = safeRank("totalCalories", totalCalories)
+                        val rSteps  = safeRank("totalSteps", totalSteps)
+                        val rPoints = safeRank("points", totalPoints)
+                        val rRuns   = safeRank("totalRuns", totalRuns)
+
+                        rankDistance = rDist.await().toInt()
+                        rankCalories = rCal.await().toInt()
+                        rankSteps    = rSteps.await().toInt()
+                        rankPoints   = rPoints.await().toInt()
+                        rankRuns     = rRuns.await().toInt()
+                    } else {
+                        val runs = runRepository.getAllUserRuns(userId)
+                        totalRuns = runs.size
+                        totalDistanceKm = runs.sumOf { it.distance } / 1000.0
+                        totalCalories = runs.sumOf { it.calories }
+                        totalSteps = runs.sumOf { it.steps }
+                        totalPoints = runs.sumOf { it.points }
+                    }
                 }
+            } catch (_: Exception) {
+                // Load failed silently — screen shows zeroes
+            } finally {
+                isLoading = false
             }
-            isLoading = false
         }
     }
 }

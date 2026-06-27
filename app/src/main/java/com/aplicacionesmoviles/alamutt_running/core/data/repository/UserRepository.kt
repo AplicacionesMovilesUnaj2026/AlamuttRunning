@@ -31,8 +31,8 @@ class UserRepository {
             val snapshot = transaction.get(userRef)
             val currentDistance = snapshot.getDouble("totalDistance") ?: 0.0
             val currentRuns = snapshot.getLong("totalRuns") ?: 0
-            val currentCalories = snapshot.getLong("totalCalories")?.toInt() ?: 0
-            val currentSteps = snapshot.getLong("totalSteps")?.toInt() ?: 0
+            val currentCalories = (snapshot.get("totalCalories") as? Number)?.toInt() ?: 0
+            val currentSteps = (snapshot.get("totalSteps") as? Number)?.toInt() ?: 0
             val bestPace = snapshot.getDouble("bestPace") ?: 0.0
             val currentPoints = snapshot.getLong("points")?.toInt() ?: 0
 

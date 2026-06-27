@@ -36,7 +36,11 @@ import com.aplicacionesmoviles.alamutt_running.features.run.ui.QuickStartScreen
 import com.aplicacionesmoviles.alamutt_running.features.run.ui.TrackingScreen
 import com.aplicacionesmoviles.alamutt_running.features.run.ui.HistoryScreen
 import com.aplicacionesmoviles.alamutt_running.features.run.ui.CountdownScreen
+import com.aplicacionesmoviles.alamutt_running.features.run.ui.RunRecoveryDialog
+import com.aplicacionesmoviles.alamutt_running.features.run.viewmodel.RunRecoveryViewModel
 import com.aplicacionesmoviles.alamutt_running.features.run.viewmodel.TrackingViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthScreen
 import com.aplicacionesmoviles.alamutt_running.features.auth.AuthViewModel
 import com.aplicacionesmoviles.alamutt_running.features.challenges.ChallengesScreen
@@ -119,7 +123,17 @@ class MainActivity : AppCompatActivity() {
                     navController = rememberNavController()
                     val trackingViewModel: TrackingViewModel = viewModel()
                     val authViewModel: AuthViewModel = viewModel()
+                    val recoveryViewModel: RunRecoveryViewModel = viewModel()
                     sharedAuthViewModel = authViewModel
+
+                    val abandonedRun by recoveryViewModel.checkpoint.collectAsState()
+                    abandonedRun?.let { checkpoint ->
+                        RunRecoveryDialog(
+                            checkpoint = checkpoint,
+                            onSave = { recoveryViewModel.saveRecoveredRun { } },
+                            onDiscard = { recoveryViewModel.discardRun() }
+                        )
+                    }
 
                     NavHost(
                         navController = navController,

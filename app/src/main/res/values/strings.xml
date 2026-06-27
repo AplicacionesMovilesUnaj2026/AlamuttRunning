@@ -140,4 +140,12 @@
     <string name="no_runs">No se encontraron carreras</string>
     <string name="date_unavailable">Fecha no disponible</string>
     <string name="run_screen">correr</string>
+    <!-- GPS loss banner -->
+    <string name="gps_signal_lost">GPS perdida — estimando distancia</string>
+    <!-- Run recovery dialog -->
+    <string name="recovery_dialog_title">Carrera interrumpida</string>
+    <string name="recovery_dialog_message">Se encontró una carrera sin guardar.\nDistancia: %1$s km — Duración: %2$s</string>
+    <string name="recovery_save">Guardar carrera</string>
+    <string name="recovery_discard">Descartar</string>
+    <string name="recovery_save_error">No se pudo guardar la carrera. Intentá de nuevo.</string>
 </resources>

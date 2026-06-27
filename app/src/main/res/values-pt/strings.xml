@@ -141,4 +141,12 @@
     <string name="no_name">Sem Nome</string>
     <string name="total_stats">Estatísticas Totais</string>
     <string name="best_pace">Melhor ritmo</string>
+    <!-- GPS loss banner -->
+    <string name="gps_signal_lost">Sinal GPS perdido — estimando distância</string>
+    <!-- Run recovery dialog -->
+    <string name="recovery_dialog_title">Corrida interrompida</string>
+    <string name="recovery_dialog_message">Uma corrida não salva foi encontrada.\nDistância: %1$s km — Duração: %2$s</string>
+    <string name="recovery_save">Salvar corrida</string>
+    <string name="recovery_discard">Descartar</string>
+    <string name="recovery_save_error">Não foi possível salvar a corrida. Tente novamente.</string>
 </resources>

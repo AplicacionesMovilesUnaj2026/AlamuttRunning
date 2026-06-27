@@ -54,13 +54,14 @@ fun QuickStartScreen(
     onStartClick: () -> Unit,
     onLogout: () -> Unit,
     onNavigateToHistory: () -> Unit,
-    viewModel: MapViewModel = viewModel()
+    viewModel: MapViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val userLocation by viewModel.userLocation.collectAsState()
     val isGpsActive by viewModel.isGpsActive.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val goalDistance by trackingViewModel.goalDistance.collectAsState()
     val unitSystem by trackingViewModel.unitSystem.collectAsState()
@@ -302,6 +303,20 @@ fun QuickStartScreen(
                 ) {
                     Text(stringResource(R.string.set_goal), color = TextWhite, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 16.dp))
                 }
+            }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+            ) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = DarkerHeader,
+                    contentColor = TextWhite,
+                    actionColor = AccentRed,
+                    shape = RoundedCornerShape(16.dp)
+                )
             }
         }
     }

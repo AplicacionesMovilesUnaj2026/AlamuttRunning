@@ -141,4 +141,12 @@
     <string name="no_name">Без имени</string>
     <string name="total_stats">Общая статистика</string>
     <string name="best_pace">Лучший темп</string>
+    <!-- GPS loss banner -->
+    <string name="gps_signal_lost">Сигнал GPS потерян — расстояние оценивается</string>
+    <!-- Run recovery dialog -->
+    <string name="recovery_dialog_title">Прерванная пробежка</string>
+    <string name="recovery_dialog_message">Найдена несохранённая пробежка.\nДистанция: %1$s км — Длительность: %2$s</string>
+    <string name="recovery_save">Сохранить пробежку</string>
+    <string name="recovery_discard">Удалить</string>
+    <string name="recovery_save_error">Не удалось сохранить пробежку. Попробуйте ещё раз.</string>
 </resources>

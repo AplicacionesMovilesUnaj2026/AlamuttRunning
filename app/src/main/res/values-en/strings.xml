@@ -139,4 +139,12 @@
     <string name="no_name">No Name</string>
     <string name="total_stats">Total Statistics</string>
     <string name="best_pace">Best pace</string>
+    <!-- GPS loss banner -->
+    <string name="gps_signal_lost">GPS signal lost — estimating distance</string>
+    <!-- Run recovery dialog -->
+    <string name="recovery_dialog_title">Interrupted run</string>
+    <string name="recovery_dialog_message">An unsaved run was found.\nDistance: %1$s km — Duration: %2$s</string>
+    <string name="recovery_save">Save run</string>
+    <string name="recovery_discard">Discard</string>
+    <string name="recovery_save_error">Could not save the run. Please try again.</string>
 </resources>

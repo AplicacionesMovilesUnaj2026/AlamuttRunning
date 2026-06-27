@@ -7,11 +7,8 @@ import com.aplicacionesmoviles.alamutt_running.features.run.components.AppDrawer
 import com.aplicacionesmoviles.alamutt_running.features.run.components.MapViewContainer
 import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 
-import android.Manifest
 import android.app.Activity
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.os.Looper
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,15 +17,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
@@ -37,7 +35,6 @@ import com.aplicacionesmoviles.alamutt_running.R
 import com.aplicacionesmoviles.alamutt_running.core.common.util.UnitConverter
 import com.aplicacionesmoviles.alamutt_running.core.ui.theme.*
 import com.aplicacionesmoviles.alamutt_running.features.run.data.StepCounterManager
-import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
@@ -59,6 +56,7 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
     val isGoalReached by viewModel.isGoalReached.collectAsState()
     val goalDistance by viewModel.goalDistance.collectAsState()
     val unitSystem by viewModel.unitSystem.collectAsState()
+    val gpsLost by viewModel.gpsLost.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val formattedTime by remember(timer) {
@@ -103,27 +101,6 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                 message = context.getString(R.string.challenge_completed, challengeText, (completedChallenges.sumOf { it } * 10).toInt()),
                 duration = SnackbarDuration.Long
             )
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            val client = LocationServices.getFusedLocationProviderClient(context)
-            val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L).build()
-            val callback = object : LocationCallback() {
-                override fun onLocationResult(result: LocationResult) {
-                    result.lastLocation?.let { viewModel.processLocation(it) }
-                }
-            }
-            try {
-                client.requestLocationUpdates(request, callback, Looper.getMainLooper())
-            } catch (e: SecurityException) {
-                e.printStackTrace()
-            }
         }
     }
 
@@ -256,6 +233,36 @@ fun TrackingScreen(viewModel: TrackingViewModel, onFinish: (String) -> Unit) {
                     }
                 }
             }
+            // GPS loss banner — shown at top, does not cover controls at bottom.
+            // Auto-dismissed when GPS recovers (gpsLost returns to false).
+            if (gpsLost) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter),
+                    color = Color(0xFFFFC107) // amber/warning
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.gps_signal_lost),
+                            color = Color.Black,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp)

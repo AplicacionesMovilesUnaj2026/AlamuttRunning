@@ -64,7 +64,7 @@ fun AppDrawer(
                     .background(Color.Gray),
                 contentAlignment = Alignment.Center
             ) {
-                if (selectedImage != null || profileImageUrl != null) {
+                if (selectedImage != null || !profileImageUrl.isNullOrBlank()) {
                     AsyncImage(
                         model = selectedImage ?: profileImageUrl,
                         contentDescription = null,
